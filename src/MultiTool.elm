@@ -1,33 +1,33 @@
-module MultiTool exposing (..)
+module MultiTool exposing (add, define, end)
 
 
-defineTool ctor =
-    { ctor = ctor
+define constructor =
+    { constructor = constructor
     , record = identity
     , field = identity
     , end = identity
     , string = identity
     , int = identity
     , bool = identity
-    , fieldMapper = identity
-    , ender = identity
-    , outputter = identity
-    , ctorer = identity
+    , recordMaker = identity
+    , fieldMaker = identity
+    , recordEnder = identity
+    , constructMultiTool = identity
     }
 
 
 add tool builder =
-    { ctor = builder.ctor
+    { constructor = builder.constructor
     , record = builder.record << Tuple.pair tool.record
     , field = builder.field << Tuple.pair tool.field
     , end = builder.end << Tuple.pair tool.end
     , string = builder.string << Tuple.pair tool.string
     , int = builder.int << Tuple.pair tool.int
     , bool = builder.bool << Tuple.pair tool.bool
-    , fieldMapper = builder.fieldMapper >> fieldMapper
-    , ender = builder.ender >> ender
-    , outputter = builder.outputter >> outputter
-    , ctorer = builder.ctorer >> ctorer
+    , recordMaker = builder.recordMaker >> recordMaker
+    , fieldMaker = builder.fieldMaker >> fieldMaker
+    , recordEnder = builder.recordEnder >> recordEnder
+    , constructMultiTool = builder.constructMultiTool >> constructMultiTool
     }
 
 
@@ -35,73 +35,73 @@ type End
     = End
 
 
-endTool builder =
+end toolBuilder =
     let
         records =
-            builder.record End
+            toolBuilder.record End
 
         fields =
-            builder.field End
+            toolBuilder.field End
 
         ends =
-            builder.end End
+            toolBuilder.end End
 
         strings =
-            builder.string End
+            toolBuilder.string End
 
         ints =
-            builder.int End
+            toolBuilder.int End
 
         bools =
-            builder.bool End
+            toolBuilder.bool End
     in
     { record =
-        \ctor ->
-            recordCtorer builder.ctorer ctor records
+        \recordConstructor ->
+            doMakeRecord toolBuilder.recordMaker recordConstructor records
     , field =
-        \fieldName getField child bldr ->
-            fieldMap3 builder.fieldMapper fieldName getField child bldr fields
+        \fieldName getField child recordBuilder ->
+            doMakeFields toolBuilder.fieldMaker fieldName getField child recordBuilder fields
     , end =
-        \bldr ->
-            end builder.ender bldr ends
+        \recordBuilder ->
+            doEndRecord toolBuilder.recordEnder recordBuilder ends
     , build =
-        \bldr ->
-            makeOutput builder.outputter builder.ctor bldr
+        \typeBuilder ->
+            doConstructMultiTool toolBuilder.constructMultiTool toolBuilder.constructor typeBuilder
     , string = strings
     , int = ints
     , bool = bools
     }
 
 
-recordCtorer ctorer_ ctor recs =
-    ctorer_ (\_ End -> End) ctor recs
+doMakeRecord recordMaker_ recordConstructor records =
+    recordMaker_ (\_ End -> End) recordConstructor records
 
 
-ctorer next ctor ( rec, recs ) =
-    ( rec ctor, next ctor recs )
+recordMaker next recordConstructor ( record_, records ) =
+    ( record_ recordConstructor, next recordConstructor records )
 
 
-makeOutput outputter_ ctor builder =
-    outputter_ (\output End -> output) ctor builder
+doEndRecord recordEnder_ builder ends =
+    recordEnder_ (\End End -> End) builder ends
 
 
-outputter next ctor ( builder, restBuilders ) =
-    next (ctor builder) restBuilders
-
-
-end ender_ builder ends =
-    ender_ (\End End -> End) builder ends
-
-
-ender next ( builder, restBuilders ) ( end_, restEnds ) =
+recordEnder next ( builder, restBuilders ) ( end_, restEnds ) =
     ( end_ builder, next restBuilders restEnds )
 
 
-fieldMap3 mapper fieldName getField child bldr fields =
+doMakeFields mapper fieldName getField child bldr fields =
     mapper (\_ _ End End End -> End) fieldName getField child bldr fields
 
 
-fieldMapper next fieldName getField ( child, restChilds ) ( builder, restBuilders ) ( field_, restFields ) =
+fieldMaker next fieldName getField ( child, restChilds ) ( builder, restBuilders ) ( field_, restFields ) =
     ( field_ fieldName getField child builder
     , next fieldName getField restChilds restBuilders restFields
     )
+
+
+doConstructMultiTool constructMultiTool_ ctor builder =
+    constructMultiTool_ (\output End -> output) ctor builder
+
+
+constructMultiTool next ctor ( builder, restBuilders ) =
+    next (ctor builder) restBuilders

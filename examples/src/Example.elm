@@ -13,7 +13,7 @@ import Tools.ToString
 
 
 multiTool =
-    MultiTool.defineTool
+    MultiTool.define
         (\toString codec control toComparable ->
             { toString = toString
             , codec = codec
@@ -25,7 +25,7 @@ multiTool =
         |> MultiTool.add Tools.Codec.interface
         |> MultiTool.add Tools.Control.interface
         |> MultiTool.add Tools.ToComparable.interface
-        |> MultiTool.endTool
+        |> MultiTool.end
 
 
 users : List User
