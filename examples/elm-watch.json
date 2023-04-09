@@ -1,0 +1,10 @@
+{
+    "targets": {
+        "elm-multitool demo": {
+            "inputs": [
+                "src/Example.elm"
+            ],
+            "output": "main.js"
+        }
+    }
+}
