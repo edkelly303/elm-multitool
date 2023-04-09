@@ -101,10 +101,18 @@ end toolBuilder =
             doEndRecord toolBuilder.recordEnder recordBuilder endRecords
 
     -- multiTool defs for custom types
-    , custom = \customDestructor -> doMakeCustom toolBuilder.customMaker customDestructor customs
-    , tag0 = \tagName tagConstructor -> doMakeTag0 toolBuilder.tag0Maker tagName tagConstructor tag0s
-    , tag1 = \tagName tagConstructor child1 -> doMakeTag1 toolBuilder.tag0Maker tagName tagConstructor child1 tag1s
-    , endCustom = \customBuilder -> doEndCustom toolBuilder.customEnder customBuilder endCustoms
+    , custom =
+        \customDestructor ->
+            doMakeCustom toolBuilder.customMaker customDestructor customs
+    , tag0 =
+        \tagName tagConstructor customBuilder ->
+            doMakeTag0 toolBuilder.tag0Maker tagName tagConstructor customBuilder tag0s
+    , tag1 =
+        \tagName tagConstructor child1 customBuilder ->
+            doMakeTag1 toolBuilder.tag1Maker tagName tagConstructor child1 customBuilder tag1s
+    , endCustom =
+        \customBuilder ->
+            doEndCustom toolBuilder.customEnder customBuilder endCustoms
 
     -- multiTool defs for primitive types
     , string = strings
@@ -154,28 +162,32 @@ customMaker next customDestructor ( custom, restCustoms ) =
     )
 
 
-doMakeTag0 tag0Maker_ tagName tagConstructor tag0s =
-    ()
+doMakeTag0 tag0Maker_ tagName tagConstructor customBuilder tag0s =
+    tag0Maker_ (\_ _ End End -> End) tagName tagConstructor customBuilder tag0s
 
 
-tag0Maker next tagName tagConstructor ( tag0, restTag0s ) =
-    ()
+tag0Maker next tagName tagConstructor ( customBuilder, restCustomBuilders ) ( tag0, restTag0s ) =
+    ( tag0 tagName tagConstructor customBuilder
+    , next tagName tagConstructor restCustomBuilders restTag0s
+    )
 
 
-doMakeTag1 tag1Maker_ tagName tagConstructor child1 tag1s =
-    ()
+doMakeTag1 tag1Maker_ tagName tagConstructor child1 customBuilder tag1s =
+    tag1Maker_ (\_ _ _ End End -> End) tagName tagConstructor child1 customBuilder tag1s
 
 
-tag1Maker next tagName tagConstructor child1 ( tag1, restTag1s ) =
-    ()
+tag1Maker next tagName tagConstructor ( child1, restChild1s ) ( customBuilder, restCustomBuilders ) ( tag1, restTag1s ) =
+    ( tag1 tagName tagConstructor child1 customBuilder
+    , next tagName tagConstructor restChild1s restCustomBuilders restTag1s
+    )
 
 
-doEndCustom customEnder_ builder endCustoms =
-    ()
+doEndCustom customEnder_ customBuilder endCustoms =
+    customEnder_ (\End End -> End) customBuilder endCustoms
 
 
-customEnder next builder ( endCustom, restEndCustoms ) =
-    ()
+customEnder next ( customBuilder, restCustomBuilders ) ( endCustom, restEndCustoms ) =
+    ( endCustom customBuilder, next restCustomBuilders restEndCustoms )
 
 
 doConstructMultiTool constructMultiTool_ ctor builder =
