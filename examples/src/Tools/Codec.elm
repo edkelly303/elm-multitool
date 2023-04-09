@@ -6,8 +6,12 @@ import Codec
 interface =
     { record = Codec.object
     , field = Codec.field
-    , end = Codec.buildObject
+    , endRecord = Codec.buildObject
     , string = Codec.string
     , int = Codec.int
     , bool = Codec.bool
+    , custom = Codec.custom
+    , tag0 = Codec.variant0
+    , tag1 = Codec.variant1
+    , endCustom = Codec.buildCustom
     }
