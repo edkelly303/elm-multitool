@@ -8,23 +8,24 @@ import Html.Attributes
 import MultiTool
 import Tools.Codec
 import Tools.Control
-import Tools.ToComparable
-import Tools.ToString
+-- import Tools.ToComparable
+-- import Tools.ToString
 
 
 multiTool =
     MultiTool.define
-        (\toString codec control toComparable ->
-            { toString = toString
-            , codec = codec
-            , control = control
-            , toComparable = toComparable
-            }
-        )
-        |> MultiTool.add Tools.ToString.interface
+        (\codec control -> {codec = codec, control = control})
+        -- (\toString codec control toComparable ->
+        --     { toString = toString
+        --     , codec = codec
+        --     , control = control
+        --     , toComparable = toComparable
+        --     }
+        -- )
+        -- |> MultiTool.add Tools.ToString.interface
         |> MultiTool.add Tools.Codec.interface
         |> MultiTool.add Tools.Control.interface
-        |> MultiTool.add Tools.ToComparable.interface
+        -- |> MultiTool.add Tools.ToComparable.interface
         |> MultiTool.end
 
 
@@ -48,7 +49,7 @@ user =
         |> multiTool.field "name" .name multiTool.string
         |> multiTool.field "age" .age multiTool.int
         |> multiTool.field "hobbies" .hobbies hobbies
-        |> multiTool.end
+        |> multiTool.endRecord
 
 
 type alias Hobbies =
@@ -61,7 +62,7 @@ hobbies =
     multiTool.record Hobbies
         |> multiTool.field "surfs" .surfs multiTool.bool
         |> multiTool.field "skis" .skis multiTool.bool
-        |> multiTool.end
+        |> multiTool.endRecord
 
 
 type alias Model =
@@ -134,17 +135,17 @@ view model =
         [ Html.h1 [] [ Html.text "elm-multitool demo" ]
         , Html.h2 [] [ Html.text "control: create a user" ]
         , Html.div [ Html.Attributes.style "width" "400px" ] [ form.view model.form ]
-        , Html.h2 [] [ Html.text "toString: stringify users" ]
-        , viewUsers model.users
-        , Html.h2 [] [ Html.text "toComparable: sort users" ]
-        , viewUsers (List.sortBy tools.toComparable model.users)
+        -- , Html.h2 [] [ Html.text "toString: stringify users" ]
+        -- , viewUsers model.users
+        -- , Html.h2 [] [ Html.text "toComparable: sort users" ]
+        -- , viewUsers (List.sortBy tools.toComparable model.users)
         , Html.h2 [] [ Html.text "codec: encode users as JSON" ]
         , Html.text json
         ]
 
 
-viewUsers users_ =
-    users_
-        |> List.map tools.toString
-        |> String.join "\n"
-        |> Html.text
+-- viewUsers users_ =
+--     users_
+--         |> List.map tools.toString
+--         |> String.join "\n"
+--         |> Html.text
