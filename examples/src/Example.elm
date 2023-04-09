@@ -40,6 +40,7 @@ users =
     -- ]
     []
 
+
 type alias User =
     -- { name : String
     -- , age : Int
@@ -97,34 +98,34 @@ colour =
 
 type alias Model =
     { form :
-        (Control.State ( Control.State (), Control.End ))
-        -- Control.State
-        --     ( Control.State String
-        --     , ( Control.State String
-        --       , ( Control.State
-        --             ( Control.State Bool
-        --             , ( Control.State Bool, Control.End )
-        --             )
-        --         , ( Control.State (), Control.End )
-        --         )
-        --       )
-        --     )
+        Control.State ( Control.State (), Control.End )
+
+    -- Control.State
+    --     ( Control.State String
+    --     , ( Control.State String
+    --       , ( Control.State
+    --             ( Control.State Bool
+    --             , ( Control.State Bool, Control.End )
+    --             )
+    --         , ( Control.State (), Control.End )
+    --         )
+    --       )
+    --     )
     , users : List User
     }
 
 
 type Msg
-    = FormUpdated
-        (Control.Delta ( Control.Delta (), Control.End ))
-        -- (Control.Delta
-        -- ( Control.Delta String
-        -- , ( Control.Delta String
-        --   , ( Control.Delta
-        --           ( Control.Delta Bool, ( Control.Delta Bool, Control.End ) )
-        --     , ( Control.Delta (), Control.End )
-        --     )
-        --   )
-        -- ))
+    = FormUpdated (Control.Delta ( Control.Delta (), Control.End ))
+      -- (Control.Delta
+      -- ( Control.Delta String
+      -- , ( Control.Delta String
+      --   , ( Control.Delta
+      --           ( Control.Delta Bool, ( Control.Delta Bool, Control.End ) )
+      --     , ( Control.Delta (), Control.End )
+      --     )
+      --   )
+      -- ))
     | FormSubmitted
 
 
