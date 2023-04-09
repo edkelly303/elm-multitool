@@ -8,13 +8,16 @@ import Html.Attributes
 import MultiTool
 import Tools.Codec
 import Tools.Control
+
+
+
 -- import Tools.ToComparable
 -- import Tools.ToString
 
 
 multiTool =
     MultiTool.define
-        (\codec control -> {codec = codec, control = control})
+        (\codec control -> { codec = codec, control = control })
         -- (\toString codec control toComparable ->
         --     { toString = toString
         --     , codec = codec
@@ -31,24 +34,26 @@ multiTool =
 
 users : List User
 users =
-    [ { name = "Pete", age = 35, hobbies = { surfs = True, skis = False } }
-    , { name = "Ed", age = 41, hobbies = { surfs = False, skis = True } }
-    , { name = "David", age = 48, hobbies = { surfs = True, skis = False } }
-    ]
-
+    -- [ { name = "Pete", age = 35, hobbies = { surfs = True, skis = False }, favouriteColour = Red }
+    -- , { name = "Ed", age = 41, hobbies = { surfs = False, skis = True }, favouriteColour = Green }
+    -- , { name = "David", age = 48, hobbies = { surfs = True, skis = False }, favouriteColour = Blue }
+    -- ]
+    []
 
 type alias User =
-    { name : String
-    , age : Int
-    , hobbies : Hobbies
+    -- { name : String
+    -- , age : Int
+    -- , hobbies : Hobbies
+    { favouriteColour : Colour
     }
 
 
 user =
     multiTool.record User
-        |> multiTool.field "name" .name multiTool.string
-        |> multiTool.field "age" .age multiTool.int
-        |> multiTool.field "hobbies" .hobbies hobbies
+        -- |> multiTool.field "name" .name multiTool.string
+        -- |> multiTool.field "age" .age multiTool.int
+        -- |> multiTool.field "hobbies" .hobbies hobbies
+        |> multiTool.field "favouriteColour" .favouriteColour colour
         |> multiTool.endRecord
 
 
@@ -65,14 +70,61 @@ hobbies =
         |> multiTool.endRecord
 
 
+type Colour
+    = Red
+    | Green
+    | Blue
+
+
+colour =
+    multiTool.custom
+        (\red green blue tag ->
+            case tag of
+                Red ->
+                    red
+
+                Green ->
+                    green
+
+                Blue ->
+                    blue
+        )
+        |> multiTool.tag0 "red" Red
+        |> multiTool.tag0 "green" Green
+        |> multiTool.tag0 "blue" Blue
+        |> multiTool.endCustom
+
+
 type alias Model =
-    { form : Control.State ( Control.State String, ( Control.State String, ( Control.State ( Control.State Bool, ( Control.State Bool, Control.End ) ), Control.End ) ) )
+    { form :
+        (Control.State ( Control.State (), Control.End ))
+        -- Control.State
+        --     ( Control.State String
+        --     , ( Control.State String
+        --       , ( Control.State
+        --             ( Control.State Bool
+        --             , ( Control.State Bool, Control.End )
+        --             )
+        --         , ( Control.State (), Control.End )
+        --         )
+        --       )
+        --     )
     , users : List User
     }
 
 
 type Msg
-    = FormUpdated (Control.Delta ( Control.Delta String, ( Control.Delta String, ( Control.Delta ( Control.Delta Bool, ( Control.Delta Bool, Control.End ) ), Control.End ) ) ))
+    = FormUpdated
+        (Control.Delta ( Control.Delta (), Control.End ))
+        -- (Control.Delta
+        -- ( Control.Delta String
+        -- , ( Control.Delta String
+        --   , ( Control.Delta
+        --           ( Control.Delta Bool, ( Control.Delta Bool, Control.End ) )
+        --     , ( Control.Delta (), Control.End )
+        --     )
+        --   )
+        -- ))
     | FormSubmitted
 
 
@@ -135,6 +187,7 @@ view model =
         [ Html.h1 [] [ Html.text "elm-multitool demo" ]
         , Html.h2 [] [ Html.text "control: create a user" ]
         , Html.div [ Html.Attributes.style "width" "400px" ] [ form.view model.form ]
+
         -- , Html.h2 [] [ Html.text "toString: stringify users" ]
         -- , viewUsers model.users
         -- , Html.h2 [] [ Html.text "toComparable: sort users" ]
@@ -142,6 +195,7 @@ view model =
         , Html.h2 [] [ Html.text "codec: encode users as JSON" ]
         , Html.text json
         ]
+
 
 
 -- viewUsers users_ =
