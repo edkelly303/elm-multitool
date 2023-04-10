@@ -4,12 +4,13 @@ import Control
 
 
 interface =
-    { record = Control.record
-    , field = Control.field
-    , endRecord = Control.end
-    , string = Control.string
+    { string = Control.string
     , int = Control.int
     , bool = Control.bool "yes" "no"
+    , list = Control.list
+    , record = Control.record
+    , field = Control.field
+    , endRecord = Control.end
     , custom = Control.customType
     , tag0 = Control.tag0
     , tag1 = Control.tag1

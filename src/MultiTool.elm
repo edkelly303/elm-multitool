@@ -1,22 +1,37 @@
-module MultiTool exposing (End, add, define, end, matcher1, matcher2, matcher3, matcher4, matcher5)
+module MultiTool exposing
+    ( End(..)
+    , add
+    , define
+    , end
+    , matcher1
+    , matcher2
+    , matcher3
+    , matcher4
+    , matcher5
+    )
 
 
+matcher1 : a -> ( a, End )
 matcher1 d1 =
     ( d1, End )
 
 
+matcher2 : a -> b -> ( a, ( b, End ) )
 matcher2 d1 d2 =
     ( d1, ( d2, End ) )
 
 
+matcher3 : a -> b -> c -> ( a, ( b, ( c, End ) ) )
 matcher3 d1 d2 d3 =
     ( d1, ( d2, ( d3, End ) ) )
 
 
+matcher4 : a -> b -> c -> d -> ( a, ( b, ( c, ( d, End ) ) ) )
 matcher4 d1 d2 d3 d4 =
     ( d1, ( d2, ( d3, ( d4, End ) ) ) )
 
 
+matcher5 : a -> b -> c -> d -> e -> ( a, ( b, ( c, ( d, ( e, End ) ) ) ) )
 matcher5 d1 d2 d3 d4 d5 =
     ( d1, ( d2, ( d3, ( d4, ( d5, End ) ) ) ) )
 
@@ -24,19 +39,26 @@ matcher5 d1 d2 d3 d4 d5 =
 define constructor =
     { constructor = constructor
 
-    --data
-    , record = identity
-    , field = identity
-    , endRecord = identity
-    , custom = identity
-    , tag0 = identity
-    , tag1 = identity
-    , endCustom = identity
+    -- primitives
     , string = identity
     , int = identity
     , bool = identity
 
-    -- functions
+    -- built-in combinators
+    , list = identity
+
+    -- record combinators
+    , record = identity
+    , field = identity
+    , endRecord = identity
+
+    -- custom type combinators
+    , custom = identity
+    , tag0 = identity
+    , tag1 = identity
+    , endCustom = identity
+
+    -- builder functions
     , recordMaker = identity
     , fieldMaker = identity
     , recordEnder = identity
@@ -44,22 +66,34 @@ define constructor =
     , tag0Maker = identity
     , tag1Maker = identity
     , customEnder = identity
+    , listMaker = identity
     , constructMultiTool = identity
     }
 
 
 add tool builder =
     { constructor = builder.constructor
+
+    -- primitives
+    , string = builder.string << Tuple.pair tool.string
+    , int = builder.int << Tuple.pair tool.int
+    , bool = builder.bool << Tuple.pair tool.bool
+
+    -- built-in combinators
+    , list = builder.list << Tuple.pair tool.list
+
+    -- record combinators
     , record = builder.record << Tuple.pair tool.record
     , field = builder.field << Tuple.pair tool.field
     , endRecord = builder.endRecord << Tuple.pair tool.endRecord
+
+    -- custom type combinators
     , custom = builder.custom << Tuple.pair tool.custom
     , tag0 = builder.tag0 << Tuple.pair tool.tag0
     , tag1 = builder.tag1 << Tuple.pair tool.tag1
     , endCustom = builder.endCustom << Tuple.pair tool.endCustom
-    , string = builder.string << Tuple.pair tool.string
-    , int = builder.int << Tuple.pair tool.int
-    , bool = builder.bool << Tuple.pair tool.bool
+
+    -- builder functions
     , recordMaker = builder.recordMaker >> recordMaker
     , fieldMaker = builder.fieldMaker >> fieldMaker
     , recordEnder = builder.recordEnder >> recordEnder
@@ -67,6 +101,7 @@ add tool builder =
     , tag0Maker = builder.tag0Maker >> tag0Maker
     , tag1Maker = builder.tag1Maker >> tag1Maker
     , customEnder = builder.customEnder >> customEnder
+    , listMaker = builder.listMaker >> listMaker
     , constructMultiTool = builder.constructMultiTool >> constructMultiTool
     }
 
@@ -77,6 +112,21 @@ type End
 
 end toolBuilder =
     let
+        -- primitives
+        strings =
+            toolBuilder.string End
+
+        ints =
+            toolBuilder.int End
+
+        bools =
+            toolBuilder.bool End
+
+        -- built-in combinators
+        lists =
+            toolBuilder.list End
+
+        -- record combinators
         records =
             toolBuilder.record End
 
@@ -86,6 +136,7 @@ end toolBuilder =
         endRecords =
             toolBuilder.endRecord End
 
+        -- custom type combinators
         customs =
             toolBuilder.custom End
 
@@ -97,18 +148,19 @@ end toolBuilder =
 
         endCustoms =
             toolBuilder.endCustom End
-
-        strings =
-            toolBuilder.string End
-
-        ints =
-            toolBuilder.int End
-
-        bools =
-            toolBuilder.bool End
     in
+    { -- multiTool defs for primitive types
+      string = strings
+    , int = ints
+    , bool = bools
+
+    -- multiTool defs for built-in combinators
+    , list =
+        \listChildren ->
+            doMakeList toolBuilder.listMaker listChildren lists
+
     -- multiTool defs for records
-    { record =
+    , record =
         \recordConstructor ->
             doMakeRecord toolBuilder.recordMaker recordConstructor records
     , field =
@@ -132,16 +184,21 @@ end toolBuilder =
         \customBuilder ->
             doEndCustom toolBuilder.customEnder customBuilder endCustoms
 
-    -- multiTool defs for primitive types
-    , string = strings
-    , int = ints
-    , bool = bools
-
     -- turn a multiTool definition into a usable multiTool
     , build =
         \typeBuilder ->
             doConstructMultiTool toolBuilder.constructMultiTool toolBuilder.constructor typeBuilder
     }
+
+
+doMakeList listMaker_ listChildren_ lists_ =
+    listMaker_ (\End End -> End) listChildren_ lists_
+
+
+listMaker next ( listChild, restListChildren ) ( list_, restLists ) =
+    ( list_ listChild
+    , next restListChildren restLists
+    )
 
 
 doMakeRecord recordMaker_ recordConstructor records =

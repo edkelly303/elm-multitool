@@ -1,20 +1,28 @@
 module Tools.ToComparable exposing (interface)
 
--- COMPARE
-
 
 interface =
-    { record = compRecord
+    { string = compString
+    , int = compInt
+    , bool = compBool
+    , list = compList
+    , record = compRecord
     , field = compField
     , endRecord = compEndRecord
     , custom = compCustom
     , tag0 = compTag0
     , tag1 = compTag1
     , endCustom = compEndCustom
-    , string = compString
-    , int = compInt
-    , bool = compBool
     }
+
+
+compList child =
+    \listData ->
+        []
+
+
+
+-- TODO
 
 
 compRecord ctor =

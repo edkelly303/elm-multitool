@@ -2,17 +2,25 @@ module Tools.ToString exposing (interface)
 
 
 interface =
-    { record = strRecord
-    , field = strField
-    , endRecord = strEnd
-    , string = strString
+    { string = strString
     , int = strInt
     , bool = strBool
+    , list = strList
+    , record = strRecord
+    , field = strField
+    , endRecord = strEnd
     , custom = strCustom
     , tag0 = strTag0
     , tag1 = strTag1
     , endCustom = strEndCustom
     }
+
+
+strList child =
+    \listData ->
+        case listData of 
+            [] -> "[]"
+            _ -> "[ " ++ (List.map child listData |> String.join ", ") ++ " ]"
 
 
 strRecord : ctor -> recordData -> List String
