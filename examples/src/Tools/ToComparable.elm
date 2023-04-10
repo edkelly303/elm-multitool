@@ -6,7 +6,7 @@ module Tools.ToComparable exposing (interface)
 interface =
     { record = compRecord
     , field = compField
-    , end = compEnd
+    , endRecord = compEnd
     , string = compString
     , int = compInt
     , bool = compBool
