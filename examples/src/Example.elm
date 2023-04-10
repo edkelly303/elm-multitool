@@ -1,5 +1,7 @@
 module Example exposing (main)
 
+-- import Tools.ToComparable
+
 import Browser
 import Codec
 import Control
@@ -8,16 +10,12 @@ import Html.Attributes
 import MultiTool
 import Tools.Codec
 import Tools.Control
-
-
-
--- import Tools.ToComparable
--- import Tools.ToString
+import Tools.ToString
 
 
 multiTool =
     MultiTool.define
-        (\codec control -> { codec = codec, control = control })
+        (\toString codec control -> { toString = toString, codec = codec, control = control })
         -- (\toString codec control toComparable ->
         --     { toString = toString
         --     , codec = codec
@@ -25,7 +23,7 @@ multiTool =
         --     , toComparable = toComparable
         --     }
         -- )
-        -- |> MultiTool.add Tools.ToString.interface
+        |> MultiTool.add Tools.ToString.interface
         |> MultiTool.add Tools.Codec.interface
         |> MultiTool.add Tools.Control.interface
         -- |> MultiTool.add Tools.ToComparable.interface
@@ -34,26 +32,25 @@ multiTool =
 
 users : List User
 users =
-    -- [ { name = "Pete", age = 35, hobbies = { surfs = True, skis = False }, favouriteColour = Red }
-    -- , { name = "Ed", age = 41, hobbies = { surfs = False, skis = True }, favouriteColour = Green }
-    -- , { name = "David", age = 48, hobbies = { surfs = True, skis = False }, favouriteColour = Blue }
-    -- ]
-    []
+    [ { name = "Pete", age = 35, hobbies = { surfs = True, skis = False }, favouriteColour = Red }
+    , { name = "Ed", age = 41, hobbies = { surfs = False, skis = True }, favouriteColour = Green 2 }
+    , { name = "David", age = 48, hobbies = { surfs = True, skis = False }, favouriteColour = Blue }
+    ]
 
 
 type alias User =
-    -- { name : String
-    -- , age : Int
-    -- , hobbies : Hobbies
-    { favouriteColour : Colour
+    { name : String
+    , age : Int
+    , hobbies : Hobbies
+    , favouriteColour : Colour
     }
 
 
 user =
     multiTool.record User
-        -- |> multiTool.field "name" .name multiTool.string
-        -- |> multiTool.field "age" .age multiTool.int
-        -- |> multiTool.field "hobbies" .hobbies hobbies
+        |> multiTool.field "name" .name multiTool.string
+        |> multiTool.field "age" .age multiTool.int
+        |> multiTool.field "hobbies" .hobbies hobbies
         |> multiTool.field "favouriteColour" .favouriteColour colour
         |> multiTool.endRecord
 
@@ -73,59 +70,76 @@ hobbies =
 
 type Colour
     = Red
-    | Green
+    | Green Int
     | Blue
 
 
 colour =
+    let
+        match =
+            \red green blue tag ->
+                case tag of
+                    Red ->
+                        red
+
+                    Green i ->
+                        green i
+
+                    Blue ->
+                        blue
+    in
     multiTool.custom
-        (\red green blue tag ->
-            case tag of
-                Red ->
-                    red
-
-                Green ->
-                    green
-
-                Blue ->
-                    blue
-        )
-        |> multiTool.tag0 "red" Red
-        |> multiTool.tag0 "green" Green
-        |> multiTool.tag0 "blue" Blue
+        (MultiTool.matcher3 match match match)
+        |> multiTool.tag0 "Red" Red
+        |> multiTool.tag1 "Green" Green multiTool.int
+        |> multiTool.tag0 "Blue" Blue
         |> multiTool.endCustom
 
 
 type alias Model =
     { form :
-        Control.State ( Control.State (), Control.End )
-
-    -- Control.State
-    --     ( Control.State String
-    --     , ( Control.State String
-    --       , ( Control.State
-    --             ( Control.State Bool
-    --             , ( Control.State Bool, Control.End )
-    --             )
-    --         , ( Control.State (), Control.End )
-    --         )
-    --       )
-    --     )
+        Control.State
+            ( Control.State String
+            , ( Control.State String
+              , ( Control.State
+                    ( Control.State Bool
+                    , ( Control.State Bool, Control.End )
+                    )
+                , ( Control.State
+                        ( Control.State ()
+                        , ( Control.State
+                                ( Control.State String, Control.End )
+                          , ( Control.State (), Control.End )
+                          )
+                        )
+                  , Control.End
+                  )
+                )
+              )
+            )
     , users : List User
     }
 
 
 type Msg
-    = FormUpdated (Control.Delta ( Control.Delta (), Control.End ))
-      -- (Control.Delta
-      -- ( Control.Delta String
-      -- , ( Control.Delta String
-      --   , ( Control.Delta
-      --           ( Control.Delta Bool, ( Control.Delta Bool, Control.End ) )
-      --     , ( Control.Delta (), Control.End )
-      --     )
-      --   )
-      -- ))
+    = FormUpdated
+        (Control.Delta
+            ( Control.Delta String
+            , ( Control.Delta String
+              , ( Control.Delta
+                    ( Control.Delta Bool, ( Control.Delta Bool, Control.End ) )
+                , ( Control.Delta
+                        ( Control.Delta ()
+                        , ( Control.Delta ( Control.Delta String, Control.End )
+                          , ( Control.Delta (), Control.End )
+                          )
+                        )
+                  , Control.End
+                  )
+                )
+              )
+            )
+        )
     | FormSubmitted
 
 
@@ -189,8 +203,8 @@ view model =
         , Html.h2 [] [ Html.text "control: create a user" ]
         , Html.div [ Html.Attributes.style "width" "400px" ] [ form.view model.form ]
 
-        -- , Html.h2 [] [ Html.text "toString: stringify users" ]
-        -- , viewUsers model.users
+        , Html.h2 [] [ Html.text "toString: stringify users" ]
+        , viewUsers model.users
         -- , Html.h2 [] [ Html.text "toComparable: sort users" ]
         -- , viewUsers (List.sortBy tools.toComparable model.users)
         , Html.h2 [] [ Html.text "codec: encode users as JSON" ]
@@ -199,8 +213,8 @@ view model =
 
 
 
--- viewUsers users_ =
---     users_
---         |> List.map tools.toString
---         |> String.join "\n"
---         |> Html.text
+viewUsers users_ =
+    users_
+        |> List.map tools.toString
+        |> String.join "\n"
+        |> Html.text
