@@ -1,7 +1,5 @@
 module Example exposing (main)
 
--- import Tools.ToComparable
-
 import Browser
 import Codec
 import Control
@@ -10,23 +8,23 @@ import Html.Attributes
 import MultiTool
 import Tools.Codec
 import Tools.Control
+import Tools.ToComparable
 import Tools.ToString
 
 
 multiTool =
     MultiTool.define
-        (\toString codec control -> { toString = toString, codec = codec, control = control })
-        -- (\toString codec control toComparable ->
-        --     { toString = toString
-        --     , codec = codec
-        --     , control = control
-        --     , toComparable = toComparable
-        --     }
-        -- )
+        (\toString codec control toComparable ->
+            { toString = toString
+            , codec = codec
+            , control = control
+            , toComparable = toComparable
+            }
+        )
         |> MultiTool.add Tools.ToString.interface
         |> MultiTool.add Tools.Codec.interface
         |> MultiTool.add Tools.Control.interface
-        -- |> MultiTool.add Tools.ToComparable.interface
+        |> MultiTool.add Tools.ToComparable.interface
         |> MultiTool.end
 
 
@@ -39,19 +37,19 @@ users =
 
 
 type alias User =
-    { name : String
+    { favouriteColour : Colour
+    , name : String
     , age : Int
     , hobbies : Hobbies
-    , favouriteColour : Colour
     }
 
 
 user =
     multiTool.record User
+        |> multiTool.field "favouriteColour" .favouriteColour colour
         |> multiTool.field "name" .name multiTool.string
         |> multiTool.field "age" .age multiTool.int
         |> multiTool.field "hobbies" .hobbies hobbies
-        |> multiTool.field "favouriteColour" .favouriteColour colour
         |> multiTool.endRecord
 
 
@@ -89,7 +87,7 @@ colour =
                         blue
     in
     multiTool.custom
-        (MultiTool.matcher3 match match match)
+        (MultiTool.matcher4 match match match match)
         |> multiTool.tag0 "Red" Red
         |> multiTool.tag1 "Green" Green multiTool.int
         |> multiTool.tag0 "Blue" Blue
@@ -99,19 +97,16 @@ colour =
 type alias Model =
     { form :
         Control.State
-            ( Control.State String
+            ( Control.State
+                ( Control.State ()
+                , ( Control.State ( Control.State String, Control.End )
+                  , ( Control.State (), Control.End )
+                  )
+                )
             , ( Control.State String
-              , ( Control.State
-                    ( Control.State Bool
-                    , ( Control.State Bool, Control.End )
-                    )
+              , ( Control.State String
                 , ( Control.State
-                        ( Control.State ()
-                        , ( Control.State
-                                ( Control.State String, Control.End )
-                          , ( Control.State (), Control.End )
-                          )
-                        )
+                        ( Control.State Bool, ( Control.State Bool, Control.End ) )
                   , Control.End
                   )
                 )
@@ -124,16 +119,16 @@ type alias Model =
 type Msg
     = FormUpdated
         (Control.Delta
-            ( Control.Delta String
+            ( Control.Delta
+                ( Control.Delta ()
+                , ( Control.Delta ( Control.Delta String, Control.End )
+                  , ( Control.Delta (), Control.End )
+                  )
+                )
             , ( Control.Delta String
-              , ( Control.Delta
-                    ( Control.Delta Bool, ( Control.Delta Bool, Control.End ) )
+              , ( Control.Delta String
                 , ( Control.Delta
-                        ( Control.Delta ()
-                        , ( Control.Delta ( Control.Delta String, Control.End )
-                          , ( Control.Delta (), Control.End )
-                          )
-                        )
+                        ( Control.Delta Bool, ( Control.Delta Bool, Control.End ) )
                   , Control.End
                   )
                 )
@@ -202,15 +197,13 @@ view model =
         [ Html.h1 [] [ Html.text "elm-multitool demo" ]
         , Html.h2 [] [ Html.text "control: create a user" ]
         , Html.div [ Html.Attributes.style "width" "400px" ] [ form.view model.form ]
-
         , Html.h2 [] [ Html.text "toString: stringify users" ]
         , viewUsers model.users
-        -- , Html.h2 [] [ Html.text "toComparable: sort users" ]
-        -- , viewUsers (List.sortBy tools.toComparable model.users)
+        , Html.h2 [] [ Html.text "toComparable: sort users" ]
+        , viewUsers (List.sortBy tools.toComparable model.users)
         , Html.h2 [] [ Html.text "codec: encode users as JSON" ]
         , Html.text json
         ]
-
 
 
 viewUsers users_ =
