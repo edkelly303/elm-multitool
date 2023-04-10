@@ -77,9 +77,9 @@ roleControl =
         |> Control.tag1 "AdminLevel" AdminLevel Control.int
         |> Control.end
 ```
-And you'll have this same duplication of boilerplate for every single type across your entire project.
+If you want to create controls and codecs for many types across your codebase, this could get tedious.
 
-### Yay! Less boilerplate
+### Yay! Less boilerplate!
 
 With Elm MultiTool, by contrast, you do a little bit of initial setup to define the tools you want to use in your application:
 
