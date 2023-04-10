@@ -44,7 +44,7 @@ strTag1 tagName tagCtor child dtor =
 
 
 strEndCustom dtor =
-    dtor 
+    dtor
 
 
 strString : String -> String
