@@ -6,7 +6,11 @@ module Tools.ToComparable exposing (interface)
 interface =
     { record = compRecord
     , field = compField
-    , endRecord = compEnd
+    , endRecord = compEndRecord
+    , custom = compCustom
+    , tag0 = compTag0
+    , tag1 = compTag1
+    , endCustom = compEndCustom
     , string = compString
     , int = compInt
     , bool = compBool
@@ -30,9 +34,27 @@ compField fieldName getField toComparable builder =
         builder ( this, rest ) recordData
 
 
-compEnd : (Int -> rest -> output) -> (rest -> output)
-compEnd builder =
+compEndRecord : (Int -> rest -> output) -> (rest -> output)
+compEndRecord builder =
     \rest -> builder 0 rest
+
+
+compCustom dtor =
+    { dtor = dtor, index = 0 }
+
+
+compTag0 tagName tagCtor { dtor, index } =
+    { dtor = dtor ( index, 0 ), index = index + 1 }
+
+
+compTag1 tagName tagCtor child { dtor, index } =
+    { dtor = dtor (\c -> ( index, child c ))
+    , index = index + 1
+    }
+
+
+compEndCustom { dtor } =
+    dtor
 
 
 compString : String -> String
