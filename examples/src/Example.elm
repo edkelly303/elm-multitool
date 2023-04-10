@@ -12,7 +12,7 @@ import Tools.ToComparable
 import Tools.ToString
 
 
-multiTool =
+appTools =
     MultiTool.define
         (\toString codec control toComparable ->
             { toString = toString
@@ -31,7 +31,7 @@ multiTool =
 users : List User
 users =
     [ { name = "Pete", age = 35, hobbies = { surfs = True, skis = False }, favouriteColour = Red }
-    , { name = "Ed", age = 41, hobbies = { surfs = False, skis = True }, favouriteColour = Green { num1 = 2, num2 = 3 } }
+    , { name = "Ed", age = 41, hobbies = { surfs = False, skis = True }, favouriteColour = Green 2 }
     , { name = "David", age = 48, hobbies = { surfs = True, skis = False }, favouriteColour = Blue }
     ]
 
@@ -44,13 +44,17 @@ type alias User =
     }
 
 
-user =
-    multiTool.record User
-        |> multiTool.field "favouriteColour" .favouriteColour colour
-        |> multiTool.field "name" .name multiTool.string
-        |> multiTool.field "age" .age multiTool.int
-        |> multiTool.field "hobbies" .hobbies hobbies
-        |> multiTool.endRecord
+userTools =
+    appTools.build userToolsDefinition
+
+
+userToolsDefinition =
+    appTools.record User
+        |> appTools.field "favouriteColour" .favouriteColour colourToolsDefinition
+        |> appTools.field "name" .name appTools.string
+        |> appTools.field "age" .age appTools.int
+        |> appTools.field "hobbies" .hobbies hobbiesToolsDefinition
+        |> appTools.endRecord
 
 
 type alias Hobbies =
@@ -59,104 +63,38 @@ type alias Hobbies =
     }
 
 
-hobbies =
-    multiTool.record Hobbies
-        |> multiTool.field "surfs" .surfs multiTool.bool
-        |> multiTool.field "skis" .skis multiTool.bool
-        |> multiTool.endRecord
+hobbiesToolsDefinition =
+    appTools.record Hobbies
+        |> appTools.field "surfs" .surfs appTools.bool
+        |> appTools.field "skis" .skis appTools.bool
+        |> appTools.endRecord
 
 
 type Colour
     = Red
-    | Green { num1 : Int, num2 : Int }
+    | Green Int
     | Blue
 
 
-colour =
+colourToolsDefinition =
     let
-        match =
-            \red green blue tag ->
-                case tag of
-                    Red ->
-                        red
+        match red green blue tag =
+            case tag of
+                Red ->
+                    red
 
-                    Green i ->
-                        green i
+                Green i ->
+                    green i
 
-                    Blue ->
-                        blue
+                Blue ->
+                    blue
     in
-    multiTool.custom
+    appTools.custom
         (MultiTool.matcher4 match match match match)
-        |> multiTool.tag0 "Red" Red
-        |> multiTool.tag1 "Green"
-            Green
-            (multiTool.record
-                (\num1 num2 ->
-                    { num1 = num1, num2 = num2 }
-                )
-                |> multiTool.field "num1" .num1 multiTool.int
-                |> multiTool.field "num2" .num2 multiTool.int
-                |> multiTool.endRecord
-            )
-        |> multiTool.tag0 "Blue" Blue
-        |> multiTool.endCustom
-
-
-type alias Model =
-    { form :
-        Control.State
-            ( Control.State
-                ( Control.State ()
-                , ( Control.State
-                        ( Control.State
-                            ( Control.State String
-                            , ( Control.State String, Control.End )
-                            )
-                        , Control.End
-                        )
-                  , ( Control.State (), Control.End )
-                  )
-                )
-            , ( Control.State String
-              , ( Control.State String
-                , ( Control.State
-                        ( Control.State Bool, ( Control.State Bool, Control.End ) )
-                  , Control.End
-                  )
-                )
-              )
-            )
-    , users : List User
-    }
-
-
-type Msg
-    = FormUpdated
-        (Control.Delta
-            ( Control.Delta
-                ( Control.Delta ()
-                , ( Control.Delta
-                        ( Control.Delta
-                            ( Control.Delta String
-                            , ( Control.Delta String, Control.End )
-                            )
-                        , Control.End
-                        )
-                  , ( Control.Delta (), Control.End )
-                  )
-                )
-            , ( Control.Delta String
-              , ( Control.Delta String
-                , ( Control.Delta
-                        ( Control.Delta Bool, ( Control.Delta Bool, Control.End ) )
-                  , Control.End
-                  )
-                )
-              )
-            )
-        )
-    | FormSubmitted
+        |> appTools.tag0 "Red" Red
+        |> appTools.tag1 "Green" Green appTools.int
+        |> appTools.tag0 "Blue" Blue
+        |> appTools.endCustom
 
 
 main : Program () Model Msg
@@ -169,12 +107,8 @@ main =
         }
 
 
-tools =
-    multiTool.build user
-
-
 form =
-    Control.toForm "User Form" FormUpdated FormSubmitted tools.control
+    Control.toForm "Create a user" FormUpdated FormSubmitted userTools.control
 
 
 init () =
@@ -211,7 +145,7 @@ view model =
     let
         json =
             Codec.encodeToString 4
-                (Codec.list tools.codec)
+                (Codec.list userTools.codec)
                 model.users
     in
     Html.pre []
@@ -221,7 +155,7 @@ view model =
         , Html.h2 [] [ Html.text "toString: stringify users" ]
         , viewUsers model.users
         , Html.h2 [] [ Html.text "toComparable: sort users" ]
-        , viewUsers (List.sortBy tools.toComparable model.users)
+        , viewUsers (List.sortBy userTools.toComparable model.users)
         , Html.h2 [] [ Html.text "codec: encode users as JSON" ]
         , Html.text json
         ]
@@ -229,6 +163,52 @@ view model =
 
 viewUsers users_ =
     users_
-        |> List.map tools.toString
+        |> List.map userTools.toString
         |> String.join "\n"
         |> Html.text
+
+
+type alias Model =
+    { form :
+        Control.State
+            ( Control.State
+                ( Control.State ()
+                , ( Control.State ( Control.State String, Control.End )
+                  , ( Control.State (), Control.End )
+                  )
+                )
+            , ( Control.State String
+              , ( Control.State String
+                , ( Control.State
+                        ( Control.State Bool
+                        , ( Control.State Bool, Control.End )
+                        )
+                  , Control.End
+                  )
+                )
+              )
+            )
+    , users : List User
+    }
+
+
+type Msg
+    = FormUpdated
+        (Control.Delta
+            ( Control.Delta
+                ( Control.Delta ()
+                , ( Control.Delta ( Control.Delta String, Control.End )
+                  , ( Control.Delta (), Control.End )
+                  )
+                )
+            , ( Control.Delta String
+              , ( Control.Delta String
+                , ( Control.Delta
+                        ( Control.Delta Bool, ( Control.Delta Bool, Control.End ) )
+                  , Control.End
+                  )
+                )
+              )
+            )
+        )
+    | FormSubmitted
