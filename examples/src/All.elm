@@ -1,4 +1,4 @@
-module Example exposing (main)
+module All exposing (main)
 
 import Browser
 import Codec
@@ -30,14 +30,14 @@ appTools =
 
 users : List User
 users =
-    [ { name = "Pete", age = 35, hobbies = { surfs = True, skis = False }, favouriteColour = Red }
-    , { name = "Ed", age = 41, hobbies = { surfs = False, skis = True }, favouriteColour = Green 2 }
-    , { name = "David", age = 48, hobbies = { surfs = True, skis = False }, favouriteColour = Blue }
+    [ { name = "Pete", age = 35, hobbies = { surfs = True, skis = False }, favouriteColour = [ Red ] }
+    , { name = "Ed", age = 41, hobbies = { surfs = False, skis = True }, favouriteColour = [ Green 2 ] }
+    , { name = "David", age = 48, hobbies = { surfs = True, skis = False }, favouriteColour = [ Blue ] }
     ]
 
 
 type alias User =
-    { favouriteColour : Colour
+    { favouriteColour : List Colour
     , name : String
     , age : Int
     , hobbies : Hobbies
@@ -50,7 +50,7 @@ userTools =
 
 userToolsDefinition =
     appTools.record User
-        |> appTools.field "favouriteColour" .favouriteColour colourToolsDefinition
+        |> appTools.field "favouriteColour" .favouriteColour (appTools.list colourToolsDefinition)
         |> appTools.field "name" .name appTools.string
         |> appTools.field "age" .age appTools.int
         |> appTools.field "hobbies" .hobbies hobbiesToolsDefinition
@@ -172,10 +172,15 @@ type alias Model =
     { form :
         Control.State
             ( Control.State
-                ( Control.State ()
-                , ( Control.State ( Control.State String, Control.End )
-                  , ( Control.State (), Control.End )
-                  )
+                (List
+                    (Control.State
+                        ( Control.State ()
+                        , ( Control.State
+                                ( Control.State String, Control.End )
+                          , ( Control.State (), Control.End )
+                          )
+                        )
+                    )
                 )
             , ( Control.State String
               , ( Control.State String
@@ -196,10 +201,12 @@ type Msg
     = FormUpdated
         (Control.Delta
             ( Control.Delta
-                ( Control.Delta ()
-                , ( Control.Delta ( Control.Delta String, Control.End )
-                  , ( Control.Delta (), Control.End )
-                  )
+                (Control.ListDelta
+                    ( Control.Delta ()
+                    , ( Control.Delta ( Control.Delta String, Control.End )
+                      , ( Control.Delta (), Control.End )
+                      )
+                    )
                 )
             , ( Control.Delta String
               , ( Control.Delta String
