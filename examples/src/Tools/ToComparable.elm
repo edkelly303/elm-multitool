@@ -17,26 +17,16 @@ interface =
     }
 
 
-compRecord : ctor -> rest -> recordData -> rest
 compRecord ctor =
-    \rest _ -> rest
+    \recordData -> []
 
 
-compField : String -> (recordData -> field) -> (field -> comparable) -> (( comparable, rest ) -> recordData -> builder) -> rest -> recordData -> builder
 compField fieldName getField toComparable builder =
-    \rest recordData ->
-        let
-            this =
-                recordData
-                    |> getField
-                    |> toComparable
-        in
-        builder ( this, rest ) recordData
+    \recordData -> builder recordData ++ toComparable (getField recordData)
 
 
-compEndRecord : (Int -> rest -> output) -> (rest -> output)
 compEndRecord builder =
-    \rest -> builder 0 rest
+    \recordData -> builder recordData
 
 
 compCustom dtor =
@@ -44,11 +34,11 @@ compCustom dtor =
 
 
 compTag0 tagName tagCtor { dtor, index } =
-    { dtor = dtor ( index, 0 ), index = index + 1 }
+    { dtor = dtor [ String.fromInt index ], index = index + 1 }
 
 
 compTag1 tagName tagCtor child { dtor, index } =
-    { dtor = dtor (\c -> ( index, child c ))
+    { dtor = dtor (\c -> String.fromInt index :: child c)
     , index = index + 1
     }
 
@@ -57,20 +47,20 @@ compEndCustom { dtor } =
     dtor
 
 
-compString : String -> String
+compString : String -> List String
 compString =
-    String.toLower
+    String.toLower >> List.singleton
 
 
-compInt : Int -> Int
+compInt : Int -> List String
 compInt =
-    identity
+    String.fromInt >> List.singleton
 
 
-compBool : Bool -> Int
+compBool : Bool -> List String
 compBool b =
     if b then
-        1
+        [ "1" ]
 
     else
-        0
+        [ "0" ]

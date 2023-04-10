@@ -31,7 +31,7 @@ multiTool =
 users : List User
 users =
     [ { name = "Pete", age = 35, hobbies = { surfs = True, skis = False }, favouriteColour = Red }
-    , { name = "Ed", age = 41, hobbies = { surfs = False, skis = True }, favouriteColour = Green 2 }
+    , { name = "Ed", age = 41, hobbies = { surfs = False, skis = True }, favouriteColour = Green { num1 = 2, num2 = 3 } }
     , { name = "David", age = 48, hobbies = { surfs = True, skis = False }, favouriteColour = Blue }
     ]
 
@@ -68,7 +68,7 @@ hobbies =
 
 type Colour
     = Red
-    | Green Int
+    | Green { num1 : Int, num2 : Int }
     | Blue
 
 
@@ -89,7 +89,16 @@ colour =
     multiTool.custom
         (MultiTool.matcher4 match match match match)
         |> multiTool.tag0 "Red" Red
-        |> multiTool.tag1 "Green" Green multiTool.int
+        |> multiTool.tag1 "Green"
+            Green
+            (multiTool.record
+                (\num1 num2 ->
+                    { num1 = num1, num2 = num2 }
+                )
+                |> multiTool.field "num1" .num1 multiTool.int
+                |> multiTool.field "num2" .num2 multiTool.int
+                |> multiTool.endRecord
+            )
         |> multiTool.tag0 "Blue" Blue
         |> multiTool.endCustom
 
@@ -99,7 +108,13 @@ type alias Model =
         Control.State
             ( Control.State
                 ( Control.State ()
-                , ( Control.State ( Control.State String, Control.End )
+                , ( Control.State
+                        ( Control.State
+                            ( Control.State String
+                            , ( Control.State String, Control.End )
+                            )
+                        , Control.End
+                        )
                   , ( Control.State (), Control.End )
                   )
                 )
@@ -121,7 +136,13 @@ type Msg
         (Control.Delta
             ( Control.Delta
                 ( Control.Delta ()
-                , ( Control.Delta ( Control.Delta String, Control.End )
+                , ( Control.Delta
+                        ( Control.Delta
+                            ( Control.Delta String
+                            , ( Control.Delta String, Control.End )
+                            )
+                        , Control.End
+                        )
                   , ( Control.Delta (), Control.End )
                   )
                 )
