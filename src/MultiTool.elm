@@ -1,6 +1,26 @@
-module MultiTool exposing (add, define, end)
+module MultiTool exposing (End, add, define, end, matcher1, matcher2, matcher3, matcher4, matcher5)
 
 import Html.Events exposing (custom)
+
+
+matcher1 d1 =
+    ( d1, End )
+
+
+matcher2 d1 d2 =
+    ( d1, ( d2, End ) )
+
+
+matcher3 d1 d2 d3 =
+    ( d1, ( d2, ( d3, End ) ) )
+
+
+matcher4 d1 d2 d3 d4 =
+    ( d1, ( d2, ( d3, ( d4, End ) ) ) )
+
+
+matcher5 d1 d2 d3 d4 d5 =
+    ( d1, ( d2, ( d3, ( d4, ( d5, End ) ) ) ) )
 
 
 define constructor =
@@ -153,12 +173,12 @@ recordEnder next ( builder, restBuilders ) ( endRecord_, restEndRecords ) =
 
 
 doMakeCustom customMaker_ customDestructor customs =
-    customMaker_ (\_ End -> End) customDestructor customs
+    customMaker_ (\End End -> End) customDestructor customs
 
 
-customMaker next customDestructor ( custom, restCustoms ) =
+customMaker next ( customDestructor, restCustomDestructors ) ( custom, restCustoms ) =
     ( custom customDestructor
-    , next customDestructor restCustoms
+    , next restCustomDestructors restCustoms
     )
 
 
