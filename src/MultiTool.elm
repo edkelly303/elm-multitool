@@ -1,7 +1,5 @@
 module MultiTool exposing (End, add, define, end, matcher1, matcher2, matcher3, matcher4, matcher5)
 
-import Html.Events exposing (custom)
-
 
 matcher1 d1 =
     ( d1, End )
