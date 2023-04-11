@@ -5,7 +5,18 @@ interface =
     { string = string
     , int = int
     , bool = bool
+
+    -- , float = float
+    -- , char = char
+    -- , maybe = maybe
     , list = list
+
+    -- , array = array
+    -- , dict = dict
+    -- , set = set
+    -- , tuple = tuple
+    -- , triple = triple
+    -- , result = result
     , record = record
     , field = field
     , endRecord = endRecord
