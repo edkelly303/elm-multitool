@@ -154,7 +154,7 @@ But if you also want bytes codecs, test fuzzers, random generators, toStrings, t
 ## Run the examples
 
 ```console
-foo@bar:~$ cd examples
-foo@bar:~$ npm i
-foo@bar:~$ . run.sh
+$ cd examples
+$ npm i
+$ . run.sh
 ```
