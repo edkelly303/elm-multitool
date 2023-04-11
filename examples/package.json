@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "elm-watch": "^1.1.2"
+    "elm-watch": "^1.1.2",
+    "run-pty": "^4.0.3"
   }
 }
