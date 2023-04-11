@@ -59,8 +59,8 @@ strEndCustom dtor =
 
 
 strString : String -> String
-strString =
-    identity
+strString str =
+    "\"" ++ str ++ "\""
 
 
 strInt : Int -> String
