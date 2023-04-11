@@ -43,30 +43,40 @@ define constructor =
     , string = identity
     , int = identity
     , bool = identity
+    , float = identity
+    , char = identity
 
     -- built-in combinators
     , list = identity
+    , listMaker = identity
 
+    -- , maybe = identity
+    -- , array = identity
+    -- , dict = identity
+    -- , set = identity
+    -- , tuple = identity
+    -- , triple = identity
+    -- , result = identity
+    --
     -- record combinators
     , record = identity
+    , recordMaker = identity
     , field = identity
+    , fieldMaker = identity
     , endRecord = identity
+    , recordEnder = identity
 
     -- custom type combinators
     , custom = identity
-    , tag0 = identity
-    , tag1 = identity
-    , endCustom = identity
-
-    -- builder functions
-    , recordMaker = identity
-    , fieldMaker = identity
-    , recordEnder = identity
     , customMaker = identity
+    , tag0 = identity
     , tag0Maker = identity
+    , tag1 = identity
     , tag1Maker = identity
+    , endCustom = identity
     , customEnder = identity
-    , listMaker = identity
+
+    -- xxx
     , constructMultiTool = identity
     }
 
@@ -78,30 +88,40 @@ add tool builder =
     , string = builder.string << Tuple.pair tool.string
     , int = builder.int << Tuple.pair tool.int
     , bool = builder.bool << Tuple.pair tool.bool
+    , float = builder.float << Tuple.pair tool.float
+    , char = builder.char << Tuple.pair tool.char
 
     -- built-in combinators
     , list = builder.list << Tuple.pair tool.list
+    , listMaker = builder.listMaker >> listMaker
 
+    -- , maybe = builder.maybe << Tuple.pair tool.maybe
+    -- , array = builder.array << Tuple.pair tool.array
+    -- , dict = builder.dict << Tuple.pair tool.dict
+    -- , set = builder.set << Tuple.pair tool.set
+    -- , tuple = builder.tuple << Tuple.pair tool.tuple
+    -- , triple = builder.triple << Tuple.pair tool.triple
+    -- , result = builder.result << Tuple.pair tool.result
+    --
     -- record combinators
     , record = builder.record << Tuple.pair tool.record
+    , recordMaker = builder.recordMaker >> recordMaker
     , field = builder.field << Tuple.pair tool.field
+    , fieldMaker = builder.fieldMaker >> fieldMaker
     , endRecord = builder.endRecord << Tuple.pair tool.endRecord
+    , recordEnder = builder.recordEnder >> recordEnder
 
     -- custom type combinators
     , custom = builder.custom << Tuple.pair tool.custom
-    , tag0 = builder.tag0 << Tuple.pair tool.tag0
-    , tag1 = builder.tag1 << Tuple.pair tool.tag1
-    , endCustom = builder.endCustom << Tuple.pair tool.endCustom
-
-    -- builder functions
-    , recordMaker = builder.recordMaker >> recordMaker
-    , fieldMaker = builder.fieldMaker >> fieldMaker
-    , recordEnder = builder.recordEnder >> recordEnder
     , customMaker = builder.customMaker >> customMaker
+    , tag0 = builder.tag0 << Tuple.pair tool.tag0
     , tag0Maker = builder.tag0Maker >> tag0Maker
+    , tag1 = builder.tag1 << Tuple.pair tool.tag1
     , tag1Maker = builder.tag1Maker >> tag1Maker
+    , endCustom = builder.endCustom << Tuple.pair tool.endCustom
     , customEnder = builder.customEnder >> customEnder
-    , listMaker = builder.listMaker >> listMaker
+
+    -- xxx
     , constructMultiTool = builder.constructMultiTool >> constructMultiTool
     }
 
@@ -121,6 +141,12 @@ end toolBuilder =
 
         bools =
             toolBuilder.bool End
+
+        floats =
+            toolBuilder.float End
+
+        chars =
+            toolBuilder.char End
 
         -- built-in combinators
         lists =
@@ -149,17 +175,19 @@ end toolBuilder =
         endCustoms =
             toolBuilder.endCustom End
     in
-    { -- multiTool defs for primitive types
+    { -- primitive types
       string = strings
     , int = ints
     , bool = bools
+    , float = floats
+    , char = chars
 
-    -- multiTool defs for built-in combinators
+    -- built-in combinators
     , list =
         \listChildren ->
             doMakeList toolBuilder.listMaker listChildren lists
 
-    -- multiTool defs for records
+    -- records
     , record =
         \recordConstructor ->
             doMakeRecord toolBuilder.recordMaker recordConstructor records
@@ -170,7 +198,7 @@ end toolBuilder =
         \recordBuilder ->
             doEndRecord toolBuilder.recordEnder recordBuilder endRecords
 
-    -- multiTool defs for custom types
+    -- custom types
     , custom =
         \customDestructor ->
             doMakeCustom toolBuilder.customMaker customDestructor customs
@@ -184,10 +212,10 @@ end toolBuilder =
         \customBuilder ->
             doEndCustom toolBuilder.customEnder customBuilder endCustoms
 
-    -- turn a multiTool definition into a usable multiTool
+    -- turn a definition into a usable multiTool
     , build =
-        \typeBuilder ->
-            doConstructMultiTool toolBuilder.constructMultiTool toolBuilder.constructor typeBuilder
+        \toolDefinition ->
+            doConstructMultiTool toolBuilder.constructMultiTool toolBuilder.constructor toolDefinition
     }
 
 

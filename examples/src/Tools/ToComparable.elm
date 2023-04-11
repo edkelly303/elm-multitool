@@ -5,12 +5,11 @@ interface =
     { string = string
     , int = int
     , bool = bool
-
-    -- , float = float
-    -- , char = char
-    -- , maybe = maybe
+    , float = float
+    , char = char
     , list = list
 
+    -- , maybe = maybe
     -- , array = array
     -- , dict = dict
     -- , set = set
@@ -67,9 +66,26 @@ string =
     String.toLower >> List.singleton
 
 
+char : Char -> List String
+char c =
+    c
+        |> String.fromChar
+        |> String.toLower
+        |> List.singleton
+
+
 int : Int -> List String
-int =
-    String.fromInt >> List.singleton
+int i =
+    i
+        |> String.fromInt
+        |> List.singleton
+
+
+float : Float -> List String
+float f =
+    f
+        |> String.fromFloat
+        |> List.singleton
 
 
 bool : Bool -> List String

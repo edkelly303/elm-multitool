@@ -5,12 +5,11 @@ interface =
     { string = string
     , int = int
     , bool = bool
-
-    -- , float = float
-    -- , char = char
-    -- , maybe = maybe
+    , float = float
+    , char = char
     , list = list
 
+    -- , maybe = maybe
     -- , array = array
     -- , dict = dict
     -- , set = set
@@ -74,9 +73,19 @@ string str =
     "\"" ++ str ++ "\""
 
 
+char : Char -> String
+char c =
+    "'" ++ String.fromChar c ++ "'"
+
+
+float : Float -> String
+float f =
+    String.fromFloat f
+
+
 int : Int -> String
-int =
-    String.fromInt
+int i =
+    String.fromInt i
 
 
 bool : Bool -> String

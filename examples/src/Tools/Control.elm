@@ -8,19 +8,15 @@ interface =
     , int = Control.int
     , bool = Control.bool "yes" "no"
     , float = Control.float
-
-    -- , char = Control.char
-    , maybe = Control.maybe
+    , char = Control.char
     , list = Control.list
-
-    -- , array = Control.array
+    , maybe = Control.maybe
+    , array = Control.array
     , dict = Control.dict
-
-    -- , set = Control.set
+    , set = Control.set
     , tuple = Control.tuple
-
-    -- , triple = Control.triple
-    -- , result = Control.result
+    , triple = Control.triple
+    , result = Control.result
     , record = Control.record
     , field = Control.field
     , endRecord = Control.end
