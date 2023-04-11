@@ -150,3 +150,11 @@ codec =
 If you only want JSON codecs and form controls for one small type, maybe not. 
 
 But if you also want bytes codecs, test fuzzers, random generators, toStrings, toComparables, and so on for many of the types in your application, it could save a lot of time and trouble.
+
+## Run the examples
+
+```console
+foo@bar:~$ cd examples
+foo@bar:~$ npm i
+foo@bar:~$ . run.sh
+```
