@@ -18,11 +18,11 @@ interface =
 
 compList child =
     \listData ->
-        []
+        List.concatMap child listData
 
 
 
--- TODO
+
 
 
 compRecord ctor =
