@@ -22,7 +22,7 @@ type Role
     | AdminLevel Int
 ```
 
-You want to use `edkelly303/elm-any-type-forms` to build a control for a form 
+You want to use `edkelly303/elm-any-type-forms` to build a form 
 that will allow you to create/update values of your `User` type. You also 
 want to use `miniBill/elm-codec` to generate JSON encoders and decoders for the 
 `User` type.
