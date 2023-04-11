@@ -18,9 +18,12 @@ interface =
 
 strList child =
     \listData ->
-        case listData of 
-            [] -> "[]"
-            _ -> "[ " ++ (List.map child listData |> String.join ", ") ++ " ]"
+        case listData of
+            [] ->
+                "[]"
+
+            _ ->
+                "[ " ++ (List.map child listData |> String.join ", ") ++ " ]"
 
 
 strRecord : ctor -> recordData -> List String

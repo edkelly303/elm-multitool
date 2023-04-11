@@ -21,10 +21,6 @@ compList child =
         List.concatMap child listData
 
 
-
-
-
-
 compRecord ctor =
     \recordData -> []
 
