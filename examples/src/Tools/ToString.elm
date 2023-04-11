@@ -2,21 +2,21 @@ module Tools.ToString exposing (interface)
 
 
 interface =
-    { string = strString
-    , int = strInt
-    , bool = strBool
-    , list = strList
-    , record = strRecord
-    , field = strField
-    , endRecord = strEnd
-    , custom = strCustom
-    , tag0 = strTag0
-    , tag1 = strTag1
-    , endCustom = strEndCustom
+    { string = string
+    , int = int
+    , bool = bool
+    , list = list
+    , record = record
+    , field = field
+    , endRecord = endRecord
+    , custom = custom
+    , tag0 = tag0
+    , tag1 = tag1
+    , endCustom = endCustom
     }
 
 
-strList child =
+list child =
     \listData ->
         case listData of
             [] ->
@@ -26,50 +26,50 @@ strList child =
                 "[ " ++ (List.map child listData |> String.join ", ") ++ " ]"
 
 
-strRecord : ctor -> recordData -> List String
-strRecord ctor =
+record : ctor -> recordData -> List String
+record ctor =
     \recordData -> []
 
 
-strField : String -> (recordData -> field) -> (field -> String) -> (recordData -> List String) -> recordData -> List String
-strField fieldName getField toString builder =
+field : String -> (recordData -> field) -> (field -> String) -> (recordData -> List String) -> recordData -> List String
+field fieldName getField toString builder =
     \recordData ->
         (fieldName ++ " = " ++ toString (getField recordData)) :: builder recordData
 
 
-strEnd : (recordData -> List String) -> recordData -> String
-strEnd builder =
+endRecord : (recordData -> List String) -> recordData -> String
+endRecord builder =
     \recordData -> "{ " ++ String.join ", " (builder recordData |> List.reverse) ++ " }"
 
 
-strCustom dtor =
+custom dtor =
     dtor
 
 
-strTag0 tagName tagCtor dtor =
+tag0 tagName tagCtor dtor =
     dtor tagName
 
 
-strTag1 tagName tagCtor child dtor =
+tag1 tagName tagCtor child dtor =
     dtor (\c -> tagName ++ " " ++ child c)
 
 
-strEndCustom dtor =
+endCustom dtor =
     dtor
 
 
-strString : String -> String
-strString str =
+string : String -> String
+string str =
     "\"" ++ str ++ "\""
 
 
-strInt : Int -> String
-strInt =
+int : Int -> String
+int =
     String.fromInt
 
 
-strBool : Bool -> String
-strBool b =
+bool : Bool -> String
+bool b =
     if b then
         "True"
 

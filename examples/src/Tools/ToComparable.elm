@@ -2,67 +2,67 @@ module Tools.ToComparable exposing (interface)
 
 
 interface =
-    { string = compString
-    , int = compInt
-    , bool = compBool
-    , list = compList
-    , record = compRecord
-    , field = compField
-    , endRecord = compEndRecord
-    , custom = compCustom
-    , tag0 = compTag0
-    , tag1 = compTag1
-    , endCustom = compEndCustom
+    { string = string
+    , int = int
+    , bool = bool
+    , list = list
+    , record = record
+    , field = field
+    , endRecord = endRecord
+    , custom = custom
+    , tag0 = tag0
+    , tag1 = tag1
+    , endCustom = endCustom
     }
 
 
-compList child =
+list child =
     \listData ->
         List.concatMap child listData
 
 
-compRecord ctor =
+record ctor =
     \recordData -> []
 
 
-compField fieldName getField toComparable builder =
+field fieldName getField toComparable builder =
     \recordData -> builder recordData ++ toComparable (getField recordData)
 
 
-compEndRecord builder =
+endRecord builder =
     \recordData -> builder recordData
 
 
-compCustom dtor =
+custom dtor =
     { dtor = dtor, index = 0 }
 
 
-compTag0 tagName tagCtor { dtor, index } =
+tag0 tagName tagCtor { dtor, index } =
     { dtor = dtor [ String.fromInt index ], index = index + 1 }
 
 
-compTag1 tagName tagCtor child { dtor, index } =
+tag1 tagName tagCtor child { dtor, index } =
     { dtor = dtor (\c -> String.fromInt index :: child c)
     , index = index + 1
     }
 
 
-compEndCustom { dtor } =
+endCustom { dtor } =
     dtor
 
 
-compString : String -> List String
-compString =
+string : String -> List String
+string =
     String.toLower >> List.singleton
 
 
-compInt : Int -> List String
-compInt =
+int : Int -> List String
+int =
     String.fromInt >> List.singleton
 
 
-compBool : Bool -> List String
-compBool b =
+bool : Bool -> List String
+bool b =
     if b then
         [ "1" ]
 
