@@ -1,7 +1,7 @@
 {
     "type": "package",
     "name": "edkelly303/elm-multitool",
-    "summary": "Compose to give your types superpowers",
+    "summary": "Compose elm-codec-like tools to give your types superpowers",
     "license": "BSD-3-Clause",
     "version": "1.0.0",
     "exposed-modules": [
