@@ -29,9 +29,24 @@ appTools =
 
 users : List User
 users =
-    [ { name = "Pete", age = 35, hobbies = { surfs = True, skis = False }, favouriteColour = [ 1 ], misc = blankMisc }
-    , { name = "Ed", age = 41, hobbies = { surfs = False, skis = True }, favouriteColour = [ 2 ], misc = blankMisc }
-    , { name = "David", age = 48, hobbies = { surfs = True, skis = False }, favouriteColour = [ 3 ], misc = blankMisc }
+    [ { name = "Pete"
+      , age = 35
+      , hobbies = { surfs = True, skis = False }
+      , favouriteColour = [ 1 ]
+      , misc = blankMisc
+      }
+    , { name = "Ed"
+      , age = 41
+      , hobbies = { surfs = False, skis = True }
+      , favouriteColour = [ 2 ]
+      , misc = blankMisc
+      }
+    , { name = "David"
+      , age = 48
+      , hobbies = { surfs = True, skis = False }
+      , favouriteColour = [ 3 ]
+      , misc = blankMisc
+      }
     ]
 
 
@@ -101,7 +116,7 @@ colourToolsDefinition =
 type alias Misc =
     { maybe : Maybe Int
     , array : Array Int
-    , dict : Dict String Int
+    , dict : Dict Int Int
     , set : Set Int
     , tuple : ( Int, Int )
     , triple : ( Int, Int, Int )
@@ -110,10 +125,10 @@ type alias Misc =
 
 
 blankMisc =
-    { maybe = Nothing
-    , array = Array.fromList []
-    , dict = Dict.empty
-    , set = Set.empty
+    { maybe = Just 0
+    , array = Array.fromList [ 0 ]
+    , dict = Dict.fromList [ ( 0, 0 ) ]
+    , set = Set.fromList [ 0 ]
     , tuple = ( 0, 0 )
     , triple = ( 0, 0, 0 )
     , result = Ok 0
@@ -124,7 +139,7 @@ miscToolsDefinition =
     appTools.record Misc
         |> appTools.field "maybe" .maybe (appTools.maybe appTools.int)
         |> appTools.field "array" .array (appTools.array appTools.int)
-        |> appTools.field "dict" .dict (appTools.dict appTools.string appTools.int)
+        |> appTools.field "dict" .dict (appTools.dict appTools.int appTools.int)
         |> appTools.field "set" .set (appTools.set appTools.int)
         |> appTools.field "tuple" .tuple (appTools.tuple appTools.int appTools.int)
         |> appTools.field "triple" .triple (appTools.triple appTools.int appTools.int appTools.int)
