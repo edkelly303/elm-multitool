@@ -123,9 +123,9 @@ roleToolsDefinition =
         -- this part of the API is a bit nasty - we need
         -- to define the `match` function using let-polymorphism
         -- and then pass it to each of our tools separately.
-        -- If anyone can figure out a way to make this 
-        -- work without relying on let-polymorphism, please
-        -- let me know!
+        -- If anyone can figure out a way to make this work 
+        -- without having to pass the function multiple times,
+        -- please let me know!
         { codec = match, control = match } 
         |> myAppTools.tag0 "Regular" Regular
         |> myAppTools.tag1 "AdminLevel" AdminLevel myAppTools.int
