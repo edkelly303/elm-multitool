@@ -14,17 +14,17 @@ import Tools.ToString
 
 appTools =
     MultiTool.define
-        (\toString codec control toComparable ->
-            { toString = toString
-            , codec = codec
+        (\codec control toString toComparable ->
+            { codec = codec
             , control = control
+            , toString = toString
             , toComparable = toComparable
             }
         )
-        |> MultiTool.add Tools.ToString.interface
-        |> MultiTool.add Tools.Codec.interface
-        |> MultiTool.add Tools.Control.interface
-        |> MultiTool.add Tools.ToComparable.interface
+        |> MultiTool.add .codec Tools.Codec.interface
+        |> MultiTool.add .control Tools.Control.interface
+        |> MultiTool.add .toString Tools.ToString.interface
+        |> MultiTool.add .toComparable Tools.ToComparable.interface
         |> MultiTool.end
 
 
@@ -90,7 +90,11 @@ colourToolsDefinition =
                     blue
     in
     appTools.custom
-        (MultiTool.matcher4 match match match match)
+        { codec = match
+        , control = match
+        , toString = match
+        , toComparable = match
+        }
         |> appTools.tag0 "Red" Red
         |> appTools.tag1 "Green" Green appTools.int
         |> appTools.tag0 "Blue" Blue

@@ -22,8 +22,8 @@ appTools =
             , control = control
             }
         )
-        |> MultiTool.add Tools.Codec.interface
-        |> MultiTool.add Tools.Control.interface
+        |> MultiTool.add .codec Tools.Codec.interface
+        |> MultiTool.add .control Tools.Control.interface
         |> MultiTool.end
 
 
@@ -106,7 +106,7 @@ colourToolsDefinition =
                     blue
     in
     appTools.custom
-        (MultiTool.matcher2 match match)
+        { codec = match, control = match }
         |> appTools.tag0 "Red" Red
         |> appTools.tag1 "Green" Green appTools.int
         |> appTools.tag0 "Blue" Blue

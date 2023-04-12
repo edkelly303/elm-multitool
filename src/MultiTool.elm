@@ -3,44 +3,12 @@ module MultiTool exposing
     , add
     , define
     , end
-    , matcher1
-    , matcher2
-    , matcher3
-    , matcher4
-    , matcher5
     )
 
 
-matcher1 : a -> ( a, End )
-matcher1 d1 =
-    ( d1, End )
-
-
-matcher2 : a -> b -> ( a, ( b, End ) )
-matcher2 d1 d2 =
-    ( d1, ( d2, End ) )
-
-
-matcher3 : a -> b -> c -> ( a, ( b, ( c, End ) ) )
-matcher3 d1 d2 d3 =
-    ( d1, ( d2, ( d3, End ) ) )
-
-
-matcher4 : a -> b -> c -> d -> ( a, ( b, ( c, ( d, End ) ) ) )
-matcher4 d1 d2 d3 d4 =
-    ( d1, ( d2, ( d3, ( d4, End ) ) ) )
-
-
-matcher5 : a -> b -> c -> d -> e -> ( a, ( b, ( c, ( d, ( e, End ) ) ) ) )
-matcher5 d1 d2 d3 d4 d5 =
-    ( d1, ( d2, ( d3, ( d4, ( d5, End ) ) ) ) )
-
-
 define constructor =
-    { constructor = constructor
-
-    -- primitives
-    , string = identity
+    { -- primitives
+      string = identity
     , int = identity
     , bool = identity
     , float = identity
@@ -83,15 +51,15 @@ define constructor =
     , customEnder = identity
 
     -- xxx
+    , constructor = constructor
+    , destructorFieldGetter = identity
     , constructMultiTool = identity
     }
 
 
-add tool builder =
-    { constructor = builder.constructor
-
-    -- primitives
-    , string = builder.string << Tuple.pair tool.string
+add destructorFieldGetter tool builder =
+    { -- primitives
+      string = builder.string << Tuple.pair tool.string
     , int = builder.int << Tuple.pair tool.int
     , bool = builder.bool << Tuple.pair tool.bool
     , float = builder.float << Tuple.pair tool.float
@@ -134,6 +102,8 @@ add tool builder =
     , customEnder = builder.customEnder >> customEnder
 
     -- xxx
+    , constructor = builder.constructor
+    , destructorFieldGetter = builder.destructorFieldGetter << Tuple.pair destructorFieldGetter
     , constructMultiTool = builder.constructMultiTool >> constructMultiTool
     }
 
@@ -207,6 +177,9 @@ end toolBuilder =
 
         endCustoms =
             toolBuilder.endCustom End
+
+        destructorFieldGetters =
+            toolBuilder.destructorFieldGetter End
     in
     { -- primitive types
       string = strings
@@ -254,8 +227,8 @@ end toolBuilder =
 
     -- custom types
     , custom =
-        \customDestructor ->
-            doMakeCustom toolBuilder.customMaker customDestructor customs
+        \customDestructors ->
+            doMakeCustom toolBuilder.customMaker customDestructors destructorFieldGetters customs
     , tag0 =
         \tagName tagConstructor customBuilder ->
             doMakeTag0 toolBuilder.tag0Maker tagName tagConstructor customBuilder tag0s
@@ -358,7 +331,9 @@ doMakeRecord recordMaker_ recordConstructor records =
 
 
 recordMaker next recordConstructor ( record_, records ) =
-    ( record_ recordConstructor, next recordConstructor records )
+    ( record_ recordConstructor
+    , next recordConstructor records
+    )
 
 
 doMakeFields fieldMaker_ fieldName getField child recordBuilders fields =
@@ -376,16 +351,18 @@ doEndRecord recordEnder_ builder endRecords =
 
 
 recordEnder next ( builder, restBuilders ) ( endRecord_, restEndRecords ) =
-    ( endRecord_ builder, next restBuilders restEndRecords )
+    ( endRecord_ builder
+    , next restBuilders restEndRecords
+    )
 
 
-doMakeCustom customMaker_ customDestructor customs =
-    customMaker_ (\End End -> End) customDestructor customs
+doMakeCustom customMaker_ customDestructors destructorFieldGetters customs =
+    customMaker_ (\_ End End -> End) customDestructors destructorFieldGetters customs
 
 
-customMaker next ( customDestructor, restCustomDestructors ) ( custom, restCustoms ) =
-    ( custom customDestructor
-    , next restCustomDestructors restCustoms
+customMaker next customDestructors ( destructorFieldGetter, restDestructorFieldGetters ) ( custom, restCustoms ) =
+    ( custom (destructorFieldGetter customDestructors)
+    , next customDestructors restDestructorFieldGetters restCustoms
     )
 
 
@@ -414,7 +391,9 @@ doEndCustom customEnder_ customBuilder endCustoms =
 
 
 customEnder next ( customBuilder, restCustomBuilders ) ( endCustom, restEndCustoms ) =
-    ( endCustom customBuilder, next restCustomBuilders restEndCustoms )
+    ( endCustom customBuilder
+    , next restCustomBuilders restEndCustoms
+    )
 
 
 doConstructMultiTool constructMultiTool_ ctor builder =

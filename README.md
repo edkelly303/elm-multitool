@@ -94,8 +94,8 @@ myAppTools =
             , control = control
             }
         )
-        |> MultiTool.add Tools.Codec.interface
-        |> MultiTool.add Tools.Control.interface
+        |> MultiTool.add .codec Tools.Codec.interface
+        |> MultiTool.add .control Tools.Control.interface
         |> MultiTool.end
 ```
 
@@ -121,12 +121,12 @@ roleToolsDefinition =
     in
     myAppTools.custom 
         -- this part of the API is a bit nasty - we need
-        -- to use `MultiTool.matchN`, where `N` is the 
-        -- number of tools we've included in myAppTools.
+        -- to define the `match` function using let-polymorphism
+        -- and then pass it to each of our tools separately.
         -- If anyone can figure out a way to make this 
         -- work without relying on let-polymorphism, please
         -- let me know!
-        (MultiTool.match2 match match) 
+        { codec = match, control = match } 
         |> myAppTools.tag0 "Regular" Regular
         |> myAppTools.tag1 "AdminLevel" AdminLevel myAppTools.int
         |> myAppTools.endCustom
