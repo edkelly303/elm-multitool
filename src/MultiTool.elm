@@ -231,16 +231,16 @@ end toolBuilder =
     , set =
         \contents ->
             doMakeSet toolBuilder.setMaker contents sets
+    , tuple =
+        \a b ->
+            doMakeTuple toolBuilder.tupleMaker a b tuples
+    , triple =
+        \a b c ->
+            doMakeTriple toolBuilder.tripleMaker a b c triples
+    , result =
+        \errors values ->
+            doMakeResult toolBuilder.resultMaker errors values results
 
-    -- , tuple =
-    --     \contents ->
-    --         doMakeTuple toolBuilder.tupleMaker contents tuples
-    -- , triple =
-    --     \contents ->
-    --         doMakeTriple toolBuilder.tripleMaker contents triples
-    -- , result =
-    --     \contents ->
-    --         doMakeResult toolBuilder.resultMaker contents results
     -- records
     , record =
         \recordConstructor ->
@@ -313,8 +313,8 @@ dictMaker next ( key_, restKeys ) ( value_, restValues ) ( dict_, restDicts ) =
     )
 
 
-doMakeSet maker_ contents_ containers_ =
-    maker_ (\End End -> End) contents_ containers_
+doMakeSet setMaker_ contents_ sets =
+    setMaker_ (\End End -> End) contents_ sets
 
 
 setMaker next ( content, restContents ) ( set_, restSets ) =
@@ -323,33 +323,33 @@ setMaker next ( content, restContents ) ( set_, restSets ) =
     )
 
 
-doMakeTuple maker_ contents_ containers_ =
-    maker_ (\End End -> End) contents_ containers_
+doMakeTuple tupleMaker_ a b tuples =
+    tupleMaker_ (\End End End -> End) a b tuples
 
 
-tupleMaker next ( content, restContents ) ( tuple_, restTuples ) =
-    ( tuple_ content
-    , next restContents restTuples
+tupleMaker next ( a, restAs ) ( b, restBs ) ( tuple_, restTuples ) =
+    ( tuple_ a b
+    , next restAs restBs restTuples
     )
 
 
-doMakeTriple maker_ contents_ containers_ =
-    maker_ (\End End -> End) contents_ containers_
+doMakeTriple tripleMaker_ a b c triples =
+    tripleMaker_ (\End End End End -> End) a b c triples
 
 
-tripleMaker next ( content, restContents ) ( triple_, restTriples ) =
-    ( triple_ content
-    , next restContents restTriples
+tripleMaker next ( a, restAs ) ( b, restBs ) ( c, restCs ) ( triple, restTriples ) =
+    ( triple a b c
+    , next restAs restBs restCs restTriples
     )
 
 
-doMakeResult maker_ contents_ containers_ =
-    maker_ (\End End -> End) contents_ containers_
+doMakeResult resultMaker_ errors values results =
+    resultMaker_ (\End End End -> End) errors values results
 
 
-resultMaker next ( content, restContents ) ( result_, restResults ) =
-    ( result_ content
-    , next restContents restResults
+resultMaker next ( error, restErrors ) ( value, restValues ) ( result, restResults ) =
+    ( result error value
+    , next restErrors restValues restResults
     )
 
 

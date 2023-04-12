@@ -101,26 +101,22 @@ colourToolsDefinition =
 type alias Misc =
     { maybe : Maybe Int
     , array : Array Int
-
     , dict : Dict String Int
     , set : Set Int
-
-    -- , tuple : ( Int, Int )
-    -- , triple : (Int, Int, Int)
-    -- , result : Result Int Int
+    , tuple : ( Int, Int )
+    , triple : ( Int, Int, Int )
+    , result : Result Int Int
     }
 
 
 blankMisc =
     { maybe = Nothing
     , array = Array.fromList []
-
     , dict = Dict.empty
     , set = Set.empty
-
-    -- , tuple = ( 0, 0 )
-    -- , triple = ( 0 , 0, 0 )
-    -- , result = Ok 0
+    , tuple = ( 0, 0 )
+    , triple = ( 0, 0, 0 )
+    , result = Ok 0
     }
 
 
@@ -130,9 +126,9 @@ miscToolsDefinition =
         |> appTools.field "array" .array (appTools.array appTools.int)
         |> appTools.field "dict" .dict (appTools.dict appTools.string appTools.int)
         |> appTools.field "set" .set (appTools.set appTools.int)
-        -- |> appTools.field "tuple" .tuple (appTools.tuple appTools.int appTools.int)
-        -- |> appTools.field "triple" .triple (appTools.triple appTools.int appTools.int appTools.int)
-        -- |> appTools.field "result" .result (appTools.result appTools.int appTools.int)
+        |> appTools.field "tuple" .tuple (appTools.tuple appTools.int appTools.int)
+        |> appTools.field "triple" .triple (appTools.triple appTools.int appTools.int appTools.int)
+        |> appTools.field "result" .result (appTools.result appTools.int appTools.int)
         |> appTools.endRecord
 
 
@@ -200,58 +196,85 @@ type alias Model =
     { form :
         Control.State
             ( Control.State (List (Control.State String))
-                  , ( Control.State String
-                    , ( Control.State String
-                      , ( Control.State
-                              ( Control.State Bool
-                              , ( Control.State Bool, Control.End )
+            , ( Control.State String
+              , ( Control.State String
+                , ( Control.State
+                        ( Control.State Bool
+                        , ( Control.State Bool, Control.End )
+                        )
+                  , ( Control.State
+                        ( Control.State
+                            ( Control.State ()
+                            , ( Control.State
+                                    ( Control.State String
+                                    , Control.End
+                                    )
+                              , Control.End
                               )
+                            )
                         , ( Control.State
                                 ( Control.State
-                                      ( Control.State ()
-                                      , ( Control.State
-                                              ( Control.State String
+                                    (List (Control.State String))
+                                , Control.End
+                                )
+                          , ( Control.State
+                                ( Control.State
+                                    (List
+                                        (Control.State
+                                            ( Control.State String
+                                            , ( Control.State String
                                               , Control.End
                                               )
-                                        , Control.End
-                                        )
-                                      )
-                                , ( Control.State
-                                        ( Control.State
-                                              (List (Control.State String))
-                                        , Control.End
-                                        )
-                                  , ( Control.State
-                                          ( Control.State
-                                                (
-                                                List
-                                                    (
-                                                    Control.State
-                                                        ( Control.State String
-                                                        , ( Control.State String
-                                                          , Control.End
-                                                          )
-                                                        )
-                                                    )
-                                                )
-                                          , Control.End
-                                          )
-                                    , ( Control.State
-                                            ( Control.State
-                                                  (List (Control.State String))
-                                            , Control.End
                                             )
+                                        )
+                                    )
+                                , Control.End
+                                )
+                            , ( Control.State
+                                    ( Control.State
+                                        (List (Control.State String))
+                                    , Control.End
+                                    )
+                              , ( Control.State
+                                    ( Control.State String
+                                    , ( Control.State String
                                       , Control.End
                                       )
                                     )
+                                , ( Control.State
+                                        ( Control.State String
+                                        , ( Control.State String
+                                          , ( Control.State String
+                                            , Control.End
+                                            )
+                                          )
+                                        )
+                                  , ( Control.State
+                                        ( Control.State
+                                            ( Control.State String
+                                            , Control.End
+                                            )
+                                        , ( Control.State
+                                                ( Control.State String
+                                                , Control.End
+                                                )
+                                          , Control.End
+                                          )
+                                        )
+                                    , Control.End
+                                    )
                                   )
                                 )
-                          , Control.End
+                              )
+                            )
                           )
                         )
-                      )
+                    , Control.End
                     )
                   )
+                )
+              )
+            )
     , users : List User
     }
 
@@ -260,47 +283,72 @@ type Msg
     = FormUpdated
         (Control.Delta
             ( Control.Delta (Control.ListDelta String)
-        , ( Control.Delta String
-          , ( Control.Delta String
-            , ( Control.Delta
-                    ( Control.Delta Bool, ( Control.Delta Bool, Control.End ) )
-              , ( Control.Delta
-                      ( Control.Delta
+            , ( Control.Delta String
+              , ( Control.Delta String
+                , ( Control.Delta
+                        ( Control.Delta Bool, ( Control.Delta Bool, Control.End ) )
+                  , ( Control.Delta
+                        ( Control.Delta
                             ( Control.Delta ()
                             , ( Control.Delta
                                     ( Control.Delta String, Control.End )
                               , Control.End
                               )
                             )
-                      , ( Control.Delta
-                              ( Control.Delta (Control.ListDelta String)
-                              , Control.End
-                              )
                         , ( Control.Delta
-                                ( Control.Delta
-                                      (
-                                      Control.ListDelta
-                                          ( Control.Delta String
-                                          , ( Control.Delta String, Control.End
-                                            )
-                                          )
-                                      )
+                                ( Control.Delta (Control.ListDelta String)
                                 , Control.End
                                 )
                           , ( Control.Delta
-                                  ( Control.Delta (Control.ListDelta String)
-                                  , Control.End
+                                ( Control.Delta
+                                    (Control.ListDelta
+                                        ( Control.Delta String
+                                        , ( Control.Delta String
+                                          , Control.End
+                                          )
+                                        )
+                                    )
+                                , Control.End
+                                )
+                            , ( Control.Delta
+                                    ( Control.Delta (Control.ListDelta String)
+                                    , Control.End
+                                    )
+                              , ( Control.Delta
+                                    ( Control.Delta String
+                                    , ( Control.Delta String, Control.End )
+                                    )
+                                , ( Control.Delta
+                                        ( Control.Delta String
+                                        , ( Control.Delta String
+                                          , ( Control.Delta String, Control.End )
+                                          )
+                                        )
+                                  , ( Control.Delta
+                                        ( Control.Delta
+                                            ( Control.Delta String
+                                            , Control.End
+                                            )
+                                        , ( Control.Delta
+                                                ( Control.Delta String
+                                                , Control.End
+                                                )
+                                          , Control.End
+                                          )
+                                        )
+                                    , Control.End
+                                    )
                                   )
-                            , Control.End
+                                )
+                              )
                             )
                           )
                         )
-                      )
-                , Control.End
+                    , Control.End
+                    )
+                  )
                 )
               )
             )
-          )
-        )
         )
     | FormSubmitted
