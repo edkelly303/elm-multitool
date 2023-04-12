@@ -1,6 +1,7 @@
 module Tools.Codec exposing (interface)
 
 import Codec
+import Dict
 
 
 interface =
@@ -12,7 +13,11 @@ interface =
     , list = Codec.list
     , maybe = Codec.maybe
     , array = Codec.array
-    , dict = \_ x -> Codec.dict x
+    , dict =
+        \k v ->
+            Codec.tuple k v
+                |> Codec.list
+                |> Codec.map Dict.fromList Dict.toList
     , set = Codec.set
     , tuple = Codec.tuple
     , triple = Codec.triple
