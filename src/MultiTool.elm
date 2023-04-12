@@ -225,10 +225,9 @@ end toolBuilder =
     , array =
         \contents ->
             doMakeArray toolBuilder.arrayMaker contents arrays
-
-    -- , dict =
-    --     \contents ->
-    --         doMakeDict toolBuilder.dictMaker contents dicts
+    , dict =
+        \keys values ->
+            doMakeDict toolBuilder.dictMaker keys values dicts
     , set =
         \contents ->
             doMakeSet toolBuilder.setMaker contents sets
@@ -304,13 +303,13 @@ arrayMaker next ( content, restContents ) ( array_, restArrays ) =
     )
 
 
-doMakeDict maker_ contents_ containers_ =
-    maker_ (\End End -> End) contents_ containers_
+doMakeDict dictMaker_ keys_ values_ dicts_ =
+    dictMaker_ (\End End End -> End) keys_ values_ dicts_
 
 
-dictMaker next ( content, restContents ) ( dict_, restDicts ) =
-    ( dict_ content
-    , next restContents restDicts
+dictMaker next ( key_, restKeys ) ( value_, restValues ) ( dict_, restDicts ) =
+    ( dict_ key_ value_
+    , next restKeys restValues restDicts
     )
 
 
