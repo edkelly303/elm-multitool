@@ -2,7 +2,7 @@
     "targets": {
         "elm-multitool demo": {
             "inputs": [
-                "src/All.elm"
+                "src/CodecAndControl.elm"
             ],
             "output": "main.js"
         }

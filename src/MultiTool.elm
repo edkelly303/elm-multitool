@@ -49,15 +49,21 @@ define constructor =
     -- built-in combinators
     , list = identity
     , listMaker = identity
+    , maybe = identity
+    , maybeMaker = identity
+    , array = identity
+    , arrayMaker = identity
+    , dict = identity
+    , dictMaker = identity
+    , set = identity
+    , setMaker = identity
+    , tuple = identity
+    , tupleMaker = identity
+    , triple = identity
+    , tripleMaker = identity
+    , result = identity
+    , resultMaker = identity
 
-    -- , maybe = identity
-    -- , array = identity
-    -- , dict = identity
-    -- , set = identity
-    -- , tuple = identity
-    -- , triple = identity
-    -- , result = identity
-    --
     -- record combinators
     , record = identity
     , recordMaker = identity
@@ -94,15 +100,21 @@ add tool builder =
     -- built-in combinators
     , list = builder.list << Tuple.pair tool.list
     , listMaker = builder.listMaker >> listMaker
+    , maybe = builder.maybe << Tuple.pair tool.maybe
+    , maybeMaker = builder.maybeMaker >> maybeMaker
+    , array = builder.array << Tuple.pair tool.array
+    , arrayMaker = builder.arrayMaker >> arrayMaker
+    , dict = builder.dict << Tuple.pair tool.dict
+    , dictMaker = builder.dictMaker >> dictMaker
+    , set = builder.set << Tuple.pair tool.set
+    , setMaker = builder.setMaker >> setMaker
+    , tuple = builder.tuple << Tuple.pair tool.tuple
+    , tupleMaker = builder.tupleMaker >> tupleMaker
+    , triple = builder.triple << Tuple.pair tool.triple
+    , tripleMaker = builder.tripleMaker >> tripleMaker
+    , result = builder.result << Tuple.pair tool.result
+    , resultMaker = builder.resultMaker >> resultMaker
 
-    -- , maybe = builder.maybe << Tuple.pair tool.maybe
-    -- , array = builder.array << Tuple.pair tool.array
-    -- , dict = builder.dict << Tuple.pair tool.dict
-    -- , set = builder.set << Tuple.pair tool.set
-    -- , tuple = builder.tuple << Tuple.pair tool.tuple
-    -- , triple = builder.triple << Tuple.pair tool.triple
-    -- , result = builder.result << Tuple.pair tool.result
-    --
     -- record combinators
     , record = builder.record << Tuple.pair tool.record
     , recordMaker = builder.recordMaker >> recordMaker
@@ -152,6 +164,27 @@ end toolBuilder =
         lists =
             toolBuilder.list End
 
+        maybes =
+            toolBuilder.maybe End
+
+        arrays =
+            toolBuilder.array End
+
+        dicts =
+            toolBuilder.dict End
+
+        sets =
+            toolBuilder.set End
+
+        tuples =
+            toolBuilder.tuple End
+
+        triples =
+            toolBuilder.triple End
+
+        results =
+            toolBuilder.result End
+
         -- record combinators
         records =
             toolBuilder.record End
@@ -186,7 +219,29 @@ end toolBuilder =
     , list =
         \listChildren ->
             doMakeList toolBuilder.listMaker listChildren lists
+    , maybe =
+        \maybeContents ->
+            doMakeMaybe toolBuilder.maybeMaker maybeContents maybes
+    , array =
+        \contents ->
+            doMakeArray toolBuilder.arrayMaker contents arrays
 
+    -- , dict =
+    --     \contents ->
+    --         doMakeDict toolBuilder.dictMaker contents dicts
+    , set =
+        \contents ->
+            doMakeSet toolBuilder.setMaker contents sets
+
+    -- , tuple =
+    --     \contents ->
+    --         doMakeTuple toolBuilder.tupleMaker contents tuples
+    -- , triple =
+    --     \contents ->
+    --         doMakeTriple toolBuilder.tripleMaker contents triples
+    -- , result =
+    --     \contents ->
+    --         doMakeResult toolBuilder.resultMaker contents results
     -- records
     , record =
         \recordConstructor ->
@@ -226,6 +281,76 @@ doMakeList listMaker_ listChildren_ lists_ =
 listMaker next ( listChild, restListChildren ) ( list_, restLists ) =
     ( list_ listChild
     , next restListChildren restLists
+    )
+
+
+doMakeMaybe maybeMaker_ maybeContents_ maybes_ =
+    maybeMaker_ (\End End -> End) maybeContents_ maybes_
+
+
+maybeMaker next ( maybeContent, restMaybeContents ) ( maybe_, restMaybes ) =
+    ( maybe_ maybeContent
+    , next restMaybeContents restMaybes
+    )
+
+
+doMakeArray maker_ contents_ containers_ =
+    maker_ (\End End -> End) contents_ containers_
+
+
+arrayMaker next ( content, restContents ) ( array_, restArrays ) =
+    ( array_ content
+    , next restContents restArrays
+    )
+
+
+doMakeDict maker_ contents_ containers_ =
+    maker_ (\End End -> End) contents_ containers_
+
+
+dictMaker next ( content, restContents ) ( dict_, restDicts ) =
+    ( dict_ content
+    , next restContents restDicts
+    )
+
+
+doMakeSet maker_ contents_ containers_ =
+    maker_ (\End End -> End) contents_ containers_
+
+
+setMaker next ( content, restContents ) ( set_, restSets ) =
+    ( set_ content
+    , next restContents restSets
+    )
+
+
+doMakeTuple maker_ contents_ containers_ =
+    maker_ (\End End -> End) contents_ containers_
+
+
+tupleMaker next ( content, restContents ) ( tuple_, restTuples ) =
+    ( tuple_ content
+    , next restContents restTuples
+    )
+
+
+doMakeTriple maker_ contents_ containers_ =
+    maker_ (\End End -> End) contents_ containers_
+
+
+tripleMaker next ( content, restContents ) ( triple_, restTriples ) =
+    ( triple_ content
+    , next restContents restTriples
+    )
+
+
+doMakeResult maker_ contents_ containers_ =
+    maker_ (\End End -> End) contents_ containers_
+
+
+resultMaker next ( content, restContents ) ( result_, restResults ) =
+    ( result_ content
+    , next restContents restResults
     )
 
 
