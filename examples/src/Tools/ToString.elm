@@ -56,7 +56,7 @@ maybe child =
 
 result error value =
     custom
-        (\ok err tag ->
+        (\err ok tag ->
             case tag of
                 Ok value_ ->
                     ok value_
@@ -114,7 +114,45 @@ tag0 tagName tagCtor dtor =
 
 
 tag1 tagName tagCtor child dtor =
-    dtor (\c -> tagName ++ " " ++ child c)
+    dtor
+        (\c ->
+            let
+                childString =
+                    child c
+
+                getEarliest needle haystack =
+                    String.indices needle haystack
+                        |> List.minimum
+                        |> Maybe.withDefault (String.length haystack)
+
+                earliestSpace =
+                    getEarliest " " childString
+
+                earliestLeftParen =
+                    getEarliest "(" childString
+
+                earliestDoubleQuote =
+                    getEarliest "\"" childString
+
+                earliestSingleQuote =
+                    getEarliest "'" childString
+
+                needsParens =
+                    List.all (\earliestThing -> earliestSpace < earliestThing)
+                        [ earliestLeftParen
+                        , earliestSingleQuote
+                        , earliestDoubleQuote
+                        ]
+            in
+            tagName
+                ++ " "
+                ++ (if needsParens then
+                        "(" ++ childString ++ ")"
+
+                    else
+                        childString
+                   )
+        )
 
 
 endCustom dtor =
