@@ -1,5 +1,9 @@
 module Tools.ToString exposing (interface)
 
+import Array
+import Dict
+import Set
+
 
 interface =
     { string = string
@@ -8,14 +12,13 @@ interface =
     , float = float
     , char = char
     , list = list
-
-    -- , maybe = maybe
-    -- , array = array
-    -- , dict = dict
-    -- , set = set
-    -- , tuple = tuple
-    -- , triple = triple
-    -- , result = result
+    , maybe = maybe
+    , array = array
+    , dict = dict
+    , set = set
+    , tuple = tuple
+    , triple = triple
+    , result = result
     , record = record
     , field = field
     , endRecord = endRecord
@@ -34,6 +37,56 @@ list child =
 
             _ ->
                 "[ " ++ (List.map child listData |> String.join ", ") ++ " ]"
+
+
+maybe child =
+    custom
+        (\just nothing tag ->
+            case tag of
+                Just child_ ->
+                    just child_
+
+                Nothing ->
+                    nothing
+        )
+        |> tag1 "Just" Just child
+        |> tag0 "Nothing" Nothing
+        |> endCustom
+
+
+result error value =
+    custom
+        (\ok err tag ->
+            case tag of
+                Ok value_ ->
+                    ok value_
+
+                Err error_ ->
+                    err error_
+        )
+        |> tag1 "Err" Err error
+        |> tag1 "Ok" Ok value
+        |> endCustom
+
+
+array item =
+    \arrayData -> "Array.fromList " ++ list item (Array.toList arrayData)
+
+
+dict key value =
+    \dictData -> "Dict.fromList " ++ list (tuple key value) (Dict.toList dictData)
+
+
+set member =
+    \setData -> "Set.fromList " ++ list member (Set.toList setData)
+
+
+tuple a b =
+    \( aData, bData ) -> "( " ++ a aData ++ ", " ++ b bData ++ " )"
+
+
+triple a b c =
+    \( aData, bData, cData ) -> "( " ++ a aData ++ ", " ++ b bData ++ ", " ++ c cData ++ " )"
 
 
 record : ctor -> recordData -> List String
