@@ -282,7 +282,6 @@ add destructorFieldGetter tool builder =
     }
 
 
-
 end :
     { array : {} -> a
     , arrayMaker : ({} -> {} -> {}) -> b -> a -> c
