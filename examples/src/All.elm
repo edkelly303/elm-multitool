@@ -35,7 +35,7 @@ appTools =
         |> MultiTool.add .codec Tools.Codec.interface
         |> MultiTool.add .control Tools.Control.interface
         |> MultiTool.add .fuzz Tools.Fuzz.interface
-        |> MultiTool.add .fuzz Tools.Random.interface
+        |> MultiTool.add .random Tools.Random.interface
         |> MultiTool.add .toString Tools.ToString.interface
         |> MultiTool.add .toComparable Tools.ToComparable.interface
         |> MultiTool.end
