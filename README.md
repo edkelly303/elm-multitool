@@ -185,7 +185,7 @@ With Elm MultiTool, you can achieve the same thing using the handy `tweak` funct
 
 ```elm
 myStringControl = 
-    myAppTool.string
+    myAppTools.string
         |> myAppTools.tweak.control (Control.debounce 1000)
         |> myAppTools.tweak.control 
             (Control.failIf String.isEmpty "Field can't be blank")
@@ -194,11 +194,11 @@ It's similar to a `map` function, so you can use it to transform individual tool
 
 ```elm
 myStringControl = 
-    myAppTool.string
+    myAppTools.string
         |> myAppTools.tweak.control 
             (\_ -> 
                 -- throw away whatever control we 
-                -- had in myAppTool.string, and use 
+                -- had in myAppTools.string, and use 
                 -- this instead:
                 Control.string
                     |> Control.debounce 1000
