@@ -2,9 +2,8 @@
 
 ## What does it do?
 
-This package allows you to compose "tools", where a tool is any Elm package that
-exposes an interface similar to `miniBill/elm-codec` and 
-`edkelly303/elm-any-type-forms`.
+This package allows you to compose "tools", where a tool is any Elm package with an API 
+similar to `miniBill/elm-codec` and `edkelly303/elm-any-type-forms`.
 
 ## Why is this useful?
 
