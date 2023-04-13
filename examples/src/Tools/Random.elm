@@ -76,10 +76,10 @@ endCustom builder =
         (\generatorsList {} ->
             case generatorsList of
                 first :: rest ->
-                    Random.uniform first rest
+                    Random.Extra.choices first rest
 
                 [] ->
-                    Random.constant firstGenerator
+                    firstGenerator
         )
         []
         generators
