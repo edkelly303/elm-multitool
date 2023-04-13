@@ -87,13 +87,15 @@ With Elm MultiTool, by contrast, you do a little bit of initial setup to define 
 import Tools.Codec
 import Tools.Control
 
+type alias AppTools codec control = 
+    { codec : codec, control : control }
+
 myAppTools =
-    MultiTool.define
-        (\codec control ->
-            { codec = codec
-            , control = control
-            }
-        )
+    -- The next line is not a typo - you *do* need to 
+    -- pass `AppTools` twice. If anyone can figure out 
+    -- a way to make this work by only passing it once, 
+    -- please let me know!
+    MultiTool.define AppTools AppTools 
         |> MultiTool.add .codec Tools.Codec.interface
         |> MultiTool.add .control Tools.Control.interface
         |> MultiTool.end
@@ -120,12 +122,11 @@ roleToolsDefinition =
                     adminLevel level
     in
     myAppTools.custom 
-        -- this part of the API is a bit nasty - we need
-        -- to define the `match` function using let-polymorphism
-        -- and then pass it to each of our tools separately.
-        -- If anyone can figure out a way to make this work 
-        -- without having to pass the function multiple times,
-        -- please let me know!
+        -- We need to define the `match` function using 
+        -- let-polymorphism and then pass it to each of our tools 
+        -- separately. If anyone can figure out a way to make 
+        -- this work without having to pass the function multiple 
+        -- times, please let me know!
         { codec = match, control = match } 
         |> myAppTools.tag0 "Regular" Regular
         |> myAppTools.tag1 "AdminLevel" AdminLevel myAppTools.int
@@ -151,10 +152,55 @@ If you only want JSON codecs and form controls for one small type, maybe not.
 
 But if you also want bytes codecs, test fuzzers, random generators, toStrings, toComparables, and so on for many of the types in your application, it could save a lot of time and trouble.
 
-## Run the examples
+## Can I see some examples?
+
+Sure! I've implemented basic (possibly quite buggy) versions of interfaces for a variety of tools: 
+* `Tools.ToString` will convert your Elm value to a `String`
+* `Tools.ToComparable` will convert your Elm value to a `comparable` (specifically, a `List String`)
+* `Tools.Fuzz` creates a fuzzer for use with `elm-explorations/test`
+* `Tools.Random` creates a random generator for use with `elm/random`
+
+From the root folder, you can run the examples like this, using Simon Lydell's wonderful `elm-watch` tool:
 
 ```console
 $ cd examples
 $ npm i
 $ . run.sh
+```
+
+## Notes
+
+### How do I do advanced stuff, like configure form controls?
+
+If you were using `elm-any-type-forms` directly, you could do something like this to customise a string control:
+
+```elm
+slowStringControl = 
+    Control.string
+        |> Control.debounce 1000
+        |> Control.failIf String.isEmpty "Field can't be blank"
+```
+
+With Elm MultiTool, you can achieve the same thing using the handy `tweak` functions:
+
+```elm
+slowStringControl = 
+    myAppTool.string
+        |> myAppTools.tweak.control (Control.debounce 1000)
+        |> myAppTools.tweak.control 
+            (Control.failIf String.isEmpty "Field can't be blank")
+```
+It's similar to a `map` function, so you can use it to transform individual tools, or even replace them with something else:
+
+```elm
+slowStringControl = 
+    myAppTool.string
+        |> myAppTools.tweak.control 
+            (\_ -> 
+                -- throw away whatever we had in 
+                -- myAppTool.string, and use this 
+                -- instead:
+                Control.string
+                    |> Control.debounce 1000
+            )
 ```
