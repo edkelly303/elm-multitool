@@ -21,17 +21,18 @@ import Tools.ToComparable
 import Tools.ToString
 
 
+type alias AppTools codec control fuzz random toString toComparable =
+    { codec : codec
+    , control : control
+    , fuzz : fuzz
+    , random : random
+    , toString : toString
+    , toComparable : toComparable
+    }
+
+
 appTools =
-    MultiTool.define
-        (\codec control fuzz random toString toComparable ->
-            { codec = codec
-            , control = control
-            , fuzz = fuzz
-            , random = random
-            , toString = toString
-            , toComparable = toComparable
-            }
-        )
+    MultiTool.define AppTools AppTools
         |> MultiTool.add .codec Tools.Codec.interface
         |> MultiTool.add .control Tools.Control.interface
         |> MultiTool.add .fuzz Tools.Fuzz.interface
@@ -46,28 +47,28 @@ users =
     [ { name = "Pete"
       , age = 35
       , hobbies = { surfs = True, skis = False }
-      , favouriteColour = [ 1 ]
+      , favouriteColours = [ Red ]
       , misc = blankMisc
       }
     , { name = "Ed"
       , age = 41
       , hobbies = { surfs = False, skis = True }
-      , favouriteColour = [ 2 ]
+      , favouriteColours = [ Blue ]
       , misc = blankMisc
       }
     , { name = "David"
       , age = 48
       , hobbies = { surfs = True, skis = False }
-      , favouriteColour = [ 3 ]
+      , favouriteColours = [ Green ]
       , misc = blankMisc
       }
     ]
 
 
 type alias User =
-    { favouriteColour : List Int
-    , name : String
+    { name : String
     , age : Int
+    , favouriteColours : List Colour
     , hobbies : Hobbies
     , misc : Misc
     }
@@ -79,12 +80,17 @@ userTools =
 
 userToolsDefinition =
     appTools.record User
-        |> appTools.field "favouriteColour" .favouriteColour (appTools.list appTools.int)
-        |> appTools.field "name" .name appTools.string
+        |> appTools.field "name" .name nameField
         |> appTools.field "age" .age appTools.int
+        |> appTools.field "favouriteColours" .favouriteColours (appTools.list colourToolsDefinition)
         |> appTools.field "hobbies" .hobbies hobbiesToolsDefinition
         |> appTools.field "misc" .misc miscToolsDefinition
         |> appTools.endRecord
+
+
+nameField =
+    appTools.string
+        |> appTools.tweak.control (Control.failIf String.isEmpty "Can't be blank")
 
 
 type alias Hobbies =
@@ -102,7 +108,7 @@ hobbiesToolsDefinition =
 
 type Colour
     = Red
-    | Green Int
+    | Green
     | Blue
 
 
@@ -113,8 +119,8 @@ colourToolsDefinition =
                 Red ->
                     red
 
-                Green i ->
-                    green i
+                Green ->
+                    green
 
                 Blue ->
                     blue
@@ -128,7 +134,7 @@ colourToolsDefinition =
         , toComparable = match
         }
         |> appTools.tag0 "Red" Red
-        |> appTools.tag1 "Green" Green appTools.int
+        |> appTools.tag0 "Green" Green
         |> appTools.tag0 "Blue" Blue
         |> appTools.endCustom
 
@@ -254,9 +260,18 @@ type alias Model =
     { random : ( List User, Random.Seed )
     , form :
         Control.State
-            ( Control.State (List (Control.State String))
+            ( Control.State String
             , ( Control.State String
-              , ( Control.State String
+              , ( Control.State
+                    (List
+                        (Control.State
+                            ( Control.State ()
+                            , ( Control.State ()
+                              , ( Control.State (), Control.End )
+                              )
+                            )
+                        )
+                    )
                 , ( Control.State
                         ( Control.State Bool
                         , ( Control.State Bool, Control.End )
@@ -342,9 +357,14 @@ type Msg
     = Tick
     | FormUpdated
         (Control.Delta
-            ( Control.Delta (Control.ListDelta String)
+            ( Control.Delta String
             , ( Control.Delta String
-              , ( Control.Delta String
+              , ( Control.Delta
+                    (Control.ListDelta
+                        ( Control.Delta ()
+                        , ( Control.Delta (), ( Control.Delta (), Control.End ) )
+                        )
+                    )
                 , ( Control.Delta
                         ( Control.Delta Bool, ( Control.Delta Bool, Control.End ) )
                   , ( Control.Delta
