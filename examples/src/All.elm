@@ -5,27 +5,37 @@ import Browser
 import Codec
 import Control
 import Dict exposing (Dict)
+import Fuzz
 import Html
 import Html.Attributes
 import MultiTool
+import Process
+import Random
 import Set exposing (Set)
+import Task
 import Tools.Codec
 import Tools.Control
+import Tools.Fuzz
+import Tools.Random
 import Tools.ToComparable
 import Tools.ToString
 
 
 appTools =
     MultiTool.define
-        (\codec control toString toComparable ->
+        (\codec control fuzz random toString toComparable ->
             { codec = codec
             , control = control
+            , fuzz = fuzz
+            , random = random
             , toString = toString
             , toComparable = toComparable
             }
         )
         |> MultiTool.add .codec Tools.Codec.interface
         |> MultiTool.add .control Tools.Control.interface
+        |> MultiTool.add .fuzz Tools.Fuzz.interface
+        |> MultiTool.add .fuzz Tools.Random.interface
         |> MultiTool.add .toString Tools.ToString.interface
         |> MultiTool.add .toComparable Tools.ToComparable.interface
         |> MultiTool.end
@@ -112,6 +122,8 @@ colourToolsDefinition =
     appTools.custom
         { codec = match
         , control = match
+        , fuzz = match
+        , random = match
         , toString = match
         , toComparable = match
         }
@@ -172,13 +184,21 @@ form =
 init () =
     ( { form = form.init
       , users = users
+      , random = ( [], Random.initialSeed 0 )
       }
-    , Cmd.none
+    , Task.perform (\_ -> Tick) (Process.sleep 1000)
     )
 
 
 update msg model =
     case msg of
+        Tick ->
+            let
+                random =
+                    Random.step (Random.list 3 userTools.random) (Tuple.second model.random)
+            in
+            ( { model | random = random }, Task.perform (\_ -> Tick) (Process.sleep 1000) )
+
         FormUpdated delta ->
             let
                 ( newForm, cmd ) =
@@ -214,6 +234,10 @@ view model =
         , viewUsers model.users
         , Html.h2 [] [ Html.text "toComparable: sort users" ]
         , viewUsers (List.sortBy userTools.toComparable model.users)
+        , Html.h2 [] [ Html.text "fuzz: generate users for tests" ]
+        , viewUsers (Fuzz.examples 3 userTools.fuzz)
+        , Html.h2 [] [ Html.text "random: generate random users" ]
+        , viewUsers (model.random |> Tuple.first)
         , Html.h2 [] [ Html.text "codec: encode users as JSON" ]
         , Html.text json
         ]
@@ -227,7 +251,8 @@ viewUsers users_ =
 
 
 type alias Model =
-    { form :
+    { random : ( List User, Random.Seed )
+    , form :
         Control.State
             ( Control.State (List (Control.State String))
             , ( Control.State String
@@ -314,7 +339,8 @@ type alias Model =
 
 
 type Msg
-    = FormUpdated
+    = Tick
+    | FormUpdated
         (Control.Delta
             ( Control.Delta (Control.ListDelta String)
             , ( Control.Delta String
