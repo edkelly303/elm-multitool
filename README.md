@@ -197,9 +197,9 @@ slowStringControl =
     myAppTool.string
         |> myAppTools.tweak.control 
             (\_ -> 
-                -- throw away whatever we had in 
-                -- myAppTool.string, and use this 
-                -- instead:
+                -- throw away whatever control we 
+                -- had in myAppTool.string, and use 
+                -- this instead:
                 Control.string
                     |> Control.debounce 1000
             )
