@@ -175,7 +175,7 @@ $ . run.sh
 If you were using `elm-any-type-forms` directly, you could do something like this to customise a string control:
 
 ```elm
-slowStringControl = 
+myStringControl = 
     Control.string
         |> Control.debounce 1000
         |> Control.failIf String.isEmpty "Field can't be blank"
@@ -184,7 +184,7 @@ slowStringControl =
 With Elm MultiTool, you can achieve the same thing using the handy `tweak` functions:
 
 ```elm
-slowStringControl = 
+myStringControl = 
     myAppTool.string
         |> myAppTools.tweak.control (Control.debounce 1000)
         |> myAppTools.tweak.control 
@@ -193,7 +193,7 @@ slowStringControl =
 It's similar to a `map` function, so you can use it to transform individual tools, or even replace them with something else:
 
 ```elm
-slowStringControl = 
+myStringControl = 
     myAppTool.string
         |> myAppTools.tweak.control 
             (\_ -> 
