@@ -86,15 +86,15 @@ With Elm MultiTool, by contrast, you do a little bit of initial setup to define 
 import Tools.Codec
 import Tools.Control
 
-type alias AppTools codec control = 
+type alias Tools codec control = 
     { codec : codec, control : control }
 
-myAppTools =
+tools =
     -- The next line is not a typo - you *do* need to 
-    -- pass `AppTools` twice. If anyone can figure out 
+    -- pass `Tools` twice. If anyone can figure out 
     -- a way to make this work by only passing it once, 
     -- please let me know!
-    MultiTool.define AppTools AppTools 
+    MultiTool.define Tools Tools 
         |> MultiTool.add .codec Tools.Codec.interface
         |> MultiTool.add .control Tools.Control.interface
         |> MultiTool.end
@@ -104,11 +104,11 @@ And then you only need to write out the boilerplate once for each of your types:
 
 ```elm
 userToolsDefinition = 
-    myAppTools.record User
-        |> myAppTools.field "name" .name myAppTools.string
-        |> myAppTools.field "age" .age myAppTools.int
-        |> myAppTools.field "role" .role roleToolsDefinition
-        |> myAppTools.endRecord
+    tools.record User
+        |> tools.field "name" .name tools.string
+        |> tools.field "age" .age tools.int
+        |> tools.field "role" .role roleToolsDefinition
+        |> tools.endRecord
 
 roleToolsDefinition =
     let
@@ -120,23 +120,23 @@ roleToolsDefinition =
                 AdminLevel level -> 
                     adminLevel level
     in
-    myAppTools.custom 
+    tools.custom 
         -- We need to define the `match` function using 
         -- let-polymorphism and then pass it to each of our tools 
         -- separately. If anyone can figure out a way to make 
         -- this work without having to pass the function multiple 
         -- times, please let me know!
         { codec = match, control = match } 
-        |> myAppTools.tag0 "Regular" Regular
-        |> myAppTools.tag1 "AdminLevel" AdminLevel myAppTools.int
-        |> myAppTools.endCustom
+        |> tools.tag0 "Regular" Regular
+        |> tools.tag1 "AdminLevel" AdminLevel tools.int
+        |> tools.endCustom
 ```
 
 Now, to use your tools, you can just do:
 
 ```elm
 userTools = 
-    myAppTools.build userToolsDefinition
+    tools.build userToolsDefinition
 
 control = 
     userTools.control -- this is identical to userControl
@@ -184,20 +184,20 @@ With Elm MultiTool, you can achieve the same thing using the handy `tweak` funct
 
 ```elm
 myStringControl = 
-    myAppTools.string
-        |> myAppTools.tweak.control (Control.debounce 1000)
-        |> myAppTools.tweak.control 
+    tools.string
+        |> tools.tweak.control (Control.debounce 1000)
+        |> tools.tweak.control 
             (Control.failIf String.isEmpty "Field can't be blank")
 ```
 It's similar to a `map` function, so you can use it to transform individual tools, or even replace them with something else:
 
 ```elm
 myStringControl = 
-    myAppTools.string
-        |> myAppTools.tweak.control 
+    tools.string
+        |> tools.tweak.control 
             (\_ -> 
                 -- throw away whatever control we 
-                -- had in myAppTools.string, and use 
+                -- had in tools.string, and use 
                 -- this instead:
                 Control.string
                     |> Control.debounce 1000
