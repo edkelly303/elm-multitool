@@ -18,7 +18,7 @@ import Tools.ToComparable
 import Tools.ToString
 
 
-type alias AppTools codec control fuzz random toString toComparable =
+type alias Tools codec control fuzz random toString toComparable =
     { codec : codec
     , control : control
     , fuzz : fuzz
@@ -29,7 +29,7 @@ type alias AppTools codec control fuzz random toString toComparable =
 
 
 tools =
-    MultiTool.define AppTools AppTools
+    MultiTool.define Tools Tools
         |> MultiTool.add .codec Tools.Codec.interface
         |> MultiTool.add .control Tools.Control.interface
         |> MultiTool.add .fuzz Tools.Fuzz.interface
