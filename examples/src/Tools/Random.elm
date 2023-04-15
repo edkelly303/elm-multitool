@@ -29,6 +29,10 @@ interface =
     , custom = custom
     , tag0 = tag0
     , tag1 = tag1
+    , tag2 = tag2
+    , tag3 = tag3
+    , tag4 = tag4
+    , tag5 = tag5
     , endCustom = endCustom
     }
 
@@ -60,6 +64,30 @@ tag0 tagName tagConstructor builder =
 
 tag1 tagName tagConstructor fuzzer builder =
     { generators = builder.generators << Tuple.pair (Random.map tagConstructor fuzzer)
+    , construct = builder.construct >> construct
+    }
+
+
+tag2 tagName tagConstructor f1 f2 builder =
+    { generators = builder.generators << Tuple.pair (Random.map2 tagConstructor f1 f2)
+    , construct = builder.construct >> construct
+    }
+
+
+tag3 tagName tagConstructor f1 f2 f3 builder =
+    { generators = builder.generators << Tuple.pair (Random.map3 tagConstructor f1 f2 f3)
+    , construct = builder.construct >> construct
+    }
+
+
+tag4 tagName tagConstructor f1 f2 f3 f4 builder =
+    { generators = builder.generators << Tuple.pair (Random.map4 tagConstructor f1 f2 f3 f4)
+    , construct = builder.construct >> construct
+    }
+
+
+tag5 tagName tagConstructor f1 f2 f3 f4 f5 builder =
+    { generators = builder.generators << Tuple.pair (Random.map5 tagConstructor f1 f2 f3 f4 f5)
     , construct = builder.construct >> construct
     }
 

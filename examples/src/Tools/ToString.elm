@@ -25,6 +25,10 @@ interface =
     , custom = custom
     , tag0 = tag0
     , tag1 = tag1
+    , tag2 = tag2
+    , tag3 = tag3
+    , tag4 = tag4
+    , tag5 = tag5
     , endCustom = endCustom
     }
 
@@ -113,46 +117,85 @@ tag0 tagName tagCtor dtor =
     dtor tagName
 
 
-tag1 tagName tagCtor child dtor =
+tag1 tagName tagCtor toString1 dtor =
+    dtor (\arg1 -> tagName ++ parensIfNeeded (toString1 arg1))
+
+
+tag2 tagName tagCtor toString1 toString2 dtor =
     dtor
-        (\c ->
-            let
-                childString =
-                    child c
-
-                getEarliest needle haystack =
-                    String.indices needle haystack
-                        |> List.minimum
-                        |> Maybe.withDefault (String.length haystack)
-
-                earliestSpace =
-                    getEarliest " " childString
-
-                earliestLeftParen =
-                    getEarliest "(" childString
-
-                earliestDoubleQuote =
-                    getEarliest "\"" childString
-
-                earliestSingleQuote =
-                    getEarliest "'" childString
-
-                needsParens =
-                    List.all (\earliestThing -> earliestSpace < earliestThing)
-                        [ earliestLeftParen
-                        , earliestSingleQuote
-                        , earliestDoubleQuote
-                        ]
-            in
+        (\arg1 arg2 ->
             tagName
-                ++ " "
-                ++ (if needsParens then
-                        "(" ++ childString ++ ")"
-
-                    else
-                        childString
-                   )
+                ++ parensIfNeeded (toString1 arg1)
+                ++ parensIfNeeded (toString2 arg2)
         )
+
+
+tag3 tagName tagCtor toString1 toString2 toString3 dtor =
+    dtor
+        (\arg1 arg2 arg3 ->
+            tagName
+                ++ parensIfNeeded (toString1 arg1)
+                ++ parensIfNeeded (toString2 arg2)
+                ++ parensIfNeeded (toString3 arg3)
+        )
+
+
+tag4 tagName tagCtor toString1 toString2 toString3 toString4 dtor =
+    dtor
+        (\arg1 arg2 arg3 arg4 ->
+            tagName
+                ++ parensIfNeeded (toString1 arg1)
+                ++ parensIfNeeded (toString2 arg2)
+                ++ parensIfNeeded (toString3 arg3)
+                ++ parensIfNeeded (toString4 arg4)
+        )
+
+
+tag5 tagName tagCtor toString1 toString2 toString3 toString4 toString5 dtor =
+    dtor
+        (\arg1 arg2 arg3 arg4 arg5 ->
+            tagName
+                ++ parensIfNeeded (toString1 arg1)
+                ++ parensIfNeeded (toString2 arg2)
+                ++ parensIfNeeded (toString3 arg3)
+                ++ parensIfNeeded (toString4 arg4)
+                ++ parensIfNeeded (toString5 arg5)
+        )
+
+
+parensIfNeeded childString =
+    let
+        getEarliest needle haystack =
+            String.indices needle haystack
+                |> List.minimum
+                |> Maybe.withDefault (String.length haystack)
+
+        earliestSpace =
+            getEarliest " " childString
+
+        earliestLeftParen =
+            getEarliest "(" childString
+
+        earliestDoubleQuote =
+            getEarliest "\"" childString
+
+        earliestSingleQuote =
+            getEarliest "'" childString
+
+        needsParens =
+            List.all (\earliestThing -> earliestSpace < earliestThing)
+                [ earliestLeftParen
+                , earliestSingleQuote
+                , earliestDoubleQuote
+                ]
+    in
+    " "
+        ++ (if needsParens then
+                "(" ++ childString ++ ")"
+
+            else
+                childString
+           )
 
 
 endCustom dtor =

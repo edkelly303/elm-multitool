@@ -28,5 +28,9 @@ interface =
     , custom = Codec.custom
     , tag0 = Codec.variant0
     , tag1 = Codec.variant1
+    , tag2 = Codec.variant2
+    , tag3 = Codec.variant3
+    , tag4 = Codec.variant4
+    , tag5 = Codec.variant5
     , endCustom = Codec.buildCustom
     }

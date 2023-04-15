@@ -32,6 +32,10 @@ interface =
     , custom = custom
     , tag0 = tag0
     , tag1 = tag1
+    , tag2 = tag2
+    , tag3 = tag3
+    , tag4 = tag4
+    , tag5 = tag5
     , endCustom = endCustom
     }
 
@@ -59,6 +63,22 @@ tag0 tagName tagConstructor builder =
 
 tag1 tagName tagConstructor fuzzer builder =
     Fuzz.map tagConstructor fuzzer :: builder
+
+
+tag2 tagName tagConstructor f1 f2 builder =
+    Fuzz.map2 tagConstructor f1 f2 :: builder
+
+
+tag3 tagName tagConstructor f1 f2 f3 builder =
+    Fuzz.map3 tagConstructor f1 f2 f3 :: builder
+
+
+tag4 tagName tagConstructor f1 f2 f3 f4 builder =
+    Fuzz.map4 tagConstructor f1 f2 f3 f4 :: builder
+
+
+tag5 tagName tagConstructor f1 f2 f3 f4 f5 builder =
+    Fuzz.map5 tagConstructor f1 f2 f3 f4 f5 :: builder
 
 
 endCustom builder =
