@@ -2,8 +2,8 @@
 
 ## What does it do?
 
-This package allows you to compose "tools", where a tool is any Elm package with an API 
-similar to `miniBill/elm-codec` and `edkelly303/elm-any-type-forms`.
+This package allows you to compose "tools", where a tool is any Elm package with an API similar to `miniBill/elm-codec` 
+and `edkelly303/elm-any-type-forms`.
 
 ## Why is this useful?
 
@@ -21,14 +21,13 @@ type Role
     | AdminLevel Int
 ```
 
-You want to use `edkelly303/elm-any-type-forms` to build a form 
-that will allow you to create/update values of your `User` type. You also 
-want to use `miniBill/elm-codec` to generate JSON encoders and decoders for the 
-`User` type.
+You want to use `edkelly303/elm-any-type-forms` to build a form that will allow you to create/update values of your 
+`User` type. You also want to use `miniBill/elm-codec` to generate JSON encoders and decoders for the `User` type.
 
 ### Boo! Boilerplate!
 
-Without Elm MultiTool, you have to do everything twice:
+Without Elm MultiTool, you have to define your codec and form control separately, which means writing almost exactly the 
+same code twice:
 
 ```elm
 import Codec
@@ -40,6 +39,13 @@ userCodec =
         |> Codec.field "age" .age Codec.int
         |> Codec.field "role" .role roleCodec
         |> Codec.buildObject
+
+userControl = 
+    Control.record User
+        |> Control.field "name" .name Control.string
+        |> Control.field "age" .age Control.int
+        |> Control.field "role" .role roleControl
+        |> Control.end
 
 roleCodec =
     Codec.custom 
@@ -54,13 +60,6 @@ roleCodec =
         |> Codec.variant0 "Regular" Regular
         |> Codec.variant1 "AdminLevel" AdminLevel Codec.int
         |> Codec.buildCustom
-
-userControl = 
-    Control.record User
-        |> Control.field "name" .name Control.string
-        |> Control.field "age" .age Control.int
-        |> Control.field "role" .role roleControl
-        |> Control.end
 
 roleControl =
     Control.customType
@@ -80,7 +79,8 @@ If you want to create controls and codecs for many types across your codebase, t
 
 ### Yay! Less boilerplate!
 
-With Elm MultiTool, by contrast, you do a little bit of initial setup to define the tools you want to use in your application:
+With Elm MultiTool, by contrast, you do a little bit of initial setup to define the tools you want to use in your 
+application:
 
 ```elm
 import Tools.Codec
@@ -149,11 +149,13 @@ codec =
 
 If you only want JSON codecs and form controls for one small type, maybe not. 
 
-But if you also want bytes codecs, test fuzzers, random generators, toStrings, toComparables, and so on for many of the types in your application, it could save a lot of time and trouble.
+But if you also want bytes codecs, test fuzzers, random generators, toStrings, toComparables, and so on for many of the 
+types in your application, it could save a lot of time and trouble.
 
 ## Can I see some examples?
 
 Sure! I've implemented basic (possibly quite buggy) versions of interfaces for a variety of tools: 
+
 * `Tools.ToString` will convert your Elm value to a `String`
 * `Tools.ToComparable` will convert your Elm value to a `comparable` (specifically, a `List String`)
 * `Tools.Fuzz` creates a fuzzer for use with `elm-explorations/test`
@@ -177,7 +179,9 @@ If you were using `elm-any-type-forms` directly, you could do something like thi
 myStringControl = 
     Control.string
         |> Control.debounce 1000
-        |> Control.failIf String.isEmpty "Field can't be blank"
+        |> Control.failIf 
+            String.isEmpty 
+            "Field can't be blank"
 ```
 
 With Elm MultiTool, you can achieve the same thing using the handy `tweak` functions:
@@ -185,11 +189,16 @@ With Elm MultiTool, you can achieve the same thing using the handy `tweak` funct
 ```elm
 myStringControl = 
     tools.string
-        |> tools.tweak.control (Control.debounce 1000)
         |> tools.tweak.control 
-            (Control.failIf String.isEmpty "Field can't be blank")
+            (Control.debounce 1000)
+        |> tools.tweak.control 
+            (Control.failIf 
+                String.isEmpty 
+                "Field can't be blank"
+            )
 ```
-It's similar to a `map` function, so you can use it to transform individual tools, or even replace them with something else:
+It's similar to a `map` function, so you can use it to transform individual tools, or even replace them with something 
+else:
 
 ```elm
 myStringControl = 
