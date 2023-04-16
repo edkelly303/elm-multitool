@@ -1,5 +1,5 @@
 module MultiTool exposing
-    ( start, Builder
+    ( define, Builder
     , add
     , end, ToolSpec
     )
@@ -65,7 +65,7 @@ In this example, we see that `toString` comes first and `toComparable` comes sec
 the interfaces added to `tools`.
 
 -}
-start :
+define :
     b
     -> c
     ->
@@ -125,7 +125,7 @@ start :
             , tweakConstructor : c
             , tweakerMaker : a -> a
             }
-start toolConstructor tweakConstructor =
+define toolConstructor tweakConstructor =
     Builder
         { -- primitives
           string = identity
