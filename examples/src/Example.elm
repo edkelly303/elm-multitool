@@ -41,21 +41,17 @@ tools =
 
 characters : List Character
 characters =
-    [ { name = "Dhalsim"
-      , age = 71
-      , profession = Yogi
-      }
-    , { name = "Vega"
-      , age = 56
-      , profession = Bullfighter
-      }
-    , { name = "Ryu"
+    [ { name = "Ryu"
       , age = 59
       , profession = KarateBlackBelt 10
       }
     , { name = "Guile"
       , age = 63
       , profession = USAFColonel
+      }
+    , { name = "Ken"
+      , age = 63
+      , profession = KarateBlackBelt 9
       }
     ]
 
@@ -92,22 +88,14 @@ ageToolDefinition =
 
 
 type Profession
-    = Yogi
-    | Bullfighter
-    | KarateBlackBelt Int
+    = KarateBlackBelt Int
     | USAFColonel
 
 
 professionToolDefinition =
     let
-        match yogi bullfighter karateBlackBelt usafColonel tag =
+        match karateBlackBelt usafColonel tag =
             case tag of
-                Yogi ->
-                    yogi
-
-                Bullfighter ->
-                    bullfighter
-
                 KarateBlackBelt dan ->
                     karateBlackBelt dan
 
@@ -122,8 +110,6 @@ professionToolDefinition =
         , toString = match
         , toComparable = match
         }
-        |> tools.tag0 "Yogi" Yogi
-        |> tools.tag0 "Bullfighter" Bullfighter
         |> tools.tag1 "KarateBlackBelt" KarateBlackBelt tools.int
         |> tools.tag0 "USAFColonel" USAFColonel
         |> tools.endCustom
@@ -230,13 +216,9 @@ type alias Model =
             ( Control.State String
             , ( Control.State String
               , ( Control.State
-                    ( Control.State ()
-                    , ( Control.State ()
-                      , ( Control.State
-                            ( Control.State String, Control.End )
-                        , ( Control.State (), Control.End )
-                        )
-                      )
+                    ( Control.State
+                        ( Control.State String, Control.End )
+                    , ( Control.State (), Control.End )
                     )
                 , Control.End
                 )
@@ -253,12 +235,8 @@ type Msg
             ( Control.Delta String
             , ( Control.Delta String
               , ( Control.Delta
-                    ( Control.Delta ()
-                    , ( Control.Delta ()
-                      , ( Control.Delta ( Control.Delta String, Control.End )
-                        , ( Control.Delta (), Control.End )
-                        )
-                      )
+                    ( Control.Delta ( Control.Delta String, Control.End )
+                    , ( Control.Delta (), Control.End )
                     )
                 , Control.End
                 )
