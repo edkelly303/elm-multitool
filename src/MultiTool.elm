@@ -13,7 +13,7 @@ the docs and look at the examples. It'll be fine.\*
 \* Unless you make any kind of minor typo in your code, in which case the Elm compiler may respond with a Lovecraftian
 error message 😱.
 
-@docs start, Builder
+@docs define, Builder
 
 @docs add
 
