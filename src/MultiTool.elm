@@ -931,37 +931,37 @@ end (Builder toolBuilder) =
 
     -- built-in combinators
     , list =
-        \listChildren ->
-            doMakeList toolBuilder.listMaker listChildren lists
+        \itemDef ->
+            doMakeList toolBuilder.listMaker itemDef lists
     , maybe =
-        \maybeContents ->
-            doMakeMaybe toolBuilder.maybeMaker maybeContents maybes
+        \contentDef ->
+            doMakeMaybe toolBuilder.maybeMaker contentDef maybes
     , array =
-        \contents ->
-            doMakeArray toolBuilder.arrayMaker contents arrays
+        \itemDef ->
+            doMakeArray toolBuilder.arrayMaker itemDef arrays
     , dict =
-        \keys values ->
-            doMakeDict toolBuilder.dictMaker keys values dicts
+        \keyDef valueDef ->
+            doMakeDict toolBuilder.dictMaker keyDef valueDef dicts
     , set =
-        \contents ->
-            doMakeSet toolBuilder.setMaker contents sets
+        \memberDef ->
+            doMakeSet toolBuilder.setMaker memberDef sets
     , tuple =
-        \a b ->
-            doMakeTuple toolBuilder.tupleMaker a b tuples
+        \firstDef secondDef ->
+            doMakeTuple toolBuilder.tupleMaker firstDef secondDef tuples
     , triple =
-        \a b c ->
-            doMakeTriple toolBuilder.tripleMaker a b c triples
+        \firstDef secondDef thirdDef ->
+            doMakeTriple toolBuilder.tripleMaker firstDef secondDef thirdDef triples
     , result =
-        \errors values ->
-            doMakeResult toolBuilder.resultMaker errors values results
+        \errorDef valueDef ->
+            doMakeResult toolBuilder.resultMaker errorDef valueDef results
 
     -- records
     , record =
         \recordConstructor ->
             doMakeRecord toolBuilder.recordMaker recordConstructor records
     , field =
-        \fieldName getField child recordBuilder ->
-            doMakeFields toolBuilder.fieldMaker fieldName getField child recordBuilder fields
+        \fieldName getField fieldDef recordBuilder ->
+            doMakeFields toolBuilder.fieldMaker fieldName getField fieldDef recordBuilder fields
     , endRecord =
         \recordBuilder ->
             doEndRecord toolBuilder.recordEnder recordBuilder endRecords
@@ -974,20 +974,20 @@ end (Builder toolBuilder) =
         \tagName tagConstructor customBuilder ->
             doMakeTag0 toolBuilder.tag0Maker tagName tagConstructor customBuilder tag0s
     , tag1 =
-        \tagName tagConstructor child1 customBuilder ->
-            doMakeTag1 toolBuilder.tag1Maker tagName tagConstructor child1 customBuilder tag1s
+        \tagName tagConstructor arg1Def customBuilder ->
+            doMakeTag1 toolBuilder.tag1Maker tagName tagConstructor arg1Def customBuilder tag1s
     , tag2 =
-        \tagName tagConstructor c1 c2 customBuilder ->
-            doMakeTag2 toolBuilder.tag2Maker tagName tagConstructor c1 c2 customBuilder tag2s
+        \tagName tagConstructor arg1Def arg2Def customBuilder ->
+            doMakeTag2 toolBuilder.tag2Maker tagName tagConstructor arg1Def arg2Def customBuilder tag2s
     , tag3 =
-        \tagName tagConstructor c1 c2 c3 customBuilder ->
-            doMakeTag3 toolBuilder.tag3Maker tagName tagConstructor c1 c2 c3 customBuilder tag3s
+        \tagName tagConstructor arg1Def arg2Def arg3Def customBuilder ->
+            doMakeTag3 toolBuilder.tag3Maker tagName tagConstructor arg1Def arg2Def arg3Def customBuilder tag3s
     , tag4 =
-        \tagName tagConstructor c1 c2 c3 c4 customBuilder ->
-            doMakeTag4 toolBuilder.tag4Maker tagName tagConstructor c1 c2 c3 c4 customBuilder tag4s
+        \tagName tagConstructor arg1Def arg2Def arg3Def arg4Def customBuilder ->
+            doMakeTag4 toolBuilder.tag4Maker tagName tagConstructor arg1Def arg2Def arg3Def arg4Def customBuilder tag4s
     , tag5 =
-        \tagName tagConstructor c1 c2 c3 c4 c5 customBuilder ->
-            doMakeTag5 toolBuilder.tag5Maker tagName tagConstructor c1 c2 c3 c4 c5 customBuilder tag5s
+        \tagName tagConstructor arg1Def arg2Def arg3Def arg4Def arg5Def customBuilder ->
+            doMakeTag5 toolBuilder.tag5Maker tagName tagConstructor arg1Def arg2Def arg3Def arg4Def arg5Def customBuilder tag5s
     , endCustom =
         \customBuilder ->
             doEndCustom toolBuilder.customEnder customBuilder endCustoms
@@ -1003,6 +1003,10 @@ end (Builder toolBuilder) =
         in
         doConstructTweak toolBuilder.constructTweak toolBuilder.tweakConstructor tweakers
     }
+
+
+type ToolDef a
+    = ToolDef a
 
 
 doMakeTweakers : ((a -> {} -> {} -> {}) -> d -> e -> f -> g) -> d -> e -> f -> g
@@ -1213,49 +1217,49 @@ tag1Maker next tagName tagConstructor ( child1, restChild1s ) ( customBuilder, r
 
 
 doMakeTag2 : ((a -> b -> {} -> {} -> {} -> {} -> {}) -> g -> h -> i -> j -> k -> l -> m) -> g -> h -> i -> j -> k -> l -> m
-doMakeTag2 tag2Maker_ tagName tagConstructor c1 c2 customBuilder tag2s =
-    tag2Maker_ (\_ _ {} {} {} {} -> {}) tagName tagConstructor c1 c2 customBuilder tag2s
+doMakeTag2 tag2Maker_ tagName tagConstructor arg1Def arg2Def customBuilder tag2s =
+    tag2Maker_ (\_ _ {} {} {} {} -> {}) tagName tagConstructor arg1Def arg2Def customBuilder tag2s
 
 
 tag2Maker : (b -> c -> a -> d -> e -> f -> g) -> b -> c -> ( h, a ) -> ( i, d ) -> ( j, e ) -> ( b -> c -> h -> i -> j -> k, f ) -> ( k, g )
-tag2Maker next tagName tagConstructor ( c1, restC1s ) ( c2, restC2s ) ( customBuilder, restCustomBuilders ) ( tag2, restTag2s ) =
-    ( tag2 tagName tagConstructor c1 c2 customBuilder
+tag2Maker next tagName tagConstructor ( arg1Def, restC1s ) ( arg2Def, restC2s ) ( customBuilder, restCustomBuilders ) ( tag2, restTag2s ) =
+    ( tag2 tagName tagConstructor arg1Def arg2Def customBuilder
     , next tagName tagConstructor restC1s restC2s restCustomBuilders restTag2s
     )
 
 
 doMakeTag3 : ((a -> b -> {} -> {} -> {} -> {} -> {} -> {}) -> h -> i -> j -> k -> l -> m -> n -> o) -> h -> i -> j -> k -> l -> m -> n -> o
-doMakeTag3 tagMaker_ tagName tagConstructor c1 c2 c3 customBuilder tags =
-    tagMaker_ (\_ _ {} {} {} {} {} -> {}) tagName tagConstructor c1 c2 c3 customBuilder tags
+doMakeTag3 tagMaker_ tagName tagConstructor arg1Def arg2Def arg3Def customBuilder tags =
+    tagMaker_ (\_ _ {} {} {} {} {} -> {}) tagName tagConstructor arg1Def arg2Def arg3Def customBuilder tags
 
 
 tag3Maker : (b -> c -> a -> d -> e -> f -> g -> h) -> b -> c -> ( i, a ) -> ( j, d ) -> ( k, e ) -> ( l, f ) -> ( b -> c -> i -> j -> k -> l -> m, g ) -> ( m, h )
-tag3Maker next tagName tagConstructor ( c1, restC1s ) ( c2, restC2s ) ( c3, restC3s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
-    ( tag tagName tagConstructor c1 c2 c3 customBuilder
+tag3Maker next tagName tagConstructor ( arg1Def, restC1s ) ( arg2Def, restC2s ) ( arg3Def, restC3s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
+    ( tag tagName tagConstructor arg1Def arg2Def arg3Def customBuilder
     , next tagName tagConstructor restC1s restC2s restC3s restCustomBuilders restTags
     )
 
 
 doMakeTag4 : ((a -> b -> {} -> {} -> {} -> {} -> {} -> {} -> {}) -> i -> j -> k -> l -> m -> n -> o -> p -> q) -> i -> j -> k -> l -> m -> n -> o -> p -> q
-doMakeTag4 tagMaker_ tagName tagConstructor c1 c2 c3 c4 customBuilder tags =
-    tagMaker_ (\_ _ {} {} {} {} {} {} -> {}) tagName tagConstructor c1 c2 c3 c4 customBuilder tags
+doMakeTag4 tagMaker_ tagName tagConstructor arg1Def arg2Def arg3Def arg4Def customBuilder tags =
+    tagMaker_ (\_ _ {} {} {} {} {} {} -> {}) tagName tagConstructor arg1Def arg2Def arg3Def arg4Def customBuilder tags
 
 
 tag4Maker : (b -> c -> a -> d -> e -> f -> g -> h -> i) -> b -> c -> ( j, a ) -> ( k, d ) -> ( l, e ) -> ( m, f ) -> ( n, g ) -> ( b -> c -> j -> k -> l -> m -> n -> o, h ) -> ( o, i )
-tag4Maker next tagName tagConstructor ( c1, restC1s ) ( c2, restC2s ) ( c3, restC3s ) ( c4, restC4s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
-    ( tag tagName tagConstructor c1 c2 c3 c4 customBuilder
+tag4Maker next tagName tagConstructor ( arg1Def, restC1s ) ( arg2Def, restC2s ) ( arg3Def, restC3s ) ( arg4Def, restC4s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
+    ( tag tagName tagConstructor arg1Def arg2Def arg3Def arg4Def customBuilder
     , next tagName tagConstructor restC1s restC2s restC3s restC4s restCustomBuilders restTags
     )
 
 
 doMakeTag5 : ((a -> b -> {} -> {} -> {} -> {} -> {} -> {} -> {} -> {}) -> j -> k -> l -> m -> n -> o -> p -> q -> r -> s) -> j -> k -> l -> m -> n -> o -> p -> q -> r -> s
-doMakeTag5 tagMaker_ tagName tagConstructor c1 c2 c3 c4 c5 customBuilder tags =
-    tagMaker_ (\_ _ {} {} {} {} {} {} {} -> {}) tagName tagConstructor c1 c2 c3 c4 c5 customBuilder tags
+doMakeTag5 tagMaker_ tagName tagConstructor arg1Def arg2Def arg3Def arg4Def arg5Def customBuilder tags =
+    tagMaker_ (\_ _ {} {} {} {} {} {} {} -> {}) tagName tagConstructor arg1Def arg2Def arg3Def arg4Def arg5Def customBuilder tags
 
 
 tag5Maker : (b -> c -> a -> d -> e -> f -> g -> h -> i -> j) -> b -> c -> ( k, a ) -> ( l, d ) -> ( m, e ) -> ( n, f ) -> ( o, g ) -> ( p, h ) -> ( b -> c -> k -> l -> m -> n -> o -> p -> q, i ) -> ( q, j )
-tag5Maker next tagName tagConstructor ( c1, restC1s ) ( c2, restC2s ) ( c3, restC3s ) ( c4, restC4s ) ( c5, restC5s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
-    ( tag tagName tagConstructor c1 c2 c3 c4 c5 customBuilder
+tag5Maker next tagName tagConstructor ( arg1Def, restC1s ) ( arg2Def, restC2s ) ( arg3Def, restC3s ) ( arg4Def, restC4s ) ( arg5Def, restC5s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
+    ( tag tagName tagConstructor arg1Def arg2Def arg3Def arg4Def arg5Def customBuilder
     , next tagName tagConstructor restC1s restC2s restC3s restC4s restC5s restCustomBuilders restTags
     )
 
