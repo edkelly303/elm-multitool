@@ -1,7 +1,7 @@
 module MultiTool exposing
-    ( define, Builder
+    ( start, Builder
     , add
-    , end
+    , end, ToolSpec
     )
 
 {-| **Fun fact**: The type annotations for the functions in this package are pretty horrifying.
@@ -13,20 +13,11 @@ the docs and look at the examples. It'll be fine.\*
 \* Unless you make any kind of minor typo in your code, in which case the Elm compiler may respond with a Lovecraftian
 error message 😱.
 
-
-## `define`
-
-@docs define, Builder
-
-
-## `add`
+@docs start, Builder
 
 @docs add
 
-
-## `end`
-
-@docs end
+@docs end, ToolSpec
 
 -}
 
@@ -40,7 +31,9 @@ type Builder a
 {-|
 
 
-### Begin a definition for a MultiTool by creating a MultiTool.Builder
+### `define`
+
+Begin creating a new MultiTool.
 
 This function takes two identical arguments. Both arguments should be a function that constructs a record with a field
 for each of the tools you intend to include in your MultiTool.
@@ -65,14 +58,14 @@ For example, if you want to combine a `ToString` tool and a `ToComparable` tool,
                 ToComparable.interface
             |> MultiTool.end
 
-**Note**: The order of the type parameters in the `Tools` definition is important. It needs to match the order in which
+**Note**: The order of the type parameters in the `Tools` type alias is important. It needs to match the order in which
 you add the tool interfaces with `MultiTool.add`.
 
 In this example, we see that `toString` comes first and `toComparable` comes second in _both_ the `Tools` type alias and
-the `tools` definition.
+the interfaces added to `tools`.
 
 -}
-define :
+start :
     b
     -> c
     ->
@@ -132,7 +125,7 @@ define :
             , tweakConstructor : c
             , tweakerMaker : a -> a
             }
-define toolConstructor tweakConstructor =
+start toolConstructor tweakConstructor =
     Builder
         { -- primitives
           string = identity
@@ -205,7 +198,9 @@ define toolConstructor tweakConstructor =
 {-|
 
 
-### Add a tool to your MultiTool.
+### `add`
+
+Add a tool to your MultiTool.
 
 This function takes three arguments. The first is a field accessor, which should match one of the fields of the record
 constructor you passed to `MultiTool.define`. For example: `.codec`.
@@ -246,12 +241,12 @@ Here's an example of an interface for the awesome `miniBill/elm-codec` package:
         , endCustom = Codec.buildCustom
         }
 
-(You'll notice that this interface definition mostly looks straighforward, except for the `dict` field. The problem here
+(You'll notice that this interface type mostly looks straightforward, except for the `dict` field. The problem here
 is that we need a `Dict` implementation that can take any `comparable` as a key, but `elm-codec`'s built-in `dict`
 function only accepts `String`s as keys. Fortunately, we can build the function we need using `elm-codec`'s lower-level
 primitives.)
 
-The third and final argument is the MultiTool.Builder that you've already created using `define`. The API here is
+The third and final argument is the `MultiTool.Builder` that you've already created using `define`. The API here is
 designed for piping with the `|>` operator, so you'll usually want to apply this final argument like this:
 
     tools =
@@ -260,232 +255,243 @@ designed for piping with the `|>` operator, so you'll usually want to apply this
 
 -}
 add :
-    a87
+    a95
     ->
-        { array : a92
-        , bool : a90
-        , char : a89
-        , custom : a88
-        , dict : a86
-        , endCustom : a85
-        , endRecord : a84
-        , field : a83
-        , float : a82
-        , int : a81
-        , list : a80
-        , maybe : a79
-        , record : a78
-        , result : a77
-        , set : a76
-        , string : a75
-        , tag0 : a74
-        , tag1 : a73
-        , tag2 : a72
-        , tag3 : a71
-        , tag4 : a70
-        , tag5 : a69
-        , triple : a68
-        , tuple : a67
+        { r
+            | array : a100
+            , bool : a98
+            , char : a97
+            , custom : a96
+            , dict : a94
+            , endCustom : a93
+            , endRecord : a92
+            , field : a91
+            , float : a90
+            , int : a89
+            , list : a88
+            , maybe : a87
+            , record : a86
+            , result : a85
+            , set : a84
+            , string : a83
+            , tag0 : a82
+            , tag1 : a81
+            , tag2 : a80
+            , tag3 : a79
+            , tag4 : a78
+            , tag5 : a77
+            , triple : a76
+            , tuple : a75
         }
     ->
         Builder
-            { after : k
-            , afters : l
-            , applyDelta : a65 -> m -> n -> o
-            , array : ( a92, a64 ) -> c41
-            , arrayMaker : a63 -> b14 -> a62 -> c40
-            , before : ( Maybe a91, a61 ) -> c39
-            , befores : ( ( Maybe a91, a61 ) -> c39, a60 ) -> c38
-            , bool : ( a90, a59 ) -> c37
-            , char : ( a89, a58 ) -> c36
-            , constructMultiTool : a57 -> a56 -> b13 -> c35
-            , constructTweak : a55 -> p -> q -> r
-            , custom : ( a88, a54 ) -> c34
-            , customEnder : a53 -> b12 -> a52 -> c33
-            , customMaker : a51 -> b11 -> a50 -> c32 -> d11
-            , destructorFieldGetter : ( a87, a49 ) -> c31
-            , dict : ( a86, a48 ) -> c30
-            , dictMaker : a47 -> b10 -> a46 -> c29 -> d10
-            , endCustom : ( a85, a45 ) -> c28
-            , endRecord : ( a84, a44 ) -> c27
-            , field : ( a83, a43 ) -> c26
-            , fieldMaker : a42 -> b9 -> c25 -> a41 -> d9 -> e8 -> f4
-            , float : ( a82, a40 ) -> c24
-            , int : ( a81, a39 ) -> c23
-            , list : ( a80, a38 ) -> c22
-            , listMaker : a37 -> b8 -> a36 -> c21
-            , maybe : ( a79, a35 ) -> c20
-            , maybeMaker : a34 -> b7 -> a33 -> c19
-            , record : ( a78, a32 ) -> c18
-            , recordEnder : a31 -> b6 -> a30 -> c17
-            , recordMaker : a29 -> b5 -> a28 -> c16
-            , result : ( a77, a27 ) -> c15
-            , resultMaker : a26 -> b4 -> a25 -> c14 -> d4
-            , set : ( a76, a24 ) -> c13
-            , setMaker : a23 -> b3 -> a22 -> c12
-            , string : ( a75, a21 ) -> c11
-            , tag0 : ( a74, a20 ) -> c10
-            , tag0Maker : a19 -> b2 -> c9 -> a18 -> d2 -> e2
-            , tag1 : ( a73, a17 ) -> c8
-            , tag1Maker : a16 -> s -> t -> u -> v -> w -> x
-            , tag2 : ( a72, a15 ) -> c7
-            , tag2Maker : a14 -> y -> z -> j1 -> k1 -> l1 -> m1 -> n1
-            , tag3 : ( a71, a13 ) -> c6
-            , tag3Maker : a12 -> o1 -> p1 -> q1 -> r1 -> s1 -> t1 -> u1 -> v1
-            , tag4 : ( a70, a11 ) -> c5
-            , tag4Maker : a10 -> w1 -> x1 -> y1 -> z1 -> h2 -> i2 -> j2 -> k2 -> l2
-            , tag5 : ( a69, a9 ) -> c4
-            , tag5Maker :
-                a8 -> m2 -> n2 -> o2 -> p2 -> q2 -> r2 -> s2 -> t2 -> u2 -> v2
-            , toolConstructor : w2
-            , triple : ( a68, a7 ) -> c3
-            , tripleMaker : a6 -> b1 -> a5 -> c2 -> d1 -> e1
-            , tuple : ( a67, a4 ) -> c1
-            , tupleMaker : a3 -> b -> a2 -> c -> d
-            , tweakConstructor : x2
-            , tweakerMaker :
-                a1
-                -> (({} -> {} -> {}) -> h3 -> i3 -> j3)
-                -> k3
-                -> l3
-                -> m3
+            { u1
+                | after : s
+                , afters : t
+                , applyDelta : a73 -> b20 -> a72 -> c47
+                , array : ( a100, a71 ) -> c46
+                , arrayMaker : a70 -> b19 -> a69 -> c45
+                , before : ( Maybe a99, a68 ) -> c44
+                , befores : ( ( Maybe a99, a68 ) -> c44, a67 ) -> c43
+                , bool : ( a98, a66 ) -> c42
+                , char : ( a97, a65 ) -> c41
+                , constructMultiTool : a64 -> a63 -> b18 -> c40
+                , constructTweak : a62 -> u -> v -> w
+                , custom : ( a96, a61 ) -> c39
+                , customEnder : a60 -> b17 -> a59 -> c38
+                , customMaker : a58 -> b16 -> a57 -> c37 -> d16
+                , destructorFieldGetter : ( a95, a56 ) -> c36
+                , dict : ( a94, a55 ) -> c35
+                , dictMaker : a54 -> b15 -> a53 -> c34 -> d15
+                , endCustom : ( a93, a52 ) -> c33
+                , endRecord : ( a92, a51 ) -> c32
+                , field : ( a91, a50 ) -> c31
+                , fieldMaker : a49 -> b14 -> c30 -> a48 -> d14 -> e13 -> f9
+                , float : ( a90, a47 ) -> c29
+                , int : ( a89, a46 ) -> c28
+                , list : ( a88, a45 ) -> c27
+                , listMaker : a44 -> b13 -> a43 -> c26
+                , maybe : ( a87, a42 ) -> c25
+                , maybeMaker : a41 -> b12 -> a40 -> c24
+                , record : ( a86, a39 ) -> c23
+                , recordEnder : a38 -> b11 -> a37 -> c22
+                , recordMaker : a36 -> b10 -> a35 -> c21
+                , result : ( a85, a34 ) -> c20
+                , resultMaker : a33 -> b9 -> a32 -> c19 -> d9
+                , set : ( a84, a31 ) -> c18
+                , setMaker : a30 -> b8 -> a29 -> c17
+                , string : ( a83, a28 ) -> c16
+                , tag0 : ( a82, a27 ) -> c15
+                , tag0Maker : a26 -> b7 -> c14 -> a25 -> d7 -> e7
+                , tag1 : ( a81, a24 ) -> c13
+                , tag1Maker : a23 -> b6 -> c12 -> a22 -> d6 -> e6 -> f6
+                , tag2 : ( a80, a21 ) -> c11
+                , tag2Maker : a20 -> b5 -> c10 -> a19 -> d5 -> e5 -> f5 -> g5
+                , tag3 : ( a79, a18 ) -> c9
+                , tag3Maker : a17 -> b4 -> c8 -> a16 -> d4 -> e4 -> f4 -> g4 -> h3
+                , tag4 : ( a78, a15 ) -> c7
+                , tag4Maker :
+                    a14 -> b3 -> c6 -> a13 -> d3 -> e3 -> f3 -> g3 -> h2 -> i2
+                , tag5 : ( a77, a12 ) -> c5
+                , tag5Maker :
+                    a11 -> b2 -> c4 -> a10 -> d2 -> e2 -> f2 -> g2 -> h1 -> i1 -> j
+                , toolConstructor : x
+                , triple : ( a76, a9 ) -> c3
+                , tripleMaker : a8 -> b1 -> a7 -> c2 -> d1 -> e1
+                , tuple : ( a75, a6 ) -> c1
+                , tupleMaker : a5 -> b -> a4 -> c -> d
+                , tweakConstructor : y
+                , tweakerMaker :
+                    a3
+                    -> (({} -> {} -> {}) -> q1 -> a1 -> a)
+                    -> r1
+                    -> s1
+                    -> t1
             }
     ->
         Builder
-            { after : ( Maybe a66, k )
-            , afters : ( k, l )
-            , applyDelta : a65 -> ( Maybe (o3 -> o3), m ) -> ( o3, n ) -> ( o3, o )
-            , array : a64 -> c41
-            , arrayMaker : a63 -> ( d14, b14 ) -> ( d14 -> e12, a62 ) -> ( e12, c40 )
-            , before : a61 -> c39
-            , befores : a60 -> c38
-            , bool : a59 -> c37
-            , char : a58 -> c36
-            , constructMultiTool : a57 -> (d13 -> a56) -> ( d13, b13 ) -> c35
-            , constructTweak : a55 -> (p3 -> p) -> ( p3, q ) -> r
-            , custom : a54 -> c34
-            , customEnder : a53 -> ( d12, b12 ) -> ( d12 -> e11, a52 ) -> ( e11, c33 )
+            { after : ( Maybe a74, s )
+            , afters : ( s, t )
+            , applyDelta :
+                a73 -> ( Maybe (d20 -> d20), b20 ) -> ( d20, a72 ) -> ( d20, c47 )
+            , array : a71 -> c46
+            , arrayMaker : a70 -> ( d19, b19 ) -> ( d19 -> e17, a69 ) -> ( e17, c45 )
+            , before : a68 -> c44
+            , befores : a67 -> c43
+            , bool : a66 -> c42
+            , char : a65 -> c41
+            , constructMultiTool : a64 -> (d18 -> a63) -> ( d18, b18 ) -> c40
+            , constructTweak : a62 -> (v1 -> u) -> ( v1, v ) -> w
+            , custom : a61 -> c39
+            , customEnder :
+                a60 -> ( d17, b17 ) -> ( d17 -> e16, a59 ) -> ( e16, c38 )
             , customMaker :
-                a51 -> b11 -> ( b11 -> e10, a50 ) -> ( e10 -> f6, c32 ) -> ( f6, d11 )
-            , destructorFieldGetter : a49 -> c31
-            , dict : a48 -> c30
+                a58
+                -> b16
+                -> ( b16 -> e15, a57 )
+                -> ( e15 -> f11, c37 )
+                -> ( f11, d16 )
+            , destructorFieldGetter : a56 -> c36
+            , dict : a55 -> c35
             , dictMaker :
-                a47
-                -> ( e9, b10 )
-                -> ( f5, a46 )
-                -> ( e9 -> f5 -> g5, c29 )
-                -> ( g5, d10 )
-            , endCustom : a45 -> c28
-            , endRecord : a44 -> c27
-            , field : a43 -> c26
+                a54
+                -> ( e14, b15 )
+                -> ( f10, a53 )
+                -> ( e14 -> f10 -> g10, c34 )
+                -> ( g10, d15 )
+            , endCustom : a52 -> c33
+            , endRecord : a51 -> c32
+            , field : a50 -> c31
             , fieldMaker :
-                a42
-                -> b9
-                -> c25
-                -> ( g4, a41 )
-                -> ( h1, d9 )
-                -> ( b9 -> c25 -> g4 -> h1 -> i1, e8 )
-                -> ( i1, f4 )
-            , float : a40 -> c24
-            , int : a39 -> c23
-            , list : a38 -> c22
-            , listMaker : a37 -> ( d8, b8 ) -> ( d8 -> e7, a36 ) -> ( e7, c21 )
-            , maybe : a35 -> c20
-            , maybeMaker : a34 -> ( d7, b7 ) -> ( d7 -> e6, a33 ) -> ( e6, c19 )
-            , record : a32 -> c18
-            , recordEnder : a31 -> ( d6, b6 ) -> ( d6 -> e5, a30 ) -> ( e5, c17 )
-            , recordMaker : a29 -> b5 -> ( b5 -> d5, a28 ) -> ( d5, c16 )
-            , result : a27 -> c15
+                a49
+                -> b14
+                -> c30
+                -> ( g9, a48 )
+                -> ( h6, d14 )
+                -> ( b14 -> c30 -> g9 -> h6 -> i6, e13 )
+                -> ( i6, f9 )
+            , float : a47 -> c29
+            , int : a46 -> c28
+            , list : a45 -> c27
+            , listMaker : a44 -> ( d13, b13 ) -> ( d13 -> e12, a43 ) -> ( e12, c26 )
+            , maybe : a42 -> c25
+            , maybeMaker : a41 -> ( d12, b12 ) -> ( d12 -> e11, a40 ) -> ( e11, c24 )
+            , record : a39 -> c23
+            , recordEnder :
+                a38 -> ( d11, b11 ) -> ( d11 -> e10, a37 ) -> ( e10, c22 )
+            , recordMaker : a36 -> b10 -> ( b10 -> d10, a35 ) -> ( d10, c21 )
+            , result : a34 -> c20
             , resultMaker :
-                a26
-                -> ( e4, b4 )
-                -> ( f3, a25 )
-                -> ( e4 -> f3 -> g3, c14 )
-                -> ( g3, d4 )
-            , set : a24 -> c13
-            , setMaker : a23 -> ( d3, b3 ) -> ( d3 -> e3, a22 ) -> ( e3, c12 )
-            , string : a21 -> c11
-            , tag0 : a20 -> c10
+                a33
+                -> ( e9, b9 )
+                -> ( f8, a32 )
+                -> ( e9 -> f8 -> g8, c19 )
+                -> ( g8, d9 )
+            , set : a31 -> c18
+            , setMaker : a30 -> ( d8, b8 ) -> ( d8 -> e8, a29 ) -> ( e8, c17 )
+            , string : a28 -> c16
+            , tag0 : a27 -> c15
             , tag0Maker :
-                a19
-                -> b2
-                -> c9
-                -> ( f2, a18 )
-                -> ( b2 -> c9 -> f2 -> g2, d2 )
-                -> ( g2, e2 )
-            , tag1 : a17 -> c8
+                a26
+                -> b7
+                -> c14
+                -> ( f7, a25 )
+                -> ( b7 -> c14 -> f7 -> g7, d7 )
+                -> ( g7, e7 )
+            , tag1 : a24 -> c13
             , tag1Maker :
-                a16
-                -> s
-                -> t
-                -> ( q3, u )
-                -> ( r3, v )
-                -> ( s -> t -> q3 -> r3 -> s3, w )
-                -> ( s3, x )
-            , tag2 : a15 -> c7
+                a23
+                -> b6
+                -> c12
+                -> ( g6, a22 )
+                -> ( h5, d6 )
+                -> ( b6 -> c12 -> g6 -> h5 -> i5, e6 )
+                -> ( i5, f6 )
+            , tag2 : a21 -> c11
             , tag2Maker :
-                a14
-                -> y
-                -> z
-                -> ( t3, j1 )
-                -> ( u3, k1 )
-                -> ( v3, l1 )
-                -> ( y -> z -> t3 -> u3 -> v3 -> w3, m1 )
-                -> ( w3, n1 )
-            , tag3 : a13 -> c6
+                a20
+                -> b5
+                -> c10
+                -> ( h4, a19 )
+                -> ( i4, d5 )
+                -> ( j3, e5 )
+                -> ( b5 -> c10 -> h4 -> i4 -> j3 -> k3, f5 )
+                -> ( k3, g5 )
+            , tag3 : a18 -> c9
             , tag3Maker :
-                a12
-                -> o1
-                -> p1
-                -> ( x3, q1 )
-                -> ( y3, r1 )
-                -> ( z3, s1 )
-                -> ( h4, t1 )
-                -> ( o1 -> p1 -> x3 -> y3 -> z3 -> h4 -> i4, u1 )
-                -> ( i4, v1 )
-            , tag4 : a11 -> c5
+                a17
+                -> b4
+                -> c8
+                -> ( i3, a16 )
+                -> ( j2, d4 )
+                -> ( k2, e4 )
+                -> ( l2, f4 )
+                -> ( b4 -> c8 -> i3 -> j2 -> k2 -> l2 -> m2, g4 )
+                -> ( m2, h3 )
+            , tag4 : a15 -> c7
             , tag4Maker :
-                a10
-                -> w1
-                -> x1
-                -> ( j4, y1 )
-                -> ( k4, z1 )
-                -> ( l4, h2 )
-                -> ( m4, i2 )
-                -> ( n4, j2 )
-                -> ( w1 -> x1 -> j4 -> k4 -> l4 -> m4 -> n4 -> o4, k2 )
-                -> ( o4, l2 )
-            , tag5 : a9 -> c4
+                a14
+                -> b3
+                -> c6
+                -> ( j1, a13 )
+                -> ( k1, d3 )
+                -> ( l1, e3 )
+                -> ( m1, f3 )
+                -> ( n1, g3 )
+                -> ( b3 -> c6 -> j1 -> k1 -> l1 -> m1 -> n1 -> o1, h2 )
+                -> ( o1, i2 )
+            , tag5 : a12 -> c5
             , tag5Maker :
-                a8
-                -> m2
-                -> n2
-                -> ( p4, o2 )
-                -> ( q4, p2 )
-                -> ( r4, q2 )
-                -> ( s4, r2 )
-                -> ( t4, s2 )
-                -> ( u4, t2 )
-                -> ( m2 -> n2 -> p4 -> q4 -> r4 -> s4 -> t4 -> u4 -> v4, u2 )
-                -> ( v4, v2 )
-            , toolConstructor : w2
-            , triple : a7 -> c3
+                a11
+                -> b2
+                -> c4
+                -> ( k, a10 )
+                -> ( l, d2 )
+                -> ( m, e2 )
+                -> ( n, f2 )
+                -> ( o, g2 )
+                -> ( p, h1 )
+                -> ( b2 -> c4 -> k -> l -> m -> n -> o -> p -> q, i1 )
+                -> ( q, j )
+            , toolConstructor : x
+            , triple : a9 -> c3
             , tripleMaker :
-                a6
+                a8
                 -> ( f1, b1 )
-                -> ( g1, a5 )
+                -> ( g1, a7 )
                 -> ( h, c2 )
                 -> ( f1 -> g1 -> h -> i, d1 )
                 -> ( i, e1 )
-            , tuple : a4 -> c1
-            , tupleMaker : a3 -> ( e, b ) -> ( f, a2 ) -> ( e -> f -> g, c ) -> ( g, d )
-            , tweakConstructor : x2
+            , tuple : a6 -> c1
+            , tupleMaker :
+                a5 -> ( e, b ) -> ( f, a4 ) -> ( e -> f -> g, c ) -> ( g, d )
+            , tweakConstructor : y
             , tweakerMaker :
-                a1
-                -> (({} -> {} -> {}) -> h3 -> i3 -> j3)
-                -> ( ( Maybe a, w4 ) -> h3, k3 )
-                -> ( w4, l3 )
-                -> ( a -> i3 -> j3, m3 )
+                a3
+                -> (({} -> {} -> {}) -> q1 -> a1 -> a)
+                -> ( ( Maybe a2, w1 ) -> q1, r1 )
+                -> ( w1, s1 )
+                -> ( a2 -> ToolSpec a1 -> ToolSpec a, t1 )
             }
 add destructorFieldGetter tool (Builder builder) =
     Builder
@@ -560,7 +566,9 @@ add destructorFieldGetter tool (Builder builder) =
 {-|
 
 
-### Complete the definition of a MultiTool.
+### `end`
+
+Complete the definition of a MultiTool.
 
     tools =
         MultiTool.define Tools Tools
@@ -572,12 +580,12 @@ add destructorFieldGetter tool (Builder builder) =
                 ToComparable.interface
             |> MultiTool.end
 
-This function converts a MultiTool.Builder into a MultiTool - a record that contains all the functions you'll need to
-create tool definitions for the types in your application. If you define a MultiTool like `tools` in the example above,
-it'll give you access to the following functions:
+This function converts a `MultiTool.Builder` into a record that contains all the functions you'll need to create tool
+specifications (`ToolSpec`s) for the types in your application. If you define a MultiTool like `tools` in the example
+above, it'll give you access to the following `ToolSpecs` and helper functions:
 
 
-## Tool definitions for primitive types
+## `ToolSpec`s for primitive types
 
 We've got `tools.bool`, `tools.string`, `tools.int`, `tools.float`, and `tools.char`.
 
@@ -590,24 +598,24 @@ For example:
         boolTool.toString True == "True"
 
 
-## Tool definitions for common combinators
+## `ToolSpec`s for common combinators
 
 We've got `tools.maybe`, `tools.result`, `tools.list`, `tools.array`, `tools.dict`, `tools.set`, `tools.tuple`, _and_
 `tools.triple`.
 
 For example:
 
-    listBoolDefinition =
+    listBoolSpec =
         tools.list tools.bool
 
-    tupleIntStringDefinition =
+    tupleIntStringSpec =
         tools.tuple tools.int tools.string
 
 
-## Tool definitions for combinators for custom types
+## `ToolSpec`s for combinators for custom types
 
-To define tools for your own custom types, use `tools.custom`, `tools.tag0`, `tools.tag1`, `tools.tag2`, `tools.tag3`,
-`tools.tag4`, `tools.tag5`, and `tools.endCustom`.
+To define `ToolSpec`s for your own custom types, use `tools.custom`, `tools.tag0`, `tools.tag1`, `tools.tag2`,
+`tools.tag3`, `tools.tag4`, `tools.tag5`, and `tools.endCustom`.
 
 For example, if we really hated Elm's `Maybe` type and wanted it to be called `Option` instead:
 
@@ -615,7 +623,7 @@ For example, if we really hated Elm's `Maybe` type and wanted it to be called `O
         = Some value
         | None
 
-    optionDefinition valueDefinition =
+    optionSpec valueSpec =
         let
             match some none tag =
                 case tag of
@@ -627,19 +635,19 @@ For example, if we really hated Elm's `Maybe` type and wanted it to be called `O
         in
         tools.custom
             { toString = match, toComparable = match }
-            |> tools.tag1 "Some" Some valueDefinition
+            |> tools.tag1 "Some" Some valueSpec
             |> tools.tag0 "None" None
             |> tools.endCustom
 
-**Note**: You _must_ define the `match` function either in a `let-in` block within your tool definition, or as a
-top-level function in one of your modules. If you try and parameterise your tool definition to take a `match` function
-as one of its arguments, it won't work - you'll get a compiler error.
+**Note**: You _must_ define the `match` function either in a `let-in` block within your tool specification, or as a
+top-level function in one of your modules. If you try and parameterise your tool specification to take a `match`
+function as one of its arguments, it won't work - you'll get a compiler error.
 
 The explanation for this is a bit beyond me, but I think it goes: "something something `forall`, something something
 let-polymorphism."
 
 
-## Tool definitions for combinators for records
+## `ToolSpec`s for combinators for records
 
 For records (and indeed any kind of "product" type), check out `tools.record`, `tools.field`, and `tools.endRecord`.
 
@@ -648,21 +656,21 @@ For example:
     type alias User =
         { name : String, age : Int }
 
-    userToolDefinition =
+    userToolSpec =
         tools.record User
             |> tools.field "name" .name tools.string
             |> tools.field "age" .age tools.int
             |> tools.endRecord
 
 
-## Converting a tool definition into a usable tool
+## Converting a `ToolSpec` into a usable tool
 
-`tools.build` turns a tool definition into a usable tool.
+`tools.build` turns a `ToolSpec` into a usable tool.
 
 For example:
 
     userTool =
-        tools.build userToolDefinition
+        tools.build userToolSpec
 
     user =
         { name = "Ed", age = 41 }
@@ -672,174 +680,188 @@ For example:
             == "{ name = \"Ed\", age = 41 }"
 
 
-## Customising a tool definition
+## Customising a `ToolSpec`
 
-`tools.tweak` allows you to alter or replace the default tool definitions specified in the tool's interface.
+`tools.tweak` allows you to alter (or replace) the tools contained within a `ToolSpec`.
 
-For example, if you've defined a MultiTool that includes an interface for using `edkelly303/elm-any-type-forms`, you
-could customise the default `string` control like this:
+For example, if you're using `edkelly303/elm-any-type-forms`, you could customise the `tools.string` and `tools.int` 
+`ToolSpec`s like this:
 
     import Control
 
-    myStringControl =
-        tools.string
-            |> tools.tweak.control (Control.debounce 1000)
+    myIntSpec =
+        tools.int
             |> tools.tweak.control
                 (Control.failIf
-                    String.isEmpty
-                    "Field can't be blank"
+                    (\int -> int < 0)
+                    "Must be greater than or equal to 0"
+                )
+
+    myStringSpec =
+        tools.string
+            |> tools.tweak.control
+                (\_ ->
+                    -- throw away whatever control we
+                    -- had in tools.string, and use
+                    -- this instead:
+                    Control.string
+                        |> Control.debounce 1000
                 )
 
 -}
 end :
     Builder
-        { after : xx
-        , afters : l
-        , applyDelta : m
-        , array : {} -> d11
-        , arrayMaker : ({} -> {} -> {}) -> c6 -> d11 -> e12
-        , before : xxx
-        , befores : {} -> n
-        , bool : {} -> o
-        , char : {} -> p
-        , constructMultiTool : (a4 -> {} -> a4) -> c7 -> d4 -> e11
-        , constructTweak : (q -> {} -> q) -> s -> t -> u
-        , custom : {} -> f6
-        , customEnder : ({} -> {} -> {}) -> c5 -> d10 -> e9
-        , customMaker : (a3 -> {} -> {} -> {}) -> d3 -> e13 -> f6 -> g6
-        , destructorFieldGetter : {} -> e13
-        , dict : {} -> f5
-        , dictMaker : ({} -> {} -> {} -> {}) -> d2 -> e10 -> f5 -> g5
-        , endCustom : {} -> d10
-        , endRecord : {} -> d7
-        , field : {} -> j
-        , fieldMaker :
-            (a2 -> b1 -> {} -> {} -> {} -> {}) -> f2 -> g4 -> h -> i2 -> j -> k
-        , float : {} -> v
-        , int : {} -> w
-        , list : {} -> d9
-        , listMaker : ({} -> {} -> {}) -> c3 -> d9 -> e7
-        , maybe : {} -> d8
-        , maybeMaker : ({} -> {} -> {}) -> c2 -> d8 -> e6
-        , record : {} -> d6
-        , recordEnder : ({} -> {} -> {}) -> c4 -> d7 -> e8
-        , recordMaker : (a1 -> {} -> {}) -> c1 -> d6 -> e5
-        , result : {} -> f4
-        , resultMaker : ({} -> {} -> {} -> {}) -> d1 -> e4 -> f4 -> g3
-        , set : {} -> d5
-        , setMaker : ({} -> {} -> {}) -> c -> d5 -> e3
-        , string : {} -> x
-        , tag0 : {} -> h2
-        , tag0Maker : (a -> b -> {} -> {} -> {}) -> e2 -> f1 -> g2 -> h2 -> i1
-        , tag1 : {} -> y
-        , tag1Maker :
-            (z -> j1 -> {} -> {} -> {} -> {})
-            -> n1
-            -> o1
-            -> p1
-            -> q1
-            -> y
-            -> r1
-        , tag2 : {} -> s1
-        , tag2Maker :
-            (t1 -> u1 -> {} -> {} -> {} -> {} -> {})
-            -> z1
-            -> b2
-            -> j2
-            -> k2
-            -> l2
-            -> s1
-            -> m2
-        , tag3 : {} -> n2
-        , tag3Maker :
-            (o2 -> p2 -> {} -> {} -> {} -> {} -> {} -> {})
-            -> v2
-            -> w2
-            -> x2
-            -> y2
-            -> z2
-            -> b3
-            -> n2
-            -> h3
-        , tag4 : {} -> i3
-        , tag4Maker :
-            (j3
-             -> k3
-             -> {}
-             -> {}
-             -> {}
-             -> {}
-             -> {}
-             -> {}
-             -> {}
-            )
-            -> r3
-            -> s3
-            -> t3
-            -> u3
-            -> v3
-            -> w3
-            -> x3
-            -> i3
-            -> y3
-        , tag5 : {} -> z3
-        , tag5Maker :
-            (b4
-             -> h4
-             -> {}
-             -> {}
-             -> {}
-             -> {}
-             -> {}
-             -> {}
-             -> {}
-             -> {}
-            )
-            -> p4
-            -> q4
-            -> r4
-            -> s4
-            -> t4
-            -> u4
-            -> v4
-            -> w4
-            -> z3
-            -> x4
-        , toolConstructor : c7
-        , triple : {} -> h1
-        , tripleMaker : ({} -> {} -> {} -> {} -> {}) -> e1 -> f -> g1 -> h1 -> i
-        , tuple : {} -> f3
-        , tupleMaker : ({} -> {} -> {} -> {}) -> d -> e -> f3 -> g
-        , tweakConstructor : s
-        , tweakerMaker : (y4 -> {} -> {} -> {}) -> m -> n -> l -> t
+        { v1
+            | afters : t
+            , applyDelta : u
+            , array : {} -> d11
+            , arrayMaker : ({} -> {} -> {}) -> c6 -> d11 -> a14
+            , befores : {} -> v
+            , bool : {} -> a13
+            , char : {} -> a12
+            , constructMultiTool : (a24 -> {} -> a24) -> c7 -> d4 -> e6
+            , constructTweak : (w -> {} -> w) -> y -> z -> r1
+            , custom : {} -> f7
+            , customEnder : ({} -> {} -> {}) -> c5 -> d10 -> a10
+            , customMaker : (a23 -> {} -> {} -> {}) -> d3 -> e7 -> f7 -> g5
+            , destructorFieldGetter : {} -> e7
+            , dict : {} -> f6
+            , dictMaker : ({} -> {} -> {} -> {}) -> d2 -> e5 -> f6 -> a11
+            , endCustom : {} -> d10
+            , endRecord : {} -> d7
+            , field : {} -> j5
+            , fieldMaker :
+                (a22 -> b6 -> {} -> {} -> {} -> {})
+                -> f3
+                -> g4
+                -> h3
+                -> i5
+                -> j5
+                -> k5
+            , float : {} -> a8
+            , int : {} -> a7
+            , list : {} -> d9
+            , listMaker : ({} -> {} -> {}) -> c3 -> d9 -> a6
+            , maybe : {} -> d8
+            , maybeMaker : ({} -> {} -> {}) -> c2 -> d8 -> a5
+            , record : {} -> d6
+            , recordEnder : ({} -> {} -> {}) -> c4 -> d7 -> a9
+            , recordMaker : (a21 -> {} -> {}) -> c1 -> d6 -> e4
+            , result : {} -> f5
+            , resultMaker : ({} -> {} -> {} -> {}) -> d1 -> e3 -> f5 -> a4
+            , set : {} -> d5
+            , setMaker : ({} -> {} -> {}) -> c -> d5 -> a3
+            , string : {} -> a2
+            , tag0 : {} -> h5
+            , tag0Maker :
+                (a20 -> b5 -> {} -> {} -> {}) -> e2 -> f2 -> g3 -> h5 -> i4
+            , tag1 : {} -> j4
+            , tag1Maker :
+                (a19 -> b4 -> {} -> {} -> {} -> {})
+                -> f1
+                -> g2
+                -> h2
+                -> i3
+                -> j4
+                -> k4
+            , tag2 : {} -> l3
+            , tag2Maker :
+                (a18 -> b3 -> {} -> {} -> {} -> {} -> {})
+                -> g1
+                -> h1
+                -> i2
+                -> j3
+                -> k3
+                -> l3
+                -> m3
+            , tag3 : {} -> n2
+            , tag3Maker :
+                (a17 -> b2 -> {} -> {} -> {} -> {} -> {} -> {})
+                -> h
+                -> i1
+                -> j2
+                -> k2
+                -> l2
+                -> m2
+                -> n2
+                -> o2
+            , tag4 : {} -> p1
+            , tag4Maker :
+                (a16 -> b1 -> {} -> {} -> {} -> {} -> {} -> {} -> {})
+                -> i
+                -> j1
+                -> k1
+                -> l1
+                -> m1
+                -> n1
+                -> o1
+                -> p1
+                -> q1
+            , tag5 : {} -> r
+            , tag5Maker :
+                (a15 -> b -> {} -> {} -> {} -> {} -> {} -> {} -> {} -> {})
+                -> j
+                -> k
+                -> l
+                -> m
+                -> n
+                -> o
+                -> p
+                -> q
+                -> r
+                -> s
+            , toolConstructor : c7
+            , triple : {} -> h4
+            , tripleMaker : ({} -> {} -> {} -> {} -> {}) -> e1 -> f -> g -> h4 -> a1
+            , tuple : {} -> f4
+            , tupleMaker : ({} -> {} -> {} -> {}) -> d -> e -> f4 -> a
+            , tweakConstructor : y
+            , tweakerMaker : (s1 -> {} -> {} -> {}) -> u -> v -> t -> z
         }
     ->
-        { array : c6 -> e12
-        , bool : o
-        , build : d4 -> e11
-        , char : p
-        , custom : d3 -> g6
-        , dict : d2 -> e10 -> g5
-        , endCustom : c5 -> e9
-        , endRecord : c4 -> e8
-        , field : f2 -> g4 -> h -> i2 -> k
-        , float : v
-        , int : w
-        , list : c3 -> e7
-        , maybe : c2 -> e6
-        , record : c1 -> e5
-        , result : d1 -> e4 -> g3
-        , set : c -> e3
-        , string : x
-        , tag0 : e2 -> f1 -> g2 -> i1
-        , tag1 : n1 -> o1 -> p1 -> q1 -> r1
-        , tag2 : z1 -> b2 -> j2 -> k2 -> l2 -> m2
-        , tag3 : v2 -> w2 -> x2 -> y2 -> z2 -> b3 -> h3
-        , tag4 : r3 -> s3 -> t3 -> u3 -> v3 -> w3 -> x3 -> y3
-        , tag5 : p4 -> q4 -> r4 -> s4 -> t4 -> u4 -> v4 -> w4 -> x4
-        , triple : e1 -> f -> g1 -> i
-        , tuple : d -> e -> g
-        , tweak : u
+        { array : c6 -> ToolSpec a14
+        , bool : ToolSpec a13
+        , build : ToolSpec d4 -> e6
+        , char : ToolSpec a12
+        , custom : d3 -> g5
+        , dict : d2 -> e5 -> ToolSpec a11
+        , endCustom : c5 -> ToolSpec a10
+        , endRecord : c4 -> ToolSpec a9
+        , field : f3 -> g4 -> ToolSpec h3 -> i5 -> k5
+        , float : ToolSpec a8
+        , int : ToolSpec a7
+        , list : ToolSpec c3 -> ToolSpec a6
+        , maybe : c2 -> ToolSpec a5
+        , record : c1 -> e4
+        , result : d1 -> e3 -> ToolSpec a4
+        , set : c -> ToolSpec a3
+        , string : ToolSpec a2
+        , tag0 : e2 -> f2 -> g3 -> i4
+        , tag1 : f1 -> g2 -> ToolSpec h2 -> i3 -> k4
+        , tag2 : g1 -> h1 -> ToolSpec i2 -> ToolSpec j3 -> k3 -> m3
+        , tag3 : h -> i1 -> ToolSpec j2 -> ToolSpec k2 -> ToolSpec l2 -> m2 -> o2
+        , tag4 :
+            i
+            -> j1
+            -> ToolSpec k1
+            -> ToolSpec l1
+            -> ToolSpec m1
+            -> ToolSpec n1
+            -> o1
+            -> q1
+        , tag5 :
+            j
+            -> k
+            -> ToolSpec l
+            -> ToolSpec m
+            -> ToolSpec n
+            -> ToolSpec o
+            -> ToolSpec p
+            -> q
+            -> s
+        , triple : e1 -> f -> g -> ToolSpec a1
+        , tuple : d -> e -> ToolSpec a
+        , tweak : r1
         }
 end (Builder toolBuilder) =
     let
@@ -923,48 +945,57 @@ end (Builder toolBuilder) =
             toolBuilder.destructorFieldGetter {}
     in
     { -- primitive types
-      string = strings
-    , int = ints
-    , bool = bools
-    , float = floats
-    , char = chars
+      string = ToolSpec strings
+    , int = ToolSpec ints
+    , bool = ToolSpec bools
+    , float = ToolSpec floats
+    , char = ToolSpec chars
 
     -- built-in combinators
     , list =
-        \itemDef ->
-            doMakeList toolBuilder.listMaker itemDef lists
+        \(ToolSpec itemSpec) ->
+            doMakeList toolBuilder.listMaker itemSpec lists
+                |> ToolSpec
     , maybe =
-        \contentDef ->
-            doMakeMaybe toolBuilder.maybeMaker contentDef maybes
+        \contentSpec ->
+            doMakeMaybe toolBuilder.maybeMaker contentSpec maybes
+                |> ToolSpec
     , array =
-        \itemDef ->
-            doMakeArray toolBuilder.arrayMaker itemDef arrays
+        \itemSpec ->
+            doMakeArray toolBuilder.arrayMaker itemSpec arrays
+                |> ToolSpec
     , dict =
-        \keyDef valueDef ->
-            doMakeDict toolBuilder.dictMaker keyDef valueDef dicts
+        \keySpec valueSpec ->
+            doMakeDict toolBuilder.dictMaker keySpec valueSpec dicts
+                |> ToolSpec
     , set =
-        \memberDef ->
-            doMakeSet toolBuilder.setMaker memberDef sets
+        \memberSpec ->
+            doMakeSet toolBuilder.setMaker memberSpec sets
+                |> ToolSpec
     , tuple =
-        \firstDef secondDef ->
-            doMakeTuple toolBuilder.tupleMaker firstDef secondDef tuples
+        \firstSpec secondSpec ->
+            doMakeTuple toolBuilder.tupleMaker firstSpec secondSpec tuples
+                |> ToolSpec
     , triple =
-        \firstDef secondDef thirdDef ->
-            doMakeTriple toolBuilder.tripleMaker firstDef secondDef thirdDef triples
+        \firstSpec secondSpec thirdSpec ->
+            doMakeTriple toolBuilder.tripleMaker firstSpec secondSpec thirdSpec triples
+                |> ToolSpec
     , result =
-        \errorDef valueDef ->
-            doMakeResult toolBuilder.resultMaker errorDef valueDef results
+        \errorSpec valueSpec ->
+            doMakeResult toolBuilder.resultMaker errorSpec valueSpec results
+                |> ToolSpec
 
     -- records
     , record =
         \recordConstructor ->
             doMakeRecord toolBuilder.recordMaker recordConstructor records
     , field =
-        \fieldName getField fieldDef recordBuilder ->
-            doMakeFields toolBuilder.fieldMaker fieldName getField fieldDef recordBuilder fields
+        \fieldName getField (ToolSpec fieldSpec) recordBuilder ->
+            doMakeFields toolBuilder.fieldMaker fieldName getField fieldSpec recordBuilder fields
     , endRecord =
         \recordBuilder ->
             doEndRecord toolBuilder.recordEnder recordBuilder endRecords
+                |> ToolSpec
 
     -- custom types
     , custom =
@@ -974,28 +1005,29 @@ end (Builder toolBuilder) =
         \tagName tagConstructor customBuilder ->
             doMakeTag0 toolBuilder.tag0Maker tagName tagConstructor customBuilder tag0s
     , tag1 =
-        \tagName tagConstructor arg1Def customBuilder ->
-            doMakeTag1 toolBuilder.tag1Maker tagName tagConstructor arg1Def customBuilder tag1s
+        \tagName tagConstructor (ToolSpec arg1Spec) customBuilder ->
+            doMakeTag1 toolBuilder.tag1Maker tagName tagConstructor arg1Spec customBuilder tag1s
     , tag2 =
-        \tagName tagConstructor arg1Def arg2Def customBuilder ->
-            doMakeTag2 toolBuilder.tag2Maker tagName tagConstructor arg1Def arg2Def customBuilder tag2s
+        \tagName tagConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) customBuilder ->
+            doMakeTag2 toolBuilder.tag2Maker tagName tagConstructor arg1Spec arg2Spec customBuilder tag2s
     , tag3 =
-        \tagName tagConstructor arg1Def arg2Def arg3Def customBuilder ->
-            doMakeTag3 toolBuilder.tag3Maker tagName tagConstructor arg1Def arg2Def arg3Def customBuilder tag3s
+        \tagName tagConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) (ToolSpec arg3Spec) customBuilder ->
+            doMakeTag3 toolBuilder.tag3Maker tagName tagConstructor arg1Spec arg2Spec arg3Spec customBuilder tag3s
     , tag4 =
-        \tagName tagConstructor arg1Def arg2Def arg3Def arg4Def customBuilder ->
-            doMakeTag4 toolBuilder.tag4Maker tagName tagConstructor arg1Def arg2Def arg3Def arg4Def customBuilder tag4s
+        \tagName tagConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) (ToolSpec arg3Spec) (ToolSpec arg4Spec) customBuilder ->
+            doMakeTag4 toolBuilder.tag4Maker tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder tag4s
     , tag5 =
-        \tagName tagConstructor arg1Def arg2Def arg3Def arg4Def arg5Def customBuilder ->
-            doMakeTag5 toolBuilder.tag5Maker tagName tagConstructor arg1Def arg2Def arg3Def arg4Def arg5Def customBuilder tag5s
+        \tagName tagConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) (ToolSpec arg3Spec) (ToolSpec arg4Spec) (ToolSpec arg5Spec) customBuilder ->
+            doMakeTag5 toolBuilder.tag5Maker tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder tag5s
     , endCustom =
         \customBuilder ->
             doEndCustom toolBuilder.customEnder customBuilder endCustoms
+                |> ToolSpec
 
-    -- turn a definition into a usable multiTool
+    -- turn a spec into a usable multiTool
     , build =
-        \toolDefinition ->
-            doConstructMultiTool toolBuilder.constructMultiTool toolBuilder.toolConstructor toolDefinition
+        \(ToolSpec toolSpec) ->
+            doConstructMultiTool toolBuilder.constructMultiTool toolBuilder.toolConstructor toolSpec
     , tweak =
         let
             tweakers =
@@ -1005,45 +1037,44 @@ end (Builder toolBuilder) =
     }
 
 
-type ToolDef a
-    = ToolDef a
+{-| A tool specification - the basic building block for creating tools for the types in your application.
+-}
+type ToolSpec toolSpec
+    = ToolSpec toolSpec
 
 
-doMakeTweakers : ((a -> {} -> {} -> {}) -> d -> e -> f -> g) -> d -> e -> f -> g
 doMakeTweakers tweakerMaker_ applyDelta_ befores afters =
     tweakerMaker_ (\_ {} {} -> {}) applyDelta_ befores afters
 
 
-tweakerMaker : ((({} -> {} -> {}) -> c -> d -> e) -> f -> g -> h) -> (({} -> {} -> {}) -> c -> d -> e) -> ( ( Maybe i, j ) -> c, f ) -> ( j, g ) -> ( i -> d -> e, h )
 tweakerMaker next applyDelta_ ( before, restBefores ) ( after, restAfters ) =
-    ( \mapper toolDef ->
+    ( \mapper (ToolSpec toolSpec) ->
         let
             delta =
                 before ( Just mapper, after )
         in
-        applyDelta_ (\{} {} -> {}) delta toolDef
+        applyDelta_ (\{} {} -> {}) delta toolSpec
+            |> ToolSpec
     , next applyDelta_ restBefores restAfters
     )
 
 
 applyDelta : (b -> a -> c) -> ( Maybe (d -> d), b ) -> ( d, a ) -> ( d, c )
-applyDelta next ( delta, restDeltas ) ( toolDef, restToolDefs ) =
+applyDelta next ( delta, restDeltas ) ( toolSpec, restToolSpecs ) =
     ( case delta of
         Just mapper ->
-            mapper toolDef
+            mapper toolSpec
 
         Nothing ->
-            toolDef
-    , next restDeltas restToolDefs
+            toolSpec
+    , next restDeltas restToolSpecs
     )
 
 
-doConstructTweak : ((a -> {} -> a) -> c -> d -> e) -> c -> d -> e
 doConstructTweak constructTweak_ tweakConstructor tweakers =
     constructTweak_ (\tc {} -> tc) tweakConstructor tweakers
 
 
-constructTweak : (a -> b -> c) -> (d -> a) -> ( d, b ) -> c
 constructTweak next tweakConstructor ( tweaker, restTweakers ) =
     next (tweakConstructor tweaker) restTweakers
 
@@ -1217,49 +1248,49 @@ tag1Maker next tagName tagConstructor ( child1, restChild1s ) ( customBuilder, r
 
 
 doMakeTag2 : ((a -> b -> {} -> {} -> {} -> {} -> {}) -> g -> h -> i -> j -> k -> l -> m) -> g -> h -> i -> j -> k -> l -> m
-doMakeTag2 tag2Maker_ tagName tagConstructor arg1Def arg2Def customBuilder tag2s =
-    tag2Maker_ (\_ _ {} {} {} {} -> {}) tagName tagConstructor arg1Def arg2Def customBuilder tag2s
+doMakeTag2 tag2Maker_ tagName tagConstructor arg1Spec arg2Spec customBuilder tag2s =
+    tag2Maker_ (\_ _ {} {} {} {} -> {}) tagName tagConstructor arg1Spec arg2Spec customBuilder tag2s
 
 
 tag2Maker : (b -> c -> a -> d -> e -> f -> g) -> b -> c -> ( h, a ) -> ( i, d ) -> ( j, e ) -> ( b -> c -> h -> i -> j -> k, f ) -> ( k, g )
-tag2Maker next tagName tagConstructor ( arg1Def, restC1s ) ( arg2Def, restC2s ) ( customBuilder, restCustomBuilders ) ( tag2, restTag2s ) =
-    ( tag2 tagName tagConstructor arg1Def arg2Def customBuilder
+tag2Maker next tagName tagConstructor ( arg1Spec, restC1s ) ( arg2Spec, restC2s ) ( customBuilder, restCustomBuilders ) ( tag2, restTag2s ) =
+    ( tag2 tagName tagConstructor arg1Spec arg2Spec customBuilder
     , next tagName tagConstructor restC1s restC2s restCustomBuilders restTag2s
     )
 
 
 doMakeTag3 : ((a -> b -> {} -> {} -> {} -> {} -> {} -> {}) -> h -> i -> j -> k -> l -> m -> n -> o) -> h -> i -> j -> k -> l -> m -> n -> o
-doMakeTag3 tagMaker_ tagName tagConstructor arg1Def arg2Def arg3Def customBuilder tags =
-    tagMaker_ (\_ _ {} {} {} {} {} -> {}) tagName tagConstructor arg1Def arg2Def arg3Def customBuilder tags
+doMakeTag3 tagMaker_ tagName tagConstructor arg1Spec arg2Spec arg3Spec customBuilder tags =
+    tagMaker_ (\_ _ {} {} {} {} {} -> {}) tagName tagConstructor arg1Spec arg2Spec arg3Spec customBuilder tags
 
 
 tag3Maker : (b -> c -> a -> d -> e -> f -> g -> h) -> b -> c -> ( i, a ) -> ( j, d ) -> ( k, e ) -> ( l, f ) -> ( b -> c -> i -> j -> k -> l -> m, g ) -> ( m, h )
-tag3Maker next tagName tagConstructor ( arg1Def, restC1s ) ( arg2Def, restC2s ) ( arg3Def, restC3s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
-    ( tag tagName tagConstructor arg1Def arg2Def arg3Def customBuilder
+tag3Maker next tagName tagConstructor ( arg1Spec, restC1s ) ( arg2Spec, restC2s ) ( arg3Spec, restC3s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
+    ( tag tagName tagConstructor arg1Spec arg2Spec arg3Spec customBuilder
     , next tagName tagConstructor restC1s restC2s restC3s restCustomBuilders restTags
     )
 
 
 doMakeTag4 : ((a -> b -> {} -> {} -> {} -> {} -> {} -> {} -> {}) -> i -> j -> k -> l -> m -> n -> o -> p -> q) -> i -> j -> k -> l -> m -> n -> o -> p -> q
-doMakeTag4 tagMaker_ tagName tagConstructor arg1Def arg2Def arg3Def arg4Def customBuilder tags =
-    tagMaker_ (\_ _ {} {} {} {} {} {} -> {}) tagName tagConstructor arg1Def arg2Def arg3Def arg4Def customBuilder tags
+doMakeTag4 tagMaker_ tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder tags =
+    tagMaker_ (\_ _ {} {} {} {} {} {} -> {}) tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder tags
 
 
 tag4Maker : (b -> c -> a -> d -> e -> f -> g -> h -> i) -> b -> c -> ( j, a ) -> ( k, d ) -> ( l, e ) -> ( m, f ) -> ( n, g ) -> ( b -> c -> j -> k -> l -> m -> n -> o, h ) -> ( o, i )
-tag4Maker next tagName tagConstructor ( arg1Def, restC1s ) ( arg2Def, restC2s ) ( arg3Def, restC3s ) ( arg4Def, restC4s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
-    ( tag tagName tagConstructor arg1Def arg2Def arg3Def arg4Def customBuilder
+tag4Maker next tagName tagConstructor ( arg1Spec, restC1s ) ( arg2Spec, restC2s ) ( arg3Spec, restC3s ) ( arg4Spec, restC4s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
+    ( tag tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder
     , next tagName tagConstructor restC1s restC2s restC3s restC4s restCustomBuilders restTags
     )
 
 
 doMakeTag5 : ((a -> b -> {} -> {} -> {} -> {} -> {} -> {} -> {} -> {}) -> j -> k -> l -> m -> n -> o -> p -> q -> r -> s) -> j -> k -> l -> m -> n -> o -> p -> q -> r -> s
-doMakeTag5 tagMaker_ tagName tagConstructor arg1Def arg2Def arg3Def arg4Def arg5Def customBuilder tags =
-    tagMaker_ (\_ _ {} {} {} {} {} {} {} -> {}) tagName tagConstructor arg1Def arg2Def arg3Def arg4Def arg5Def customBuilder tags
+doMakeTag5 tagMaker_ tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder tags =
+    tagMaker_ (\_ _ {} {} {} {} {} {} {} -> {}) tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder tags
 
 
 tag5Maker : (b -> c -> a -> d -> e -> f -> g -> h -> i -> j) -> b -> c -> ( k, a ) -> ( l, d ) -> ( m, e ) -> ( n, f ) -> ( o, g ) -> ( p, h ) -> ( b -> c -> k -> l -> m -> n -> o -> p -> q, i ) -> ( q, j )
-tag5Maker next tagName tagConstructor ( arg1Def, restC1s ) ( arg2Def, restC2s ) ( arg3Def, restC3s ) ( arg4Def, restC4s ) ( arg5Def, restC5s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
-    ( tag tagName tagConstructor arg1Def arg2Def arg3Def arg4Def arg5Def customBuilder
+tag5Maker next tagName tagConstructor ( arg1Spec, restC1s ) ( arg2Spec, restC2s ) ( arg3Spec, restC3s ) ( arg4Spec, restC4s ) ( arg5Spec, restC5s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
+    ( tag tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder
     , next tagName tagConstructor restC1s restC2s restC3s restC4s restC5s restCustomBuilders restTags
     )
 

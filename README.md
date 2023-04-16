@@ -100,17 +100,18 @@ tools =
         |> MultiTool.end
 ```
 
-And then you only need to write out the boilerplate once for each of your types:
+And then you only need to write out the boilerplate once to create tool specifications (`ToolSpec`s) for each of your 
+types:
 
 ```elm
-userToolsDefinition = 
+userToolSpec = 
     tools.record User
         |> tools.field "name" .name tools.string
         |> tools.field "age" .age tools.int
-        |> tools.field "role" .role roleToolsDefinition
+        |> tools.field "role" .role roleToolSpec
         |> tools.endRecord
 
-roleToolsDefinition =
+roleToolSpec =
     let
         match regular adminLevel tag =
             case tag of 
@@ -136,7 +137,7 @@ Now, to use your tools, you can just do:
 
 ```elm
 userTools = 
-    tools.build userToolsDefinition
+    tools.build userToolSpec
 
 control = 
     userTools.control -- this is identical to userControl
@@ -187,7 +188,7 @@ myStringControl =
 With Elm MultiTool, you can achieve the same thing using the handy `tweak` functions:
 
 ```elm
-myStringControl = 
+myStringSpec = 
     tools.string
         |> tools.tweak.control 
             (Control.debounce 1000)
@@ -197,11 +198,10 @@ myStringControl =
                 "Field can't be blank"
             )
 ```
-It's similar to a `map` function, so you can use it to transform individual tools, or even replace them with something 
-else:
+It's similar to a `map` function, so you can use it to transform (or even replace) individual tools within a `ToolSpec`:
 
 ```elm
-myStringControl = 
+myStringSpec = 
     tools.string
         |> tools.tweak.control 
             (\_ -> 
