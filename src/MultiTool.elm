@@ -684,7 +684,7 @@ For example:
 
 `tools.tweak` allows you to alter (or replace) the tools contained within a `ToolSpec`.
 
-For example, if you're using `edkelly303/elm-any-type-forms`, you could customise the `tools.string` and `tools.int` 
+For example, if you're using `edkelly303/elm-any-type-forms`, you could customise the `tools.string` and `tools.int`
 `ToolSpec`s like this:
 
     import Control
