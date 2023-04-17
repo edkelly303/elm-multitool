@@ -43,15 +43,15 @@ farmers : List Farmer
 farmers =
     [ { name = "Boggis"
       , age = 59
-      , animals = [Chickens 5000, Dogs ["Bill", "Growler"] ]
+      , animals = [ Chickens 5000, Dogs [ "Bill", "Growler" ] ]
       }
     , { name = "Bunce"
       , age = 63
-      , animals = [Ducks 1500]
+      , animals = [ Ducks 1500 ]
       }
     , { name = "Bean"
       , age = 45
-      , animals = [Turkeys 500, Dogs ["Rex"] ]
+      , animals = [ Turkeys 500, Dogs [ "Rex" ] ]
       }
     ]
 
@@ -98,10 +98,17 @@ animalsSpec =
     let
         match chickens ducks turkeys dogs tag =
             case tag of
-                Chickens int -> chickens int
-                Ducks int -> ducks int
-                Turkeys int -> turkeys int
-                Dogs names -> dogs names
+                Chickens int ->
+                    chickens int
+
+                Ducks int ->
+                    ducks int
+
+                Turkeys int ->
+                    turkeys int
+
+                Dogs names ->
+                    dogs names
     in
     tools.custom
         { codec = match
@@ -216,41 +223,39 @@ type alias Model =
     { random : ( List Farmer, Random.Seed )
     , form :
         Control.State
-                  ( Control.State String
-                  , ( Control.State String
-                    , ( Control.State
-                            (
-                            List
-                                (
-                                Control.State
-                                    ( Control.State
-                                          ( Control.State String, Control.End )
-                                    , ( Control.State
-                                            ( Control.State String, Control.End
-                                            )
-                                      , ( Control.State
-                                              ( Control.State String
-                                              , Control.End
-                                              )
-                                        , ( Control.State
-                                                ( Control.State
-                                                      (
-                                                      List
-                                                          (Control.State String)
-                                                      )
-                                                , Control.End
-                                                )
-                                          , Control.End
-                                          )
-                                        )
-                                      )
+            ( Control.State String
+            , ( Control.State String
+              , ( Control.State
+                    (List
+                        (Control.State
+                            ( Control.State
+                                ( Control.State String, Control.End )
+                            , ( Control.State
+                                    ( Control.State String
+                                    , Control.End
                                     )
+                              , ( Control.State
+                                    ( Control.State String
+                                    , Control.End
+                                    )
+                                , ( Control.State
+                                        ( Control.State
+                                            (List
+                                                (Control.State String)
+                                            )
+                                        , Control.End
+                                        )
+                                  , Control.End
+                                  )
                                 )
+                              )
                             )
-                      , Control.End
-                      )
+                        )
                     )
-                  )
+                , Control.End
+                )
+              )
+            )
     , farmers : List Farmer
     }
 
@@ -260,26 +265,25 @@ type Msg
     | FormUpdated
         (Control.Delta
             ( Control.Delta String
-        , ( Control.Delta String
-          , ( Control.Delta
-                  (
-                  Control.ListDelta
-                      ( Control.Delta ( Control.Delta String, Control.End )
-                      , ( Control.Delta ( Control.Delta String, Control.End )
+            , ( Control.Delta String
+              , ( Control.Delta
+                    (Control.ListDelta
+                        ( Control.Delta ( Control.Delta String, Control.End )
                         , ( Control.Delta ( Control.Delta String, Control.End )
-                          , ( Control.Delta
-                                  ( Control.Delta (Control.ListDelta String)
-                                  , Control.End
-                                  )
-                            , Control.End
+                          , ( Control.Delta ( Control.Delta String, Control.End )
+                            , ( Control.Delta
+                                    ( Control.Delta (Control.ListDelta String)
+                                    , Control.End
+                                    )
+                              , Control.End
+                              )
                             )
                           )
                         )
-                      )
-                  )
-            , Control.End
+                    )
+                , Control.End
+                )
+              )
             )
-          )
-        )
         )
     | FormSubmitted
