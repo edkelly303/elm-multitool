@@ -39,68 +39,69 @@ tools =
         |> MultiTool.end
 
 
-characters : List Character
-characters =
-    [ { name = "Ryu"
+farmers : List Farmer
+farmers =
+    [ { name = "Boggis"
       , age = 59
-      , profession = KarateBlackBelt 10
+      , animals = [Chickens 5000, Dogs ["Bill", "Growler"] ]
       }
-    , { name = "Guile"
+    , { name = "Bunce"
       , age = 63
-      , profession = USAFColonel
+      , animals = [Ducks 1500]
       }
-    , { name = "Ken"
-      , age = 63
-      , profession = KarateBlackBelt 9
+    , { name = "Bean"
+      , age = 45
+      , animals = [Turkeys 500, Dogs ["Rex"] ]
       }
     ]
 
 
-type alias Character =
+type alias Farmer =
     { name : String
     , age : Int
-    , profession : Profession
+    , animals : List Animals
     }
 
 
-characterTools =
-    tools.build characterToolDefinition
+farmerTools =
+    tools.build farmerSpec
 
 
-characterToolDefinition =
-    tools.record Character
-        |> tools.field "name" .name nameToolDefinition
-        |> tools.field "age" .age ageToolDefinition
-        |> tools.field "profession" .profession professionToolDefinition
+farmerSpec =
+    tools.record Farmer
+        |> tools.field "name" .name nameSpec
+        |> tools.field "age" .age ageSpec
+        |> tools.field "animals" .animals (tools.list animalsSpec)
         |> tools.endRecord
 
 
-nameToolDefinition =
+nameSpec =
     tools.tweak.control
         (Control.failIf String.isEmpty "Name can't be blank")
         tools.string
 
 
-ageToolDefinition =
+ageSpec =
     tools.tweak.control
         (Control.failIf (\age -> age < 0) "Age can't be a negative number")
         tools.int
 
 
-type Profession
-    = KarateBlackBelt Int
-    | USAFColonel
+type Animals
+    = Chickens Int
+    | Ducks Int
+    | Turkeys Int
+    | Dogs (List String)
 
 
-professionToolDefinition =
+animalsSpec =
     let
-        match karateBlackBelt usafColonel tag =
+        match chickens ducks turkeys dogs tag =
             case tag of
-                KarateBlackBelt dan ->
-                    karateBlackBelt dan
-
-                USAFColonel ->
-                    usafColonel
+                Chickens int -> chickens int
+                Ducks int -> ducks int
+                Turkeys int -> turkeys int
+                Dogs names -> dogs names
     in
     tools.custom
         { codec = match
@@ -110,8 +111,10 @@ professionToolDefinition =
         , toString = match
         , toComparable = match
         }
-        |> tools.tag1 "KarateBlackBelt" KarateBlackBelt tools.int
-        |> tools.tag0 "USAFColonel" USAFColonel
+        |> tools.tag1 "Chickens" Chickens tools.int
+        |> tools.tag1 "Ducks" Ducks tools.int
+        |> tools.tag1 "Turkeys" Turkeys tools.int
+        |> tools.tag1 "Dogs" Dogs (tools.list tools.string)
         |> tools.endCustom
 
 
@@ -126,12 +129,12 @@ main =
 
 
 form =
-    Control.toForm "Create a character" FormUpdated FormSubmitted characterTools.control
+    Control.toForm "Create a farmer" FormUpdated FormSubmitted farmerTools.control
 
 
 init () =
     ( { form = form.init
-      , characters = characters
+      , farmers = farmers
       , random = ( [], Random.initialSeed 0 )
       }
     , Task.perform (\_ -> Tick) (Process.sleep 1000)
@@ -143,7 +146,7 @@ update msg model =
         Tick ->
             let
                 random =
-                    Random.step (Random.list 4 characterTools.random) (Tuple.second model.random)
+                    Random.step (Random.list 4 farmerTools.random) (Tuple.second model.random)
             in
             ( { model | random = random }
             , Task.perform (\_ -> Tick) (Process.sleep 2000)
@@ -164,9 +167,9 @@ update msg model =
                     form.submit model.form
             in
             case result of
-                Ok character ->
+                Ok farmer ->
                     ( { model
-                        | characters = character :: model.characters
+                        | farmers = farmer :: model.farmers
                         , form = form.init
                       }
                     , Cmd.none
@@ -181,50 +184,74 @@ update msg model =
 view model =
     let
         json =
-            Codec.encodeToString 4
-                (Codec.list characterTools.codec)
-                model.characters
+            Codec.encodeToString 0
+                (Codec.list farmerTools.codec)
+                model.farmers
     in
     Html.pre []
         [ Html.h1 [] [ Html.text "elm-multitool demo" ]
-        , Html.h2 [] [ Html.text "Tools.Control: create a character" ]
+        , Html.h2 [] [ Html.text "Tools.Control: forms" ]
         , Html.div [ Html.Attributes.style "width" "500px" ] [ form.view model.form ]
-        , Html.h2 [] [ Html.text "Tools.ToString: stringify characters" ]
-        , viewCharacters model.characters
-        , Html.h2 [] [ Html.text "Tools.ToComparable: sort characters" ]
-        , viewCharacters (List.sortBy characterTools.toComparable model.characters)
-        , Html.h2 [] [ Html.text "Tools.Fuzz: generate character fuzzers" ]
-        , viewCharacters (Fuzz.examples 4 characterTools.fuzz)
-        , Html.h2 [] [ Html.text "Tools.Random: generate random characters" ]
-        , viewCharacters (model.random |> Tuple.first)
-        , Html.h2 [] [ Html.text "Tools.Codec: encode characters as JSON" ]
+        , Html.h2 [] [ Html.text "Tools.ToString: stringification" ]
+        , viewCharacters model.farmers
+        , Html.h2 [] [ Html.text "Tools.ToComparable: sorting" ]
+        , viewCharacters (List.sortBy farmerTools.toComparable model.farmers)
+        , Html.h2 [] [ Html.text "Tools.Codec: JSON encoding" ]
         , Html.text json
+        , Html.h2 [] [ Html.text "Tools.Random: random generators" ]
+        , viewCharacters (model.random |> Tuple.first)
+        , Html.h2 [] [ Html.text "Tools.Fuzz: fuzzers for testing" ]
+        , viewCharacters (Fuzz.examples 1 farmerTools.fuzz)
         ]
 
 
 viewCharacters characterList =
     characterList
-        |> List.map characterTools.toString
+        |> List.map farmerTools.toString
         |> String.join "\n"
         |> Html.text
 
 
 type alias Model =
-    { random : ( List Character, Random.Seed )
+    { random : ( List Farmer, Random.Seed )
     , form :
         Control.State
-            ( Control.State String
-            , ( Control.State String
-              , ( Control.State
-                    ( Control.State
-                        ( Control.State String, Control.End )
-                    , ( Control.State (), Control.End )
+                  ( Control.State String
+                  , ( Control.State String
+                    , ( Control.State
+                            (
+                            List
+                                (
+                                Control.State
+                                    ( Control.State
+                                          ( Control.State String, Control.End )
+                                    , ( Control.State
+                                            ( Control.State String, Control.End
+                                            )
+                                      , ( Control.State
+                                              ( Control.State String
+                                              , Control.End
+                                              )
+                                        , ( Control.State
+                                                ( Control.State
+                                                      (
+                                                      List
+                                                          (Control.State String)
+                                                      )
+                                                , Control.End
+                                                )
+                                          , Control.End
+                                          )
+                                        )
+                                      )
+                                    )
+                                )
+                            )
+                      , Control.End
+                      )
                     )
-                , Control.End
-                )
-              )
-            )
-    , characters : List Character
+                  )
+    , farmers : List Farmer
     }
 
 
@@ -233,14 +260,26 @@ type Msg
     | FormUpdated
         (Control.Delta
             ( Control.Delta String
-            , ( Control.Delta String
-              , ( Control.Delta
-                    ( Control.Delta ( Control.Delta String, Control.End )
-                    , ( Control.Delta (), Control.End )
-                    )
-                , Control.End
-                )
-              )
+        , ( Control.Delta String
+          , ( Control.Delta
+                  (
+                  Control.ListDelta
+                      ( Control.Delta ( Control.Delta String, Control.End )
+                      , ( Control.Delta ( Control.Delta String, Control.End )
+                        , ( Control.Delta ( Control.Delta String, Control.End )
+                          , ( Control.Delta
+                                  ( Control.Delta (Control.ListDelta String)
+                                  , Control.End
+                                  )
+                            , Control.End
+                            )
+                          )
+                        )
+                      )
+                  )
+            , Control.End
             )
+          )
+        )
         )
     | FormSubmitted
