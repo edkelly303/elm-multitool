@@ -16,7 +16,7 @@ import Tools.Fuzz
 import Tools.Random
 import Tools.ToComparable
 import Tools.ToString
-
+import Set exposing (Set)
 
 type alias Tools codec control fuzz random toString toComparable =
     { codec : codec
@@ -43,7 +43,7 @@ farmers : List Farmer
 farmers =
     [ { name = "Boggis"
       , age = 59
-      , animals = [ Chickens 5000, Dogs [ "Bill", "Growler" ] ]
+      , animals = [ Chickens 5000, Dogs (Set.fromList [ "Bill", "Growler" ]) ]
       }
     , { name = "Bunce"
       , age = 63
@@ -51,7 +51,7 @@ farmers =
       }
     , { name = "Bean"
       , age = 45
-      , animals = [ Turkeys 500, Dogs [ "Rex" ] ]
+      , animals = [ Turkeys 500, Dogs (Set.fromList [ "Rex" ]) ]
       }
     ]
 
@@ -91,7 +91,7 @@ type Animals
     = Chickens Int
     | Ducks Int
     | Turkeys Int
-    | Dogs (List String)
+    | Dogs (Set String)
 
 
 animalsSpec =
@@ -121,7 +121,7 @@ animalsSpec =
         |> tools.tag1 "Chickens" Chickens tools.int
         |> tools.tag1 "Ducks" Ducks tools.int
         |> tools.tag1 "Turkeys" Turkeys tools.int
-        |> tools.tag1 "Dogs" Dogs (tools.list tools.string)
+        |> tools.tag1 "Dogs" Dogs (tools.set tools.string)
         |> tools.endCustom
 
 
@@ -223,39 +223,47 @@ type alias Model =
     { random : ( List Farmer, Random.Seed )
     , form :
         Control.State
-            ( Control.State String
-            , ( Control.State String
-              , ( Control.State
-                    (List
-                        (Control.State
-                            ( Control.State
-                                ( Control.State String, Control.End )
-                            , ( Control.State
-                                    ( Control.State String
-                                    , Control.End
-                                    )
-                              , ( Control.State
-                                    ( Control.State String
-                                    , Control.End
-                                    )
-                                , ( Control.State
-                                        ( Control.State
-                                            (List
-                                                (Control.State String)
+                  ( Control.State String
+                  , ( Control.State String
+                    , ( Control.State
+                            (
+                            List
+                                (
+                                Control.State
+                                    ( Control.State
+                                          ( Control.State String, Control.End )
+                                    , ( Control.State
+                                            ( Control.State String, Control.End
                                             )
-                                        , Control.End
+                                      , ( Control.State
+                                              ( Control.State String
+                                              , Control.End
+                                              )
+                                        , ( Control.State
+                                                ( Control.State
+                                                      ( Control.State
+                                                            (
+                                                            List
+                                                                (
+                                                                Control.State
+                                                                    String
+                                                                )
+                                                            )
+                                                      , Control.End
+                                                      )
+                                                , Control.End
+                                                )
+                                          , Control.End
+                                          )
                                         )
-                                  , Control.End
-                                  )
+                                      )
+                                    )
                                 )
-                              )
                             )
-                        )
+                      , Control.End
+                      )
                     )
-                , Control.End
-                )
-              )
-            )
+                  )
     , farmers : List Farmer
     }
 
@@ -265,25 +273,30 @@ type Msg
     | FormUpdated
         (Control.Delta
             ( Control.Delta String
-            , ( Control.Delta String
-              , ( Control.Delta
-                    (Control.ListDelta
-                        ( Control.Delta ( Control.Delta String, Control.End )
+        , ( Control.Delta String
+          , ( Control.Delta
+                  (
+                  Control.ListDelta
+                      ( Control.Delta ( Control.Delta String, Control.End )
+                      , ( Control.Delta ( Control.Delta String, Control.End )
                         , ( Control.Delta ( Control.Delta String, Control.End )
-                          , ( Control.Delta ( Control.Delta String, Control.End )
-                            , ( Control.Delta
-                                    ( Control.Delta (Control.ListDelta String)
-                                    , Control.End
-                                    )
-                              , Control.End
-                              )
+                          , ( Control.Delta
+                                  ( Control.Delta
+                                        ( Control.Delta
+                                              (Control.ListDelta String)
+                                        , Control.End
+                                        )
+                                  , Control.End
+                                  )
+                            , Control.End
                             )
                           )
                         )
-                    )
-                , Control.End
-                )
-              )
+                      )
+                  )
+            , Control.End
             )
+          )
+        )
         )
     | FormSubmitted

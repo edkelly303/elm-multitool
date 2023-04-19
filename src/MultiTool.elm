@@ -819,22 +819,22 @@ end :
             , tweakerMaker : (s1 -> {} -> {} -> {}) -> u -> v -> t -> z
         }
     ->
-        { array : c6 -> ToolSpec a14
+        { array : ToolSpec c6 -> ToolSpec a14
         , bool : ToolSpec a13
         , build : ToolSpec d4 -> e6
         , char : ToolSpec a12
         , custom : d3 -> g5
-        , dict : d2 -> e5 -> ToolSpec a11
+        , dict : ToolSpec d2 -> ToolSpec e5 -> ToolSpec a11
         , endCustom : c5 -> ToolSpec a10
         , endRecord : c4 -> ToolSpec a9
         , field : f3 -> g4 -> ToolSpec h3 -> i5 -> k5
         , float : ToolSpec a8
         , int : ToolSpec a7
         , list : ToolSpec c3 -> ToolSpec a6
-        , maybe : c2 -> ToolSpec a5
+        , maybe : ToolSpec c2 -> ToolSpec a5
         , record : c1 -> e4
-        , result : d1 -> e3 -> ToolSpec a4
-        , set : c -> ToolSpec a3
+        , result : ToolSpec d1 -> ToolSpec e3 -> ToolSpec a4
+        , set : ToolSpec c -> ToolSpec a3
         , string : ToolSpec a2
         , tag0 : e2 -> f2 -> g3 -> i4
         , tag1 : f1 -> g2 -> ToolSpec h2 -> i3 -> k4
@@ -859,8 +859,8 @@ end :
             -> ToolSpec p
             -> q
             -> s
-        , triple : e1 -> f -> g -> ToolSpec a1
-        , tuple : d -> e -> ToolSpec a
+        , triple : ToolSpec e1 -> ToolSpec f -> ToolSpec g -> ToolSpec a1
+        , tuple : ToolSpec d -> ToolSpec e -> ToolSpec a
         , tweak : r1
         }
 end (Builder toolBuilder) =
@@ -957,31 +957,31 @@ end (Builder toolBuilder) =
             doMakeList toolBuilder.listMaker itemSpec lists
                 |> ToolSpec
     , maybe =
-        \contentSpec ->
+        \(ToolSpec contentSpec) ->
             doMakeMaybe toolBuilder.maybeMaker contentSpec maybes
                 |> ToolSpec
     , array =
-        \itemSpec ->
+        \(ToolSpec itemSpec) ->
             doMakeArray toolBuilder.arrayMaker itemSpec arrays
                 |> ToolSpec
     , dict =
-        \keySpec valueSpec ->
+        \(ToolSpec keySpec) (ToolSpec valueSpec) ->
             doMakeDict toolBuilder.dictMaker keySpec valueSpec dicts
                 |> ToolSpec
     , set =
-        \memberSpec ->
+        \(ToolSpec memberSpec) ->
             doMakeSet toolBuilder.setMaker memberSpec sets
                 |> ToolSpec
     , tuple =
-        \firstSpec secondSpec ->
+        \(ToolSpec firstSpec) (ToolSpec secondSpec) ->
             doMakeTuple toolBuilder.tupleMaker firstSpec secondSpec tuples
                 |> ToolSpec
     , triple =
-        \firstSpec secondSpec thirdSpec ->
+        \(ToolSpec firstSpec) (ToolSpec secondSpec) (ToolSpec thirdSpec) ->
             doMakeTriple toolBuilder.tripleMaker firstSpec secondSpec thirdSpec triples
                 |> ToolSpec
     , result =
-        \errorSpec valueSpec ->
+        \(ToolSpec errorSpec) (ToolSpec valueSpec) ->
             doMakeResult toolBuilder.resultMaker errorSpec valueSpec results
                 |> ToolSpec
 
