@@ -1,10 +1,12 @@
 {
+    "port": 8000,
     "targets": {
-        "elm-multitool demo": {
+        "example": {
             "inputs": [
                 "src/Example.elm"
             ],
             "output": "main.js"
         }
-    }
+    },
+    "serve": "."
 }
