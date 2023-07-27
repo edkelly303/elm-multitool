@@ -6,26 +6,28 @@ import Control
 interface =
     { string = Control.string
     , int = Control.int
-    , bool = Control.bool "yes" "no"
+    , bool = Control.bool
     , float = Control.float
     , char = Control.char
     , list = Control.list
     , maybe = Control.maybe
     , array = Control.array
-    , dict = \k v -> Control.dict "" k "" v
+    , dict = Control.dict
     , set = Control.set
-    , tuple = \a b -> Control.tuple "" a "" b
-    , triple = \a b c -> Control.triple "" a "" b "" c
+    , tuple = Control.tuple
+    , triple = Control.triple
     , result = Control.result
     , record = Control.record
-    , field = Control.field
-    , endRecord = Control.end
+    , field =
+        -- Control.field doesn't use the field name
+        \_ getter subControl -> Control.field getter subControl
+    , endRecord = Control.endRecord
     , custom = Control.customType
     , tag0 = Control.tag0
     , tag1 = Control.tag1
-    , tag2 = \tagName tagConstructor c1 c2 -> Control.tag2 tagName tagConstructor ( "", c1 ) ( "", c2 )
-    , tag3 = \tagName tagConstructor c1 c2 c3 -> Control.tag3 tagName tagConstructor ( "", c1 ) ( "", c2 ) ( "", c3 )
-    , tag4 = \tagName tagConstructor c1 c2 c3 c4 -> Control.tag4 tagName tagConstructor ( "", c1 ) ( "", c2 ) ( "", c3 ) ( "", c4 )
-    , tag5 = \tagName tagConstructor c1 c2 c3 c4 c5 -> Control.tag5 tagName tagConstructor ( "", c1 ) ( "", c2 ) ( "", c3 ) ( "", c4 ) ( "", c5 )
-    , endCustom = Control.end
+    , tag2 = Control.tag2
+    , tag3 = Control.tag3
+    , tag4 = Control.tag4
+    , tag5 = Control.tag5
+    , endCustom = Control.endCustomType
     }

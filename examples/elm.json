@@ -7,7 +7,7 @@
     "elm-version": "0.19.1",
     "dependencies": {
         "direct": {
-            "edkelly303/elm-any-type-forms": "1.1.1",
+            "edkelly303/elm-any-type-forms": "3.0.0",
             "elm/browser": "1.0.2",
             "elm/core": "1.0.5",
             "elm/html": "1.0.0",
