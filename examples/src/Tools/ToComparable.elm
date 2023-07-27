@@ -119,9 +119,7 @@ tag2 tagName tagCtor toComp1 toComp2 { dtor, index } =
         dtor
             (\arg1 arg2 ->
                 String.fromInt index
-                    :: [ toComp1 arg1
-                       , toComp2 arg2
-                       ]
+                    :: (toComp1 arg1 ++ toComp2 arg2)
             )
     , index = index + 1
     }
@@ -132,10 +130,10 @@ tag3 tagName tagCtor toComp1 toComp2 toComp3 { dtor, index } =
         dtor
             (\arg1 arg2 arg3 ->
                 String.fromInt index
-                    :: [ toComp1 arg1
-                       , toComp2 arg2
-                       , toComp3 arg3
-                       ]
+                    :: (toComp1 arg1
+                            ++ toComp2 arg2
+                            ++ toComp3 arg3
+                       )
             )
     , index = index + 1
     }
@@ -146,11 +144,11 @@ tag4 tagName tagCtor toComp1 toComp2 toComp3 toComp4 { dtor, index } =
         dtor
             (\arg1 arg2 arg3 arg4 ->
                 String.fromInt index
-                    :: [ toComp1 arg1
-                       , toComp2 arg2
-                       , toComp3 arg3
-                       , toComp4 arg4
-                       ]
+                    :: (toComp1 arg1
+                            ++ toComp2 arg2
+                            ++ toComp3 arg3
+                            ++ toComp4 arg4
+                       )
             )
     , index = index + 1
     }
@@ -161,12 +159,12 @@ tag5 tagName tagCtor toComp1 toComp2 toComp3 toComp4 toComp5 { dtor, index } =
         dtor
             (\arg1 arg2 arg3 arg4 arg5 ->
                 String.fromInt index
-                    :: [ toComp1 arg1
-                       , toComp2 arg2
-                       , toComp3 arg3
-                       , toComp4 arg4
-                       , toComp5 arg5
-                       ]
+                    :: (toComp1 arg1
+                            ++ toComp2 arg2
+                            ++ toComp3 arg3
+                            ++ toComp4 arg4
+                            ++ toComp5 arg5
+                       )
             )
     , index = index + 1
     }
