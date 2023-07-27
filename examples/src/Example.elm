@@ -16,7 +16,7 @@ import Tools.Fuzz
 import Tools.Random
 import Tools.ToComparable
 import Tools.ToString
-import Set exposing (Set)
+
 
 type alias Tools codec control fuzz random toString toComparable =
     { codec : codec
@@ -39,76 +39,31 @@ tools =
         |> MultiTool.end
 
 
-farmers : List Farmer
-farmers =
-    [ { name = "Boggis"
-      , age = 59
-      , animals = [ Chickens 5000, Dogs (Set.fromList [ "Bill", "Growler" ]) ]
-      }
-    , { name = "Bunce"
-      , age = 63
-      , animals = [ Ducks 1500 ]
-      }
-    , { name = "Bean"
-      , age = 45
-      , animals = [ Turkeys 500, Dogs (Set.fromList [ "Rex" ]) ]
-      }
+type Shape
+    = Circle Int
+    | Triangle Int Int Int
+    | Rectangle Int Int
+
+
+shapes =
+    [ Circle 1
+    , Rectangle 1 2
+    , Triangle 4 5 6
     ]
 
 
-type alias Farmer =
-    { name : String
-    , age : Int
-    , animals : List Animals
-    }
-
-
-farmerTools =
-    tools.build farmerSpec
-
-
-farmerSpec =
-    tools.record Farmer
-        |> tools.field "name" .name nameSpec
-        |> tools.field "age" .age ageSpec
-        |> tools.field "animals" .animals (tools.list animalsSpec)
-        |> tools.endRecord
-
-
-nameSpec =
-    tools.tweak.control
-        (Control.failIf String.isEmpty "Name can't be blank")
-        tools.string
-
-
-ageSpec =
-    tools.tweak.control
-        (Control.failIf (\age -> age < 0) "Age can't be a negative number")
-        tools.int
-
-
-type Animals
-    = Chickens Int
-    | Ducks Int
-    | Turkeys Int
-    | Dogs (Set String)
-
-
-animalsSpec =
+shapeSpec =
     let
-        match chickens ducks turkeys dogs tag =
+        match circle triangle rectangle tag =
             case tag of
-                Chickens int ->
-                    chickens int
+                Circle radius ->
+                    circle radius
 
-                Ducks int ->
-                    ducks int
+                Triangle side1 side2 side3 ->
+                    triangle side1 side2 side3
 
-                Turkeys int ->
-                    turkeys int
-
-                Dogs names ->
-                    dogs names
+                Rectangle width height ->
+                    rectangle width height
     in
     tools.custom
         { codec = match
@@ -118,33 +73,46 @@ animalsSpec =
         , toString = match
         , toComparable = match
         }
-        |> tools.tag1 "Chickens" Chickens tools.int
-        |> tools.tag1 "Ducks" Ducks tools.int
-        |> tools.tag1 "Turkeys" Turkeys tools.int
-        |> tools.tag1 "Dogs" Dogs (tools.set tools.string)
+        |> tools.tag1 "Circle" Circle tools.int
+        |> tools.tag3 "Triangle" Triangle tools.int tools.int tools.int
+        |> tools.tag2 "Rectangle" Rectangle tools.int tools.int
         |> tools.endCustom
 
 
-main : Program () Model Msg
+shapeTools =
+    tools.build shapeSpec
+
+
 main =
     Browser.element
         { init = init
         , update = update
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = \model -> form.subscriptions model.form
         , view = view
         }
 
 
 form =
-    Control.toForm "Create a farmer" FormUpdated FormSubmitted farmerTools.control
+    Control.form
+        { onUpdate = FormUpdated
+        , onSubmit = FormSubmitted
+        , control = shapeTools.control
+        }
 
 
 init () =
-    ( { form = form.init
-      , farmers = farmers
+    let
+        ( formState, formCmd ) =
+            form.init
+    in
+    ( { form = formState
+      , shapes = shapes
       , random = ( [], Random.initialSeed 0 )
       }
-    , Task.perform (\_ -> Tick) (Process.sleep 1000)
+    , Cmd.batch
+        [ Task.perform (\_ -> Tick) (Process.sleep 1000)
+        , formCmd
+        ]
     )
 
 
@@ -153,7 +121,7 @@ update msg model =
         Tick ->
             let
                 random =
-                    Random.step (Random.list 4 farmerTools.random) (Tuple.second model.random)
+                    Random.step (Random.list 4 shapeTools.random) (Tuple.second model.random)
             in
             ( { model | random = random }
             , Task.perform (\_ -> Tick) (Process.sleep 2000)
@@ -174,12 +142,16 @@ update msg model =
                     form.submit model.form
             in
             case result of
-                Ok farmer ->
+                Ok shape ->
+                    let
+                        ( resetForm, cmd ) =
+                            form.init
+                    in
                     ( { model
-                        | farmers = farmer :: model.farmers
-                        , form = form.init
+                        | shapes = shape :: model.shapes
+                        , form = resetForm
                       }
-                    , Cmd.none
+                    , cmd
                     )
 
                 Err _ ->
@@ -192,111 +164,41 @@ view model =
     let
         json =
             Codec.encodeToString 0
-                (Codec.list farmerTools.codec)
-                model.farmers
+                (Codec.list shapeTools.codec)
+                model.shapes
     in
     Html.pre []
         [ Html.h1 [] [ Html.text "elm-multitool demo" ]
         , Html.h2 [] [ Html.text "Tools.Control: forms" ]
         , Html.div [ Html.Attributes.style "width" "500px" ] [ form.view model.form ]
         , Html.h2 [] [ Html.text "Tools.ToString: stringification" ]
-        , viewCharacters model.farmers
+        , viewCharacters model.shapes
         , Html.h2 [] [ Html.text "Tools.ToComparable: sorting" ]
-        , viewCharacters (List.sortBy farmerTools.toComparable model.farmers)
+        , viewCharacters (List.sortBy shapeTools.toComparable model.shapes)
         , Html.h2 [] [ Html.text "Tools.Codec: JSON encoding" ]
         , Html.text json
         , Html.h2 [] [ Html.text "Tools.Random: random generators" ]
         , viewCharacters (model.random |> Tuple.first)
         , Html.h2 [] [ Html.text "Tools.Fuzz: fuzzers for testing" ]
-        , viewCharacters (Fuzz.examples 1 farmerTools.fuzz)
+        , viewCharacters (Fuzz.examples 1 shapeTools.fuzz)
         ]
 
 
 viewCharacters characterList =
     characterList
-        |> List.map farmerTools.toString
+        |> List.map shapeTools.toString
         |> String.join "\n"
         |> Html.text
 
 
-type alias Model =
-    { random : ( List Farmer, Random.Seed )
-    , form :
-        Control.State
-                  ( Control.State String
-                  , ( Control.State String
-                    , ( Control.State
-                            (
-                            List
-                                (
-                                Control.State
-                                    ( Control.State
-                                          ( Control.State String, Control.End )
-                                    , ( Control.State
-                                            ( Control.State String, Control.End
-                                            )
-                                      , ( Control.State
-                                              ( Control.State String
-                                              , Control.End
-                                              )
-                                        , ( Control.State
-                                                ( Control.State
-                                                      ( Control.State
-                                                            (
-                                                            List
-                                                                (
-                                                                Control.State
-                                                                    String
-                                                                )
-                                                            )
-                                                      , Control.End
-                                                      )
-                                                , Control.End
-                                                )
-                                          , Control.End
-                                          )
-                                        )
-                                      )
-                                    )
-                                )
-                            )
-                      , Control.End
-                      )
-                    )
-                  )
-    , farmers : List Farmer
+type alias Model a =
+    { random : ( List Shape, Random.Seed )
+    , form : a
+    , shapes : List Shape
     }
 
 
-type Msg
+type Msg a
     = Tick
-    | FormUpdated
-        (Control.Delta
-            ( Control.Delta String
-        , ( Control.Delta String
-          , ( Control.Delta
-                  (
-                  Control.ListDelta
-                      ( Control.Delta ( Control.Delta String, Control.End )
-                      , ( Control.Delta ( Control.Delta String, Control.End )
-                        , ( Control.Delta ( Control.Delta String, Control.End )
-                          , ( Control.Delta
-                                  ( Control.Delta
-                                        ( Control.Delta
-                                              (Control.ListDelta String)
-                                        , Control.End
-                                        )
-                                  , Control.End
-                                  )
-                            , Control.End
-                            )
-                          )
-                        )
-                      )
-                  )
-            , Control.End
-            )
-          )
-        )
-        )
+    | FormUpdated a
     | FormSubmitted
