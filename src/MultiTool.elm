@@ -81,13 +81,13 @@ define :
             , char : a43 -> a43
             , constructMultiTool : a42 -> a42
             , constructTweak : a41 -> a41
-            , custom : a40 -> a40
+            , customType : a40 -> a40
             , customEnder : a39 -> a39
             , customMaker : a38 -> a38
             , destructorFieldGetter : a37 -> a37
             , dict : a36 -> a36
             , dictMaker : a35 -> a35
-            , endCustom : a34 -> a34
+            , endCustomType : a34 -> a34
             , endRecord : a33 -> a33
             , field : a32 -> a32
             , fieldMaker : a31 -> a31
@@ -105,18 +105,18 @@ define :
             , set : a19 -> a19
             , setMaker : a18 -> a18
             , string : a17 -> a17
-            , tag0 : a16 -> a16
-            , tag0Maker : a15 -> a15
-            , tag1 : a14 -> a14
-            , tag1Maker : a13 -> a13
-            , tag2 : a12 -> a12
-            , tag2Maker : a11 -> a11
-            , tag3 : a10 -> a10
-            , tag3Maker : a9 -> a9
-            , tag4 : a8 -> a8
-            , tag4Maker : a7 -> a7
-            , tag5 : a6 -> a6
-            , tag5Maker : a5 -> a5
+            , variant0 : a16 -> a16
+            , variant0Maker : a15 -> a15
+            , variant1 : a14 -> a14
+            , variant1Maker : a13 -> a13
+            , variant2 : a12 -> a12
+            , variant2Maker : a11 -> a11
+            , variant3 : a10 -> a10
+            , variant3Maker : a9 -> a9
+            , variant4 : a8 -> a8
+            , variant4Maker : a7 -> a7
+            , variant5 : a6 -> a6
+            , variant5Maker : a5 -> a5
             , toolConstructor : b
             , triple : a4 -> a4
             , tripleMaker : a3 -> a3
@@ -161,21 +161,21 @@ define toolConstructor tweakConstructor =
         , recordEnder = identity
 
         -- custom type combinators
-        , custom = identity
+        , customType = identity
         , customMaker = identity
-        , tag0 = identity
-        , tag0Maker = identity
-        , tag1 = identity
-        , tag1Maker = identity
-        , tag2 = identity
-        , tag2Maker = identity
-        , tag3 = identity
-        , tag3Maker = identity
-        , tag4 = identity
-        , tag4Maker = identity
-        , tag5 = identity
-        , tag5Maker = identity
-        , endCustom = identity
+        , variant0 = identity
+        , variant0Maker = identity
+        , variant1 = identity
+        , variant1Maker = identity
+        , variant2 = identity
+        , variant2Maker = identity
+        , variant3 = identity
+        , variant3Maker = identity
+        , variant4 = identity
+        , variant4Maker = identity
+        , variant5 = identity
+        , variant5Maker = identity
+        , endCustomType = identity
         , customEnder = identity
 
         -- constructing the multitool
@@ -231,14 +231,14 @@ Here's an example of an interface for the awesome `miniBill/elm-codec` package:
         , record = Codec.object
         , field = Codec.field
         , endRecord = Codec.buildObject
-        , custom = Codec.custom
-        , tag0 = Codec.variant0
-        , tag1 = Codec.variant1
-        , tag2 = Codec.variant2
-        , tag3 = Codec.variant3
-        , tag4 = Codec.variant4
-        , tag5 = Codec.variant5
-        , endCustom = Codec.buildCustom
+        , customType = Codec.custom
+        , variant0 = Codec.variant0
+        , variant1 = Codec.variant1
+        , variant2 = Codec.variant2
+        , variant3 = Codec.variant3
+        , variant4 = Codec.variant4
+        , variant5 = Codec.variant5
+        , endCustomType = Codec.buildCustom
         }
 
 (You'll notice that this interface type mostly looks straightforward, except for the `dict` field. The problem here
@@ -261,9 +261,9 @@ add :
             | array : a100
             , bool : a98
             , char : a97
-            , custom : a96
+            , customType : a96
             , dict : a94
-            , endCustom : a93
+            , endCustomType : a93
             , endRecord : a92
             , field : a91
             , float : a90
@@ -274,12 +274,12 @@ add :
             , result : a85
             , set : a84
             , string : a83
-            , tag0 : a82
-            , tag1 : a81
-            , tag2 : a80
-            , tag3 : a79
-            , tag4 : a78
-            , tag5 : a77
+            , variant0 : a82
+            , variant1 : a81
+            , variant2 : a80
+            , variant3 : a79
+            , variant4 : a78
+            , variant5 : a77
             , triple : a76
             , tuple : a75
         }
@@ -297,13 +297,13 @@ add :
                 , char : ( a97, a65 ) -> c41
                 , constructMultiTool : a64 -> a63 -> b18 -> c40
                 , constructTweak : a62 -> u -> v -> w
-                , custom : ( a96, a61 ) -> c39
+                , customType : ( a96, a61 ) -> c39
                 , customEnder : a60 -> b17 -> a59 -> c38
                 , customMaker : a58 -> b16 -> a57 -> c37 -> d16
                 , destructorFieldGetter : ( a95, a56 ) -> c36
                 , dict : ( a94, a55 ) -> c35
                 , dictMaker : a54 -> b15 -> a53 -> c34 -> d15
-                , endCustom : ( a93, a52 ) -> c33
+                , endCustomType : ( a93, a52 ) -> c33
                 , endRecord : ( a92, a51 ) -> c32
                 , field : ( a91, a50 ) -> c31
                 , fieldMaker : a49 -> b14 -> c30 -> a48 -> d14 -> e13 -> f9
@@ -321,19 +321,19 @@ add :
                 , set : ( a84, a31 ) -> c18
                 , setMaker : a30 -> b8 -> a29 -> c17
                 , string : ( a83, a28 ) -> c16
-                , tag0 : ( a82, a27 ) -> c15
-                , tag0Maker : a26 -> b7 -> c14 -> a25 -> d7 -> e7
-                , tag1 : ( a81, a24 ) -> c13
-                , tag1Maker : a23 -> b6 -> c12 -> a22 -> d6 -> e6 -> f6
-                , tag2 : ( a80, a21 ) -> c11
-                , tag2Maker : a20 -> b5 -> c10 -> a19 -> d5 -> e5 -> f5 -> g5
-                , tag3 : ( a79, a18 ) -> c9
-                , tag3Maker : a17 -> b4 -> c8 -> a16 -> d4 -> e4 -> f4 -> g4 -> h3
-                , tag4 : ( a78, a15 ) -> c7
-                , tag4Maker :
+                , variant0 : ( a82, a27 ) -> c15
+                , variant0Maker : a26 -> b7 -> c14 -> a25 -> d7 -> e7
+                , variant1 : ( a81, a24 ) -> c13
+                , variant1Maker : a23 -> b6 -> c12 -> a22 -> d6 -> e6 -> f6
+                , variant2 : ( a80, a21 ) -> c11
+                , variant2Maker : a20 -> b5 -> c10 -> a19 -> d5 -> e5 -> f5 -> g5
+                , variant3 : ( a79, a18 ) -> c9
+                , variant3Maker : a17 -> b4 -> c8 -> a16 -> d4 -> e4 -> f4 -> g4 -> h3
+                , variant4 : ( a78, a15 ) -> c7
+                , variant4Maker :
                     a14 -> b3 -> c6 -> a13 -> d3 -> e3 -> f3 -> g3 -> h2 -> i2
-                , tag5 : ( a77, a12 ) -> c5
-                , tag5Maker :
+                , variant5 : ( a77, a12 ) -> c5
+                , variant5Maker :
                     a11 -> b2 -> c4 -> a10 -> d2 -> e2 -> f2 -> g2 -> h1 -> i1 -> j
                 , toolConstructor : x
                 , triple : ( a76, a9 ) -> c3
@@ -362,7 +362,7 @@ add :
             , char : a65 -> c41
             , constructMultiTool : a64 -> (d18 -> a63) -> ( d18, b18 ) -> c40
             , constructTweak : a62 -> (v1 -> u) -> ( v1, v ) -> w
-            , custom : a61 -> c39
+            , customType : a61 -> c39
             , customEnder :
                 a60 -> ( d17, b17 ) -> ( d17 -> e16, a59 ) -> ( e16, c38 )
             , customMaker :
@@ -379,7 +379,7 @@ add :
                 -> ( f10, a53 )
                 -> ( e14 -> f10 -> g10, c34 )
                 -> ( g10, d15 )
-            , endCustom : a52 -> c33
+            , endCustomType : a52 -> c33
             , endRecord : a51 -> c32
             , field : a50 -> c31
             , fieldMaker :
@@ -410,16 +410,16 @@ add :
             , set : a31 -> c18
             , setMaker : a30 -> ( d8, b8 ) -> ( d8 -> e8, a29 ) -> ( e8, c17 )
             , string : a28 -> c16
-            , tag0 : a27 -> c15
-            , tag0Maker :
+            , variant0 : a27 -> c15
+            , variant0Maker :
                 a26
                 -> b7
                 -> c14
                 -> ( f7, a25 )
                 -> ( b7 -> c14 -> f7 -> g7, d7 )
                 -> ( g7, e7 )
-            , tag1 : a24 -> c13
-            , tag1Maker :
+            , variant1 : a24 -> c13
+            , variant1Maker :
                 a23
                 -> b6
                 -> c12
@@ -427,8 +427,8 @@ add :
                 -> ( h5, d6 )
                 -> ( b6 -> c12 -> g6 -> h5 -> i5, e6 )
                 -> ( i5, f6 )
-            , tag2 : a21 -> c11
-            , tag2Maker :
+            , variant2 : a21 -> c11
+            , variant2Maker :
                 a20
                 -> b5
                 -> c10
@@ -437,8 +437,8 @@ add :
                 -> ( j3, e5 )
                 -> ( b5 -> c10 -> h4 -> i4 -> j3 -> k3, f5 )
                 -> ( k3, g5 )
-            , tag3 : a18 -> c9
-            , tag3Maker :
+            , variant3 : a18 -> c9
+            , variant3Maker :
                 a17
                 -> b4
                 -> c8
@@ -448,8 +448,8 @@ add :
                 -> ( l2, f4 )
                 -> ( b4 -> c8 -> i3 -> j2 -> k2 -> l2 -> m2, g4 )
                 -> ( m2, h3 )
-            , tag4 : a15 -> c7
-            , tag4Maker :
+            , variant4 : a15 -> c7
+            , variant4Maker :
                 a14
                 -> b3
                 -> c6
@@ -460,8 +460,8 @@ add :
                 -> ( n1, g3 )
                 -> ( b3 -> c6 -> j1 -> k1 -> l1 -> m1 -> n1 -> o1, h2 )
                 -> ( o1, i2 )
-            , tag5 : a12 -> c5
-            , tag5Maker :
+            , variant5 : a12 -> c5
+            , variant5Maker :
                 a11
                 -> b2
                 -> c4
@@ -529,21 +529,21 @@ add destructorFieldGetter tool (Builder builder) =
         , recordEnder = builder.recordEnder >> recordEnder
 
         -- custom type combinators
-        , custom = builder.custom << Tuple.pair tool.custom
+        , customType = builder.customType << Tuple.pair tool.customType
         , customMaker = builder.customMaker >> customMaker
-        , tag0 = builder.tag0 << Tuple.pair tool.tag0
-        , tag0Maker = builder.tag0Maker >> tag0Maker
-        , tag1 = builder.tag1 << Tuple.pair tool.tag1
-        , tag1Maker = builder.tag1Maker >> tag1Maker
-        , tag2 = builder.tag2 << Tuple.pair tool.tag2
-        , tag2Maker = builder.tag2Maker >> tag2Maker
-        , tag3 = builder.tag3 << Tuple.pair tool.tag3
-        , tag3Maker = builder.tag3Maker >> tag3Maker
-        , tag4 = builder.tag4 << Tuple.pair tool.tag4
-        , tag4Maker = builder.tag4Maker >> tag4Maker
-        , tag5 = builder.tag5 << Tuple.pair tool.tag5
-        , tag5Maker = builder.tag5Maker >> tag5Maker
-        , endCustom = builder.endCustom << Tuple.pair tool.endCustom
+        , variant0 = builder.variant0 << Tuple.pair tool.variant0
+        , variant0Maker = builder.variant0Maker >> variant0Maker
+        , variant1 = builder.variant1 << Tuple.pair tool.variant1
+        , variant1Maker = builder.variant1Maker >> variant1Maker
+        , variant2 = builder.variant2 << Tuple.pair tool.variant2
+        , variant2Maker = builder.variant2Maker >> variant2Maker
+        , variant3 = builder.variant3 << Tuple.pair tool.variant3
+        , variant3Maker = builder.variant3Maker >> variant3Maker
+        , variant4 = builder.variant4 << Tuple.pair tool.variant4
+        , variant4Maker = builder.variant4Maker >> variant4Maker
+        , variant5 = builder.variant5 << Tuple.pair tool.variant5
+        , variant5Maker = builder.variant5Maker >> variant5Maker
+        , endCustomType = builder.endCustomType << Tuple.pair tool.endCustomType
         , customEnder = builder.customEnder >> customEnder
 
         -- constructing the multitool
@@ -614,8 +614,8 @@ For example:
 
 ## `ToolSpec`s for combinators for custom types
 
-To define `ToolSpec`s for your own custom types, use `tools.custom`, `tools.tag0`, `tools.tag1`, `tools.tag2`,
-`tools.tag3`, `tools.tag4`, `tools.tag5`, and `tools.endCustom`.
+To define `ToolSpec`s for your own custom types, use `tools.customType`, `tools.variant0`, `tools.variant1`, `tools.variant2`,
+`tools.variant3`, `tools.variant4`, `tools.variant5`, and `tools.endCustomType`.
 
 For example, if we really hated Elm's `Maybe` type and wanted it to be called `Option` instead:
 
@@ -633,11 +633,11 @@ For example, if we really hated Elm's `Maybe` type and wanted it to be called `O
                     None ->
                         none
         in
-        tools.custom
+        tools.customType
             { toString = match, toComparable = match }
-            |> tools.tag1 "Some" Some valueSpec
-            |> tools.tag0 "None" None
-            |> tools.endCustom
+            |> tools.variant1 "Some" Some valueSpec
+            |> tools.variant0 "None" None
+            |> tools.endCustomType
 
 **Note**: You _must_ define the `match` function either in a `let-in` block within your tool specification, or as a
 top-level function in one of your modules. If you try and parameterise your tool specification to take a `match`
@@ -721,13 +721,13 @@ end :
             , char : {} -> a12
             , constructMultiTool : (a24 -> {} -> a24) -> c7 -> d4 -> e6
             , constructTweak : (w -> {} -> w) -> y -> z -> r1
-            , custom : {} -> f7
+            , customType : {} -> f7
             , customEnder : ({} -> {} -> {}) -> c5 -> d10 -> a10
             , customMaker : (a23 -> {} -> {} -> {}) -> d3 -> e7 -> f7 -> g5
             , destructorFieldGetter : {} -> e7
             , dict : {} -> f6
             , dictMaker : ({} -> {} -> {} -> {}) -> d2 -> e5 -> f6 -> a11
-            , endCustom : {} -> d10
+            , endCustomType : {} -> d10
             , endRecord : {} -> d7
             , field : {} -> j5
             , fieldMaker :
@@ -752,11 +752,11 @@ end :
             , set : {} -> d5
             , setMaker : ({} -> {} -> {}) -> c -> d5 -> a3
             , string : {} -> a2
-            , tag0 : {} -> h5
-            , tag0Maker :
+            , variant0 : {} -> h5
+            , variant0Maker :
                 (a20 -> b5 -> {} -> {} -> {}) -> e2 -> f2 -> g3 -> h5 -> i4
-            , tag1 : {} -> j4
-            , tag1Maker :
+            , variant1 : {} -> j4
+            , variant1Maker :
                 (a19 -> b4 -> {} -> {} -> {} -> {})
                 -> f1
                 -> g2
@@ -764,8 +764,8 @@ end :
                 -> i3
                 -> j4
                 -> k4
-            , tag2 : {} -> l3
-            , tag2Maker :
+            , variant2 : {} -> l3
+            , variant2Maker :
                 (a18 -> b3 -> {} -> {} -> {} -> {} -> {})
                 -> g1
                 -> h1
@@ -774,8 +774,8 @@ end :
                 -> k3
                 -> l3
                 -> m3
-            , tag3 : {} -> n2
-            , tag3Maker :
+            , variant3 : {} -> n2
+            , variant3Maker :
                 (a17 -> b2 -> {} -> {} -> {} -> {} -> {} -> {})
                 -> h
                 -> i1
@@ -785,8 +785,8 @@ end :
                 -> m2
                 -> n2
                 -> o2
-            , tag4 : {} -> p1
-            , tag4Maker :
+            , variant4 : {} -> p1
+            , variant4Maker :
                 (a16 -> b1 -> {} -> {} -> {} -> {} -> {} -> {} -> {})
                 -> i
                 -> j1
@@ -797,8 +797,8 @@ end :
                 -> o1
                 -> p1
                 -> q1
-            , tag5 : {} -> r
-            , tag5Maker :
+            , variant5 : {} -> r
+            , variant5Maker :
                 (a15 -> b -> {} -> {} -> {} -> {} -> {} -> {} -> {} -> {})
                 -> j
                 -> k
@@ -823,9 +823,9 @@ end :
         , bool : ToolSpec a13
         , build : ToolSpec d4 -> e6
         , char : ToolSpec a12
-        , custom : d3 -> g5
+        , customType : d3 -> g5
         , dict : ToolSpec d2 -> ToolSpec e5 -> ToolSpec a11
-        , endCustom : c5 -> ToolSpec a10
+        , endCustomType : c5 -> ToolSpec a10
         , endRecord : c4 -> ToolSpec a9
         , field : f3 -> g4 -> ToolSpec h3 -> i5 -> k5
         , float : ToolSpec a8
@@ -836,11 +836,11 @@ end :
         , result : ToolSpec d1 -> ToolSpec e3 -> ToolSpec a4
         , set : ToolSpec c -> ToolSpec a3
         , string : ToolSpec a2
-        , tag0 : e2 -> f2 -> g3 -> i4
-        , tag1 : f1 -> g2 -> ToolSpec h2 -> i3 -> k4
-        , tag2 : g1 -> h1 -> ToolSpec i2 -> ToolSpec j3 -> k3 -> m3
-        , tag3 : h -> i1 -> ToolSpec j2 -> ToolSpec k2 -> ToolSpec l2 -> m2 -> o2
-        , tag4 :
+        , variant0 : e2 -> f2 -> g3 -> i4
+        , variant1 : f1 -> g2 -> ToolSpec h2 -> i3 -> k4
+        , variant2 : g1 -> h1 -> ToolSpec i2 -> ToolSpec j3 -> k3 -> m3
+        , variant3 : h -> i1 -> ToolSpec j2 -> ToolSpec k2 -> ToolSpec l2 -> m2 -> o2
+        , variant4 :
             i
             -> j1
             -> ToolSpec k1
@@ -849,7 +849,7 @@ end :
             -> ToolSpec n1
             -> o1
             -> q1
-        , tag5 :
+        , variant5 :
             j
             -> k
             -> ToolSpec l
@@ -918,28 +918,28 @@ end (Builder toolBuilder) =
 
         -- custom type combinators
         customs =
-            toolBuilder.custom {}
+            toolBuilder.customType {}
 
-        tag0s =
-            toolBuilder.tag0 {}
+        variant0s =
+            toolBuilder.variant0 {}
 
-        tag1s =
-            toolBuilder.tag1 {}
+        variant1s =
+            toolBuilder.variant1 {}
 
-        tag2s =
-            toolBuilder.tag2 {}
+        variant2s =
+            toolBuilder.variant2 {}
 
-        tag3s =
-            toolBuilder.tag3 {}
+        variant3s =
+            toolBuilder.variant3 {}
 
-        tag4s =
-            toolBuilder.tag4 {}
+        variant4s =
+            toolBuilder.variant4 {}
 
-        tag5s =
-            toolBuilder.tag5 {}
+        variant5s =
+            toolBuilder.variant5 {}
 
         endCustoms =
-            toolBuilder.endCustom {}
+            toolBuilder.endCustomType {}
 
         destructorFieldGetters =
             toolBuilder.destructorFieldGetter {}
@@ -998,28 +998,28 @@ end (Builder toolBuilder) =
                 |> ToolSpec
 
     -- custom types
-    , custom =
+    , customType =
         \customDestructors ->
             doMakeCustom toolBuilder.customMaker customDestructors destructorFieldGetters customs
-    , tag0 =
+    , variant0 =
         \tagName tagConstructor customBuilder ->
-            doMakeTag0 toolBuilder.tag0Maker tagName tagConstructor customBuilder tag0s
-    , tag1 =
+            doMakeTag0 toolBuilder.variant0Maker tagName tagConstructor customBuilder variant0s
+    , variant1 =
         \tagName tagConstructor (ToolSpec arg1Spec) customBuilder ->
-            doMakeTag1 toolBuilder.tag1Maker tagName tagConstructor arg1Spec customBuilder tag1s
-    , tag2 =
+            doMakeTag1 toolBuilder.variant1Maker tagName tagConstructor arg1Spec customBuilder variant1s
+    , variant2 =
         \tagName tagConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) customBuilder ->
-            doMakeTag2 toolBuilder.tag2Maker tagName tagConstructor arg1Spec arg2Spec customBuilder tag2s
-    , tag3 =
+            doMakeTag2 toolBuilder.variant2Maker tagName tagConstructor arg1Spec arg2Spec customBuilder variant2s
+    , variant3 =
         \tagName tagConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) (ToolSpec arg3Spec) customBuilder ->
-            doMakeTag3 toolBuilder.tag3Maker tagName tagConstructor arg1Spec arg2Spec arg3Spec customBuilder tag3s
-    , tag4 =
+            doMakeTag3 toolBuilder.variant3Maker tagName tagConstructor arg1Spec arg2Spec arg3Spec customBuilder variant3s
+    , variant4 =
         \tagName tagConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) (ToolSpec arg3Spec) (ToolSpec arg4Spec) customBuilder ->
-            doMakeTag4 toolBuilder.tag4Maker tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder tag4s
-    , tag5 =
+            doMakeTag4 toolBuilder.variant4Maker tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder variant4s
+    , variant5 =
         \tagName tagConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) (ToolSpec arg3Spec) (ToolSpec arg4Spec) (ToolSpec arg5Spec) customBuilder ->
-            doMakeTag5 toolBuilder.tag5Maker tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder tag5s
-    , endCustom =
+            doMakeTag5 toolBuilder.variant5Maker tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder variant5s
+    , endCustomType =
         \customBuilder ->
             doEndCustom toolBuilder.customEnder customBuilder endCustoms
                 |> ToolSpec
@@ -1224,37 +1224,37 @@ customMaker next customDestructors ( destructorFieldGetter, restDestructorFieldG
 
 
 doMakeTag0 : ((a -> b -> {} -> {} -> {}) -> e -> f -> g -> h -> i) -> e -> f -> g -> h -> i
-doMakeTag0 tag0Maker_ tagName tagConstructor customBuilder tag0s =
-    tag0Maker_ (\_ _ {} {} -> {}) tagName tagConstructor customBuilder tag0s
+doMakeTag0 variant0Maker_ tagName tagConstructor customBuilder variant0s =
+    variant0Maker_ (\_ _ {} {} -> {}) tagName tagConstructor customBuilder variant0s
 
 
-tag0Maker : (b -> c -> a -> d -> e) -> b -> c -> ( f, a ) -> ( b -> c -> f -> g, d ) -> ( g, e )
-tag0Maker next tagName tagConstructor ( customBuilder, restCustomBuilders ) ( tag0, restTag0s ) =
-    ( tag0 tagName tagConstructor customBuilder
+variant0Maker : (b -> c -> a -> d -> e) -> b -> c -> ( f, a ) -> ( b -> c -> f -> g, d ) -> ( g, e )
+variant0Maker next tagName tagConstructor ( customBuilder, restCustomBuilders ) ( variant0, restTag0s ) =
+    ( variant0 tagName tagConstructor customBuilder
     , next tagName tagConstructor restCustomBuilders restTag0s
     )
 
 
 doMakeTag1 : ((a -> b -> {} -> {} -> {} -> {}) -> f -> g -> h -> i -> j -> k) -> f -> g -> h -> i -> j -> k
-doMakeTag1 tag1Maker_ tagName tagConstructor child1 customBuilder tag1s =
-    tag1Maker_ (\_ _ {} {} {} -> {}) tagName tagConstructor child1 customBuilder tag1s
+doMakeTag1 variant1Maker_ tagName tagConstructor child1 customBuilder variant1s =
+    variant1Maker_ (\_ _ {} {} {} -> {}) tagName tagConstructor child1 customBuilder variant1s
 
 
-tag1Maker : (b -> c -> a -> d -> e -> f) -> b -> c -> ( g, a ) -> ( h, d ) -> ( b -> c -> g -> h -> i, e ) -> ( i, f )
-tag1Maker next tagName tagConstructor ( child1, restChild1s ) ( customBuilder, restCustomBuilders ) ( tag1, restTag1s ) =
-    ( tag1 tagName tagConstructor child1 customBuilder
+variant1Maker : (b -> c -> a -> d -> e -> f) -> b -> c -> ( g, a ) -> ( h, d ) -> ( b -> c -> g -> h -> i, e ) -> ( i, f )
+variant1Maker next tagName tagConstructor ( child1, restChild1s ) ( customBuilder, restCustomBuilders ) ( variant1, restTag1s ) =
+    ( variant1 tagName tagConstructor child1 customBuilder
     , next tagName tagConstructor restChild1s restCustomBuilders restTag1s
     )
 
 
 doMakeTag2 : ((a -> b -> {} -> {} -> {} -> {} -> {}) -> g -> h -> i -> j -> k -> l -> m) -> g -> h -> i -> j -> k -> l -> m
-doMakeTag2 tag2Maker_ tagName tagConstructor arg1Spec arg2Spec customBuilder tag2s =
-    tag2Maker_ (\_ _ {} {} {} {} -> {}) tagName tagConstructor arg1Spec arg2Spec customBuilder tag2s
+doMakeTag2 variant2Maker_ tagName tagConstructor arg1Spec arg2Spec customBuilder variant2s =
+    variant2Maker_ (\_ _ {} {} {} {} -> {}) tagName tagConstructor arg1Spec arg2Spec customBuilder variant2s
 
 
-tag2Maker : (b -> c -> a -> d -> e -> f -> g) -> b -> c -> ( h, a ) -> ( i, d ) -> ( j, e ) -> ( b -> c -> h -> i -> j -> k, f ) -> ( k, g )
-tag2Maker next tagName tagConstructor ( arg1Spec, restC1s ) ( arg2Spec, restC2s ) ( customBuilder, restCustomBuilders ) ( tag2, restTag2s ) =
-    ( tag2 tagName tagConstructor arg1Spec arg2Spec customBuilder
+variant2Maker : (b -> c -> a -> d -> e -> f -> g) -> b -> c -> ( h, a ) -> ( i, d ) -> ( j, e ) -> ( b -> c -> h -> i -> j -> k, f ) -> ( k, g )
+variant2Maker next tagName tagConstructor ( arg1Spec, restC1s ) ( arg2Spec, restC2s ) ( customBuilder, restCustomBuilders ) ( variant2, restTag2s ) =
+    ( variant2 tagName tagConstructor arg1Spec arg2Spec customBuilder
     , next tagName tagConstructor restC1s restC2s restCustomBuilders restTag2s
     )
 
@@ -1264,8 +1264,8 @@ doMakeTag3 tagMaker_ tagName tagConstructor arg1Spec arg2Spec arg3Spec customBui
     tagMaker_ (\_ _ {} {} {} {} {} -> {}) tagName tagConstructor arg1Spec arg2Spec arg3Spec customBuilder tags
 
 
-tag3Maker : (b -> c -> a -> d -> e -> f -> g -> h) -> b -> c -> ( i, a ) -> ( j, d ) -> ( k, e ) -> ( l, f ) -> ( b -> c -> i -> j -> k -> l -> m, g ) -> ( m, h )
-tag3Maker next tagName tagConstructor ( arg1Spec, restC1s ) ( arg2Spec, restC2s ) ( arg3Spec, restC3s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
+variant3Maker : (b -> c -> a -> d -> e -> f -> g -> h) -> b -> c -> ( i, a ) -> ( j, d ) -> ( k, e ) -> ( l, f ) -> ( b -> c -> i -> j -> k -> l -> m, g ) -> ( m, h )
+variant3Maker next tagName tagConstructor ( arg1Spec, restC1s ) ( arg2Spec, restC2s ) ( arg3Spec, restC3s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
     ( tag tagName tagConstructor arg1Spec arg2Spec arg3Spec customBuilder
     , next tagName tagConstructor restC1s restC2s restC3s restCustomBuilders restTags
     )
@@ -1276,8 +1276,8 @@ doMakeTag4 tagMaker_ tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec 
     tagMaker_ (\_ _ {} {} {} {} {} {} -> {}) tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder tags
 
 
-tag4Maker : (b -> c -> a -> d -> e -> f -> g -> h -> i) -> b -> c -> ( j, a ) -> ( k, d ) -> ( l, e ) -> ( m, f ) -> ( n, g ) -> ( b -> c -> j -> k -> l -> m -> n -> o, h ) -> ( o, i )
-tag4Maker next tagName tagConstructor ( arg1Spec, restC1s ) ( arg2Spec, restC2s ) ( arg3Spec, restC3s ) ( arg4Spec, restC4s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
+variant4Maker : (b -> c -> a -> d -> e -> f -> g -> h -> i) -> b -> c -> ( j, a ) -> ( k, d ) -> ( l, e ) -> ( m, f ) -> ( n, g ) -> ( b -> c -> j -> k -> l -> m -> n -> o, h ) -> ( o, i )
+variant4Maker next tagName tagConstructor ( arg1Spec, restC1s ) ( arg2Spec, restC2s ) ( arg3Spec, restC3s ) ( arg4Spec, restC4s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
     ( tag tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder
     , next tagName tagConstructor restC1s restC2s restC3s restC4s restCustomBuilders restTags
     )
@@ -1288,8 +1288,8 @@ doMakeTag5 tagMaker_ tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec 
     tagMaker_ (\_ _ {} {} {} {} {} {} {} -> {}) tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder tags
 
 
-tag5Maker : (b -> c -> a -> d -> e -> f -> g -> h -> i -> j) -> b -> c -> ( k, a ) -> ( l, d ) -> ( m, e ) -> ( n, f ) -> ( o, g ) -> ( p, h ) -> ( b -> c -> k -> l -> m -> n -> o -> p -> q, i ) -> ( q, j )
-tag5Maker next tagName tagConstructor ( arg1Spec, restC1s ) ( arg2Spec, restC2s ) ( arg3Spec, restC3s ) ( arg4Spec, restC4s ) ( arg5Spec, restC5s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
+variant5Maker : (b -> c -> a -> d -> e -> f -> g -> h -> i -> j) -> b -> c -> ( k, a ) -> ( l, d ) -> ( m, e ) -> ( n, f ) -> ( o, g ) -> ( p, h ) -> ( b -> c -> k -> l -> m -> n -> o -> p -> q, i ) -> ( q, j )
+variant5Maker next tagName tagConstructor ( arg1Spec, restC1s ) ( arg2Spec, restC2s ) ( arg3Spec, restC3s ) ( arg4Spec, restC4s ) ( arg5Spec, restC5s ) ( customBuilder, restCustomBuilders ) ( tag, restTags ) =
     ( tag tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder
     , next tagName tagConstructor restC1s restC2s restC3s restC4s restC5s restCustomBuilders restTags
     )

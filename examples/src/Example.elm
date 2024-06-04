@@ -65,7 +65,7 @@ shapeSpec =
                 Rectangle width height ->
                     rectangle width height
     in
-    tools.custom
+    tools.customType
         { codec = match
         , control = match
         , fuzz = match
@@ -73,10 +73,10 @@ shapeSpec =
         , toString = match
         , toComparable = match
         }
-        |> tools.tag1 "Circle" Circle tools.int
-        |> tools.tag3 "Triangle" Triangle tools.int tools.int tools.int
-        |> tools.tag2 "Rectangle" Rectangle tools.int tools.int
-        |> tools.endCustom
+        |> tools.variant1 "Circle" Circle tools.int
+        |> tools.variant3 "Triangle" Triangle tools.int tools.int tools.int
+        |> tools.variant2 "Rectangle" Rectangle tools.int tools.int
+        |> tools.endCustomType
 
 
 shapeTools =
@@ -93,7 +93,7 @@ main =
 
 
 form =
-    Control.form
+    Control.simpleForm
         { onUpdate = FormUpdated
         , onSubmit = FormSubmitted
         , control = shapeTools.control
@@ -103,7 +103,7 @@ form =
 init () =
     let
         ( formState, formCmd ) =
-            form.init
+            form.blank
     in
     ( { form = formState
       , shapes = shapes
@@ -145,7 +145,7 @@ update msg model =
                 Ok shape ->
                     let
                         ( resetForm, cmd ) =
-                            form.init
+                            form.blank
                     in
                     ( { model
                         | shapes = shape :: model.shapes
@@ -175,7 +175,7 @@ view model =
         , viewShapes model.shapes
         , heading "Tools.ToComparable: sorting"
         , viewShapes (List.sortBy shapeTools.toComparable model.shapes)
-        , heading "Tools.Codec: JSON encoding" 
+        , heading "Tools.Codec: JSON encoding"
         , Html.text json
         , heading "Tools.Random: random generators"
         , viewShapes (model.random |> Tuple.first)
@@ -183,8 +183,8 @@ view model =
         , viewShapes (Fuzz.examples 1 shapeTools.fuzz)
         ]
 
-        
-heading txt = 
+
+heading txt =
     Html.h2 [] [ Html.text txt ]
 
 
@@ -193,13 +193,6 @@ viewShapes shapeList =
         |> List.map shapeTools.toString
         |> String.join "\n"
         |> Html.text
-
-
-type alias Model a =
-    { random : ( List Shape, Random.Seed )
-    , form : a
-    , shapes : List Shape
-    }
 
 
 type Msg a

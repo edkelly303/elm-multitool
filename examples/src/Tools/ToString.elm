@@ -22,14 +22,14 @@ interface =
     , record = record
     , field = field
     , endRecord = endRecord
-    , custom = custom
-    , tag0 = tag0
-    , tag1 = tag1
-    , tag2 = tag2
-    , tag3 = tag3
-    , tag4 = tag4
-    , tag5 = tag5
-    , endCustom = endCustom
+    , customType = customType
+    , variant0 = variant0
+    , variant1 = variant1
+    , variant2 = variant2
+    , variant3 = variant3
+    , variant4 = variant4
+    , variant5 = variant5
+    , endCustomType = endCustomType
     }
 
 
@@ -44,7 +44,7 @@ list child =
 
 
 maybe child =
-    custom
+    customType
         (\just nothing tag ->
             case tag of
                 Just child_ ->
@@ -53,13 +53,13 @@ maybe child =
                 Nothing ->
                     nothing
         )
-        |> tag1 "Just" Just child
-        |> tag0 "Nothing" Nothing
-        |> endCustom
+        |> variant1 "Just" Just child
+        |> variant0 "Nothing" Nothing
+        |> endCustomType
 
 
 result error value =
-    custom
+    customType
         (\err ok tag ->
             case tag of
                 Ok value_ ->
@@ -68,9 +68,9 @@ result error value =
                 Err error_ ->
                     err error_
         )
-        |> tag1 "Err" Err error
-        |> tag1 "Ok" Ok value
-        |> endCustom
+        |> variant1 "Err" Err error
+        |> variant1 "Ok" Ok value
+        |> endCustomType
 
 
 array item =
@@ -109,19 +109,19 @@ endRecord builder =
     \recordData -> "{ " ++ String.join ", " (builder recordData |> List.reverse) ++ " }"
 
 
-custom dtor =
+customType dtor =
     dtor
 
 
-tag0 tagName tagCtor dtor =
+variant0 tagName tagCtor dtor =
     dtor tagName
 
 
-tag1 tagName tagCtor toString1 dtor =
+variant1 tagName tagCtor toString1 dtor =
     dtor (\arg1 -> tagName ++ parensIfNeeded (toString1 arg1))
 
 
-tag2 tagName tagCtor toString1 toString2 dtor =
+variant2 tagName tagCtor toString1 toString2 dtor =
     dtor
         (\arg1 arg2 ->
             tagName
@@ -130,7 +130,7 @@ tag2 tagName tagCtor toString1 toString2 dtor =
         )
 
 
-tag3 tagName tagCtor toString1 toString2 toString3 dtor =
+variant3 tagName tagCtor toString1 toString2 toString3 dtor =
     dtor
         (\arg1 arg2 arg3 ->
             tagName
@@ -140,7 +140,7 @@ tag3 tagName tagCtor toString1 toString2 toString3 dtor =
         )
 
 
-tag4 tagName tagCtor toString1 toString2 toString3 toString4 dtor =
+variant4 tagName tagCtor toString1 toString2 toString3 toString4 dtor =
     dtor
         (\arg1 arg2 arg3 arg4 ->
             tagName
@@ -151,7 +151,7 @@ tag4 tagName tagCtor toString1 toString2 toString3 toString4 dtor =
         )
 
 
-tag5 tagName tagCtor toString1 toString2 toString3 toString4 toString5 dtor =
+variant5 tagName tagCtor toString1 toString2 toString3 toString4 toString5 dtor =
     dtor
         (\arg1 arg2 arg3 arg4 arg5 ->
             tagName
@@ -198,7 +198,7 @@ parensIfNeeded childString =
            )
 
 
-endCustom dtor =
+endCustomType dtor =
     dtor
 
 

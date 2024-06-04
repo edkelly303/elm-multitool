@@ -22,12 +22,12 @@ interface =
         -- Control.field doesn't use the field name
         \_ getter subControl -> Control.field getter subControl
     , endRecord = Control.endRecord
-    , custom = Control.customType
+    , customType = Control.customType
     , variant0 = Control.variant0
     , variant1 = Control.variant1
     , variant2 = Control.variant2
     , variant3 = Control.variant3
     , variant4 = Control.variant4
     , variant5 = Control.variant5
-    , endCustom = Control.endCustomType
+    , endCustomType = Control.endCustomType
     }

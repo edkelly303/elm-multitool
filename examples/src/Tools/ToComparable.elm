@@ -22,14 +22,14 @@ interface =
     , record = record
     , field = field
     , endRecord = endRecord
-    , custom = custom
-    , tag0 = tag0
-    , tag1 = tag1
-    , tag2 = tag2
-    , tag3 = tag3
-    , tag4 = tag4
-    , tag5 = tag5
-    , endCustom = endCustom
+    , customType = customType
+    , variant0 = variant0
+    , variant1 = variant1
+    , variant2 = variant2
+    , variant3 = variant3
+    , variant4 = variant4
+    , variant5 = variant5
+    , endCustomType = endCustomType
     }
 
 
@@ -39,7 +39,7 @@ list child =
 
 
 maybe child =
-    custom
+    customType
         (\just nothing tag ->
             case tag of
                 Just child_ ->
@@ -48,13 +48,13 @@ maybe child =
                 Nothing ->
                     nothing
         )
-        |> tag1 "Just" Just child
-        |> tag0 "Nothing" Nothing
-        |> endCustom
+        |> variant1 "Just" Just child
+        |> variant0 "Nothing" Nothing
+        |> endCustomType
 
 
 result error value =
-    custom
+    customType
         (\ok err tag ->
             case tag of
                 Ok value_ ->
@@ -63,9 +63,9 @@ result error value =
                 Err error_ ->
                     err error_
         )
-        |> tag1 "Err" Err error
-        |> tag1 "Ok" Ok value
-        |> endCustom
+        |> variant1 "Err" Err error
+        |> variant1 "Ok" Ok value
+        |> endCustomType
 
 
 array item =
@@ -100,21 +100,21 @@ endRecord builder =
     \recordData -> builder recordData
 
 
-custom dtor =
+customType dtor =
     { dtor = dtor, index = 0 }
 
 
-tag0 tagName tagCtor { dtor, index } =
+variant0 tagName tagCtor { dtor, index } =
     { dtor = dtor [ String.fromInt index ], index = index + 1 }
 
 
-tag1 tagName tagCtor toComp1 { dtor, index } =
+variant1 tagName tagCtor toComp1 { dtor, index } =
     { dtor = dtor (\arg1 -> String.fromInt index :: toComp1 arg1)
     , index = index + 1
     }
 
 
-tag2 tagName tagCtor toComp1 toComp2 { dtor, index } =
+variant2 tagName tagCtor toComp1 toComp2 { dtor, index } =
     { dtor =
         dtor
             (\arg1 arg2 ->
@@ -125,7 +125,7 @@ tag2 tagName tagCtor toComp1 toComp2 { dtor, index } =
     }
 
 
-tag3 tagName tagCtor toComp1 toComp2 toComp3 { dtor, index } =
+variant3 tagName tagCtor toComp1 toComp2 toComp3 { dtor, index } =
     { dtor =
         dtor
             (\arg1 arg2 arg3 ->
@@ -139,7 +139,7 @@ tag3 tagName tagCtor toComp1 toComp2 toComp3 { dtor, index } =
     }
 
 
-tag4 tagName tagCtor toComp1 toComp2 toComp3 toComp4 { dtor, index } =
+variant4 tagName tagCtor toComp1 toComp2 toComp3 toComp4 { dtor, index } =
     { dtor =
         dtor
             (\arg1 arg2 arg3 arg4 ->
@@ -154,7 +154,7 @@ tag4 tagName tagCtor toComp1 toComp2 toComp3 toComp4 { dtor, index } =
     }
 
 
-tag5 tagName tagCtor toComp1 toComp2 toComp3 toComp4 toComp5 { dtor, index } =
+variant5 tagName tagCtor toComp1 toComp2 toComp3 toComp4 toComp5 { dtor, index } =
     { dtor =
         dtor
             (\arg1 arg2 arg3 arg4 arg5 ->
@@ -170,7 +170,7 @@ tag5 tagName tagCtor toComp1 toComp2 toComp3 toComp4 toComp5 { dtor, index } =
     }
 
 
-endCustom { dtor } =
+endCustomType { dtor } =
     dtor
 
 

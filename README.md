@@ -121,16 +121,16 @@ roleToolSpec =
                 AdminLevel level -> 
                     adminLevel level
     in
-    tools.custom 
+    tools.customType
         -- We need to define the `match` function using 
         -- let-polymorphism and then pass it to each of our tools 
         -- separately. If anyone can figure out a way to make 
         -- this work without having to pass the function multiple 
         -- times, please let me know!
         { codec = match, control = match } 
-        |> tools.tag0 "Regular" Regular
-        |> tools.tag1 "AdminLevel" AdminLevel tools.int
-        |> tools.endCustom
+        |> tools.variant0 "Regular" Regular
+        |> tools.variant1 "AdminLevel" AdminLevel tools.int
+        |> tools.endCustomType
 ```
 
 Now, to use your tools, you can just do:

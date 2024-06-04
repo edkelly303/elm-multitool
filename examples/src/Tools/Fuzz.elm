@@ -29,14 +29,14 @@ interface =
     , record = record
     , field = field
     , endRecord = endRecord
-    , custom = custom
-    , tag0 = tag0
-    , tag1 = tag1
-    , tag2 = tag2
-    , tag3 = tag3
-    , tag4 = tag4
-    , tag5 = tag5
-    , endCustom = endCustom
+    , customType = custom
+    , variant0 = tag0
+    , variant1 = tag1
+    , variant2 = tag2
+    , variant3 = tag3
+    , variant4 = tag4
+    , variant5 = tag5
+    , endCustomType = endCustom
     }
 
 
