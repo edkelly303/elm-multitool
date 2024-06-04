@@ -23,11 +23,11 @@ interface =
         \_ getter subControl -> Control.field getter subControl
     , endRecord = Control.endRecord
     , custom = Control.customType
-    , tag0 = Control.tag0
-    , tag1 = Control.tag1
-    , tag2 = Control.tag2
-    , tag3 = Control.tag3
-    , tag4 = Control.tag4
-    , tag5 = Control.tag5
+    , variant0 = Control.variant0
+    , variant1 = Control.variant1
+    , variant2 = Control.variant2
+    , variant3 = Control.variant3
+    , variant4 = Control.variant4
+    , variant5 = Control.variant5
     , endCustom = Control.endCustomType
     }
