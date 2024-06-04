@@ -169,23 +169,27 @@ view model =
     in
     Html.pre []
         [ Html.h1 [] [ Html.text "elm-multitool demo" ]
-        , Html.h2 [] [ Html.text "Tools.Control: forms" ]
+        , heading "Tools.Control: forms"
         , Html.div [ Html.Attributes.style "width" "500px" ] [ form.view model.form ]
-        , Html.h2 [] [ Html.text "Tools.ToString: stringification" ]
-        , viewCharacters model.shapes
-        , Html.h2 [] [ Html.text "Tools.ToComparable: sorting" ]
-        , viewCharacters (List.sortBy shapeTools.toComparable model.shapes)
-        , Html.h2 [] [ Html.text "Tools.Codec: JSON encoding" ]
+        , heading "Tools.ToString: stringification"
+        , viewShapes model.shapes
+        , heading "Tools.ToComparable: sorting"
+        , viewShapes (List.sortBy shapeTools.toComparable model.shapes)
+        , heading "Tools.Codec: JSON encoding" 
         , Html.text json
-        , Html.h2 [] [ Html.text "Tools.Random: random generators" ]
-        , viewCharacters (model.random |> Tuple.first)
-        , Html.h2 [] [ Html.text "Tools.Fuzz: fuzzers for testing" ]
-        , viewCharacters (Fuzz.examples 1 shapeTools.fuzz)
+        , heading "Tools.Random: random generators"
+        , viewShapes (model.random |> Tuple.first)
+        , heading "Tools.Fuzz: fuzzers for testing"
+        , viewShapes (Fuzz.examples 1 shapeTools.fuzz)
         ]
 
+        
+heading txt = 
+    Html.h2 [] [ Html.text txt ]
 
-viewCharacters characterList =
-    characterList
+
+viewShapes shapeList =
+    shapeList
         |> List.map shapeTools.toString
         |> String.join "\n"
         |> Html.text
