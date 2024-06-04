@@ -42,10 +42,10 @@ userCodec =
 
 userControl = 
     Control.record User
-        |> Control.field "name" .name Control.string
-        |> Control.field "age" .age Control.int
-        |> Control.field "role" .role roleControl
-        |> Control.end
+        |> Control.field .name Control.string
+        |> Control.field .age Control.int
+        |> Control.field .role roleControl
+        |> Control.endRecord
 
 roleCodec =
     Codec.custom 
@@ -71,9 +71,9 @@ roleControl =
                 AdminLevel level -> 
                     adminLevel level
         )
-        |> Control.tag0 "Regular" Regular
-        |> Control.tag1 "AdminLevel" AdminLevel Control.int
-        |> Control.end
+        |> Control.variant0 "Regular" Regular
+        |> Control.variant1 "AdminLevel" AdminLevel Control.int
+        |> Control.endCustomType
 ```
 If you want to create controls and codecs for many types across your codebase, this could get tedious.
 
