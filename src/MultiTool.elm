@@ -668,30 +668,36 @@ resultMaker result_ next ( error, restErrors ) ( value, restValues ) =
     )
 
 
+doMakeRecord : ((a -> ()) -> b -> c) -> b -> c
 doMakeRecord recordMaker_ recordConstructor =
     recordMaker_ (\_ -> ()) recordConstructor
 
 
+recordMaker : (c -> a) -> (c -> b) -> c -> ( a, b )
 recordMaker record_ next recordConstructor =
     ( record_ recordConstructor
     , next recordConstructor
     )
 
 
+doMakeFields : ((a -> b -> () -> () -> ()) -> c -> d -> e -> f -> g) -> c -> d -> e -> f -> g
 doMakeFields fieldMaker_ fieldName getField child recordBuilders =
     fieldMaker_ (\_ _ () () -> ()) fieldName getField child recordBuilders
 
 
+fieldMaker : (c -> d -> a -> b -> e) -> (c -> d -> f -> g -> h) -> c -> d -> ( a, f ) -> ( b, g ) -> ( e, h )
 fieldMaker field_ next fieldName getField ( child, restChilds ) ( builder, restBuilders ) =
     ( field_ fieldName getField child builder
     , next fieldName getField restChilds restBuilders
     )
 
 
+doEndRecord : ((() -> ()) -> b -> a) -> b -> a
 doEndRecord recordEnder_ builder =
     recordEnder_ (\() -> ()) builder
 
 
+recordEnder : (a -> b) -> (c -> d) -> ( a, c ) -> ( b, d )
 recordEnder endRecord_ next ( builder, restBuilders ) =
     ( endRecord_ builder
     , next restBuilders
