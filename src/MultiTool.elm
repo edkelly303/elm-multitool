@@ -115,8 +115,8 @@ define toolConstructor tweakConstructor =
         -- constructing tweakers
         , before = identity
         , befores = identity
-        , after = {}
-        , afters = {}
+        , after = ()
+        , afters = ()
         , tweakerMaker = identity
         , constructTweak = identity
         , applyDelta = identity
@@ -392,47 +392,47 @@ end (Builder toolBuilder) =
     let
         -- primitives
         strings =
-            toolBuilder.string {}
+            toolBuilder.string ()
 
         ints =
-            toolBuilder.int {}
+            toolBuilder.int ()
 
         bools =
-            toolBuilder.bool {}
+            toolBuilder.bool ()
 
         floats =
-            toolBuilder.float {}
+            toolBuilder.float ()
 
         chars =
-            toolBuilder.char {}
+            toolBuilder.char ()
 
         -- custom type combinators
         customs =
-            toolBuilder.customType {}
+            toolBuilder.customType ()
 
         variant0s =
-            toolBuilder.variant0 {}
+            toolBuilder.variant0 ()
 
         variant1s =
-            toolBuilder.variant1 {}
+            toolBuilder.variant1 ()
 
         variant2s =
-            toolBuilder.variant2 {}
+            toolBuilder.variant2 ()
 
         variant3s =
-            toolBuilder.variant3 {}
+            toolBuilder.variant3 ()
 
         variant4s =
-            toolBuilder.variant4 {}
+            toolBuilder.variant4 ()
 
         variant5s =
-            toolBuilder.variant5 {}
+            toolBuilder.variant5 ()
 
         endCustoms =
-            toolBuilder.endCustomType {}
+            toolBuilder.endCustomType ()
 
         destructorFieldGetters =
-            toolBuilder.destructorFieldGetter {}
+            toolBuilder.destructorFieldGetter ()
     in
     { -- primitive types
       string = ToolSpec strings
@@ -521,7 +521,7 @@ end (Builder toolBuilder) =
     , tweak =
         let
             tweakers =
-                doMakeTweakers toolBuilder.tweakerMaker toolBuilder.applyDelta (toolBuilder.befores {}) toolBuilder.afters
+                doMakeTweakers toolBuilder.tweakerMaker toolBuilder.applyDelta (toolBuilder.befores ()) toolBuilder.afters
         in
         doConstructTweak toolBuilder.constructTweak toolBuilder.tweakConstructor tweakers
     }
@@ -533,9 +533,9 @@ type ToolSpec toolSpec
     = ToolSpec toolSpec
 
 
-doMakeTweakers : ((a -> {} -> {} -> {}) -> d -> e -> f -> g) -> d -> e -> f -> g
+doMakeTweakers : ((a -> () -> () -> ()) -> d -> e -> f -> g) -> d -> e -> f -> g
 doMakeTweakers tweakerMaker_ applyDelta_ befores afters =
-    tweakerMaker_ (\_ {} {} -> {}) applyDelta_ befores afters
+    tweakerMaker_ (\_ () () -> ()) applyDelta_ befores afters
 
 
 tweakerMaker next applyDelta_ ( before, restBefores ) ( after, restAfters ) =
@@ -544,7 +544,7 @@ tweakerMaker next applyDelta_ ( before, restBefores ) ( after, restAfters ) =
             delta =
                 before ( Just mapper, after )
         in
-        applyDelta_ (\{} {} -> {}) delta toolSpec
+        applyDelta_ (\() () -> ()) delta toolSpec
             |> ToolSpec
     , next applyDelta_ restBefores restAfters
     )
@@ -562,9 +562,9 @@ applyDelta next ( delta, restDeltas ) ( toolSpec, restToolSpecs ) =
     )
 
 
-doConstructTweak : ((a -> {} -> a) -> c -> d -> e) -> c -> d -> e
+doConstructTweak : ((a -> () -> a) -> c -> d -> e) -> c -> d -> e
 doConstructTweak constructTweak_ tweakConstructor tweakers =
-    constructTweak_ (\tc {} -> tc) tweakConstructor tweakers
+    constructTweak_ (\tc () -> tc) tweakConstructor tweakers
 
 
 constructTweak : (a -> b -> c) -> (d -> a) -> ( d, b ) -> c
@@ -572,9 +572,9 @@ constructTweak next tweakConstructor ( tweaker, restTweakers ) =
     next (tweakConstructor tweaker) restTweakers
 
 
-doMakeList : (({} -> {}) -> b -> c) -> b -> c
+doMakeList : ((() -> ()) -> b -> c) -> b -> c
 doMakeList listMaker_ listChildren_ =
-    listMaker_ (\{} -> {}) listChildren_
+    listMaker_ (\() -> ()) listChildren_
 
 
 listMaker : (a -> b) -> (c -> d) -> ( a, c ) -> ( b, d )
@@ -584,9 +584,9 @@ listMaker list_ next ( listChild, restListChildren ) =
     )
 
 
-doMakeMaybe : (({} -> {}) -> b -> c) -> b -> c
+doMakeMaybe : ((() -> ()) -> b -> c) -> b -> c
 doMakeMaybe maybeMaker_ maybeContents_ =
-    maybeMaker_ (\{} -> {}) maybeContents_
+    maybeMaker_ (\() -> ()) maybeContents_
 
 
 maybeMaker : (a -> b) -> (c -> d) -> ( a, c ) -> ( b, d )
@@ -596,9 +596,9 @@ maybeMaker maybe_ next ( maybeContent, restMaybeContents ) =
     )
 
 
-doMakeArray : (({} -> {}) -> b -> c) -> b -> c
+doMakeArray : ((() -> ()) -> b -> c) -> b -> c
 doMakeArray maker_ contents_ =
-    maker_ (\{} -> {}) contents_
+    maker_ (\() -> ()) contents_
 
 
 arrayMaker : (a -> b) -> (c -> d) -> ( a, c ) -> ( b, d )
@@ -608,9 +608,9 @@ arrayMaker array_ next ( content, restContents ) =
     )
 
 
-doMakeDict : (({} -> {} -> {}) -> c -> d -> e) -> c -> d -> e
+doMakeDict : ((() -> () -> ()) -> c -> d -> e) -> c -> d -> e
 doMakeDict dictMaker_ keys_ values_ =
-    dictMaker_ (\{} {} -> {}) keys_ values_
+    dictMaker_ (\() () -> ()) keys_ values_
 
 
 dictMaker : (a -> b -> c) -> (d -> e -> f) -> ( a, d ) -> ( b, e ) -> ( c, f )
@@ -620,9 +620,9 @@ dictMaker dict_ next ( key_, restKeys ) ( value_, restValues ) =
     )
 
 
-doMakeSet : (({} -> {}) -> b -> c) -> b -> c
+doMakeSet : ((() -> ()) -> b -> c) -> b -> c
 doMakeSet setMaker_ contents_ =
-    setMaker_ (\{} -> {}) contents_
+    setMaker_ (\() -> ()) contents_
 
 
 setMaker : (a -> b) -> (c -> d) -> ( a, c ) -> ( b, d )
@@ -632,9 +632,9 @@ setMaker set_ next ( content, restContents ) =
     )
 
 
-doMakeTuple : (({} -> {} -> {}) -> c -> d -> e) -> c -> d -> e
+doMakeTuple : ((() -> () -> ()) -> c -> d -> e) -> c -> d -> e
 doMakeTuple tupleMaker_ a b =
-    tupleMaker_ (\{} {} -> {}) a b
+    tupleMaker_ (\() () -> ()) a b
 
 
 tupleMaker : (a -> b -> c) -> (d -> e -> f) -> ( a, d ) -> ( b, e ) -> ( c, f )
@@ -644,9 +644,9 @@ tupleMaker tuple_ next ( a, restAs ) ( b, restBs ) =
     )
 
 
-doMakeTriple : (({} -> {} -> {} -> {}) -> d -> e -> f -> g) -> d -> e -> f -> g
+doMakeTriple : ((() -> () -> () -> ()) -> d -> e -> f -> g) -> d -> e -> f -> g
 doMakeTriple tripleMaker_ a b c =
-    tripleMaker_ (\{} {} {} -> {}) a b c
+    tripleMaker_ (\() () () -> ()) a b c
 
 
 tripleMaker : (a -> b -> c -> d) -> (e -> f -> g -> h) -> ( a, e ) -> ( b, f ) -> ( c, g ) -> ( d, h )
@@ -656,9 +656,9 @@ tripleMaker triple_ next ( a, restAs ) ( b, restBs ) ( c, restCs ) =
     )
 
 
-doMakeResult : (({} -> {} -> {}) -> c -> d -> e) -> c -> d -> e
+doMakeResult : ((() -> () -> ()) -> c -> d -> e) -> c -> d -> e
 doMakeResult resultMaker_ errors values =
-    resultMaker_ (\{} {} -> {}) errors values
+    resultMaker_ (\() () -> ()) errors values
 
 
 resultMaker : (a -> b -> c) -> (d -> e -> f) -> ( a, d ) -> ( b, e ) -> ( c, f )
@@ -669,7 +669,7 @@ resultMaker result_ next ( error, restErrors ) ( value, restValues ) =
 
 
 doMakeRecord recordMaker_ recordConstructor =
-    recordMaker_ (\_ -> {}) recordConstructor
+    recordMaker_ (\_ -> ()) recordConstructor
 
 
 recordMaker record_ next recordConstructor =
@@ -679,7 +679,7 @@ recordMaker record_ next recordConstructor =
 
 
 doMakeFields fieldMaker_ fieldName getField child recordBuilders =
-    fieldMaker_ (\_ _ {} {} -> {}) fieldName getField child recordBuilders
+    fieldMaker_ (\_ _ () () -> ()) fieldName getField child recordBuilders
 
 
 fieldMaker field_ next fieldName getField ( child, restChilds ) ( builder, restBuilders ) =
@@ -689,7 +689,7 @@ fieldMaker field_ next fieldName getField ( child, restChilds ) ( builder, restB
 
 
 doEndRecord recordEnder_ builder =
-    recordEnder_ (\{} -> {}) builder
+    recordEnder_ (\() -> ()) builder
 
 
 recordEnder endRecord_ next ( builder, restBuilders ) =
@@ -698,9 +698,9 @@ recordEnder endRecord_ next ( builder, restBuilders ) =
     )
 
 
-doMakeCustom : ((a -> {} -> {} -> {}) -> d -> e -> f -> g) -> d -> e -> f -> g
+doMakeCustom : ((a -> () -> () -> ()) -> d -> e -> f -> g) -> d -> e -> f -> g
 doMakeCustom customMaker_ customDestructors destructorFieldGetters customs =
-    customMaker_ (\_ {} {} -> {}) customDestructors destructorFieldGetters customs
+    customMaker_ (\_ () () -> ()) customDestructors destructorFieldGetters customs
 
 
 customMaker : (b -> a -> c -> d) -> b -> ( b -> e, a ) -> ( e -> f, c ) -> ( f, d )
@@ -710,9 +710,9 @@ customMaker next customDestructors ( destructorFieldGetter, restDestructorFieldG
     )
 
 
-doMakeTag0 : ((a -> b -> {} -> {} -> {}) -> e -> f -> g -> h -> i) -> e -> f -> g -> h -> i
+doMakeTag0 : ((a -> b -> () -> () -> ()) -> e -> f -> g -> h -> i) -> e -> f -> g -> h -> i
 doMakeTag0 variant0Maker_ tagName tagConstructor customBuilder variant0s =
-    variant0Maker_ (\_ _ {} {} -> {}) tagName tagConstructor customBuilder variant0s
+    variant0Maker_ (\_ _ () () -> ()) tagName tagConstructor customBuilder variant0s
 
 
 variant0Maker : (b -> c -> a -> d -> e) -> b -> c -> ( f, a ) -> ( b -> c -> f -> g, d ) -> ( g, e )
@@ -722,9 +722,9 @@ variant0Maker next tagName tagConstructor ( customBuilder, restCustomBuilders ) 
     )
 
 
-doMakeTag1 : ((a -> b -> {} -> {} -> {} -> {}) -> f -> g -> h -> i -> j -> k) -> f -> g -> h -> i -> j -> k
+doMakeTag1 : ((a -> b -> () -> () -> () -> ()) -> f -> g -> h -> i -> j -> k) -> f -> g -> h -> i -> j -> k
 doMakeTag1 variant1Maker_ tagName tagConstructor child1 customBuilder variant1s =
-    variant1Maker_ (\_ _ {} {} {} -> {}) tagName tagConstructor child1 customBuilder variant1s
+    variant1Maker_ (\_ _ () () () -> ()) tagName tagConstructor child1 customBuilder variant1s
 
 
 variant1Maker : (b -> c -> a -> d -> e -> f) -> b -> c -> ( g, a ) -> ( h, d ) -> ( b -> c -> g -> h -> i, e ) -> ( i, f )
@@ -734,9 +734,9 @@ variant1Maker next tagName tagConstructor ( child1, restChild1s ) ( customBuilde
     )
 
 
-doMakeTag2 : ((a -> b -> {} -> {} -> {} -> {} -> {}) -> g -> h -> i -> j -> k -> l -> m) -> g -> h -> i -> j -> k -> l -> m
+doMakeTag2 : ((a -> b -> () -> () -> () -> () -> ()) -> g -> h -> i -> j -> k -> l -> m) -> g -> h -> i -> j -> k -> l -> m
 doMakeTag2 variant2Maker_ tagName tagConstructor arg1Spec arg2Spec customBuilder variant2s =
-    variant2Maker_ (\_ _ {} {} {} {} -> {}) tagName tagConstructor arg1Spec arg2Spec customBuilder variant2s
+    variant2Maker_ (\_ _ () () () () -> ()) tagName tagConstructor arg1Spec arg2Spec customBuilder variant2s
 
 
 variant2Maker : (b -> c -> a -> d -> e -> f -> g) -> b -> c -> ( h, a ) -> ( i, d ) -> ( j, e ) -> ( b -> c -> h -> i -> j -> k, f ) -> ( k, g )
@@ -746,9 +746,9 @@ variant2Maker next tagName tagConstructor ( arg1Spec, restC1s ) ( arg2Spec, rest
     )
 
 
-doMakeTag3 : ((a -> b -> {} -> {} -> {} -> {} -> {} -> {}) -> h -> i -> j -> k -> l -> m -> n -> o) -> h -> i -> j -> k -> l -> m -> n -> o
+doMakeTag3 : ((a -> b -> () -> () -> () -> () -> () -> ()) -> h -> i -> j -> k -> l -> m -> n -> o) -> h -> i -> j -> k -> l -> m -> n -> o
 doMakeTag3 tagMaker_ tagName tagConstructor arg1Spec arg2Spec arg3Spec customBuilder tags =
-    tagMaker_ (\_ _ {} {} {} {} {} -> {}) tagName tagConstructor arg1Spec arg2Spec arg3Spec customBuilder tags
+    tagMaker_ (\_ _ () () () () () -> ()) tagName tagConstructor arg1Spec arg2Spec arg3Spec customBuilder tags
 
 
 variant3Maker : (b -> c -> a -> d -> e -> f -> g -> h) -> b -> c -> ( i, a ) -> ( j, d ) -> ( k, e ) -> ( l, f ) -> ( b -> c -> i -> j -> k -> l -> m, g ) -> ( m, h )
@@ -758,9 +758,9 @@ variant3Maker next tagName tagConstructor ( arg1Spec, restC1s ) ( arg2Spec, rest
     )
 
 
-doMakeTag4 : ((a -> b -> {} -> {} -> {} -> {} -> {} -> {} -> {}) -> i -> j -> k -> l -> m -> n -> o -> p -> q) -> i -> j -> k -> l -> m -> n -> o -> p -> q
+doMakeTag4 : ((a -> b -> () -> () -> () -> () -> () -> () -> ()) -> i -> j -> k -> l -> m -> n -> o -> p -> q) -> i -> j -> k -> l -> m -> n -> o -> p -> q
 doMakeTag4 tagMaker_ tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder tags =
-    tagMaker_ (\_ _ {} {} {} {} {} {} -> {}) tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder tags
+    tagMaker_ (\_ _ () () () () () () -> ()) tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder tags
 
 
 variant4Maker : (b -> c -> a -> d -> e -> f -> g -> h -> i) -> b -> c -> ( j, a ) -> ( k, d ) -> ( l, e ) -> ( m, f ) -> ( n, g ) -> ( b -> c -> j -> k -> l -> m -> n -> o, h ) -> ( o, i )
@@ -770,9 +770,9 @@ variant4Maker next tagName tagConstructor ( arg1Spec, restC1s ) ( arg2Spec, rest
     )
 
 
-doMakeTag5 : ((a -> b -> {} -> {} -> {} -> {} -> {} -> {} -> {} -> {}) -> j -> k -> l -> m -> n -> o -> p -> q -> r -> s) -> j -> k -> l -> m -> n -> o -> p -> q -> r -> s
+doMakeTag5 : ((a -> b -> () -> () -> () -> () -> () -> () -> () -> ()) -> j -> k -> l -> m -> n -> o -> p -> q -> r -> s) -> j -> k -> l -> m -> n -> o -> p -> q -> r -> s
 doMakeTag5 tagMaker_ tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder tags =
-    tagMaker_ (\_ _ {} {} {} {} {} {} {} -> {}) tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder tags
+    tagMaker_ (\_ _ () () () () () () () -> ()) tagName tagConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder tags
 
 
 variant5Maker : (b -> c -> a -> d -> e -> f -> g -> h -> i -> j) -> b -> c -> ( k, a ) -> ( l, d ) -> ( m, e ) -> ( n, f ) -> ( o, g ) -> ( p, h ) -> ( b -> c -> k -> l -> m -> n -> o -> p -> q, i ) -> ( q, j )
@@ -782,9 +782,9 @@ variant5Maker next tagName tagConstructor ( arg1Spec, restC1s ) ( arg2Spec, rest
     )
 
 
-doEndCustom : (({} -> {} -> {}) -> c -> d -> e) -> c -> d -> e
+doEndCustom : ((() -> () -> ()) -> c -> d -> e) -> c -> d -> e
 doEndCustom customEnder_ customBuilder endCustoms =
-    customEnder_ (\{} {} -> {}) customBuilder endCustoms
+    customEnder_ (\() () -> ()) customBuilder endCustoms
 
 
 customEnder : (b -> a -> c) -> ( d, b ) -> ( d -> e, a ) -> ( e, c )
@@ -794,9 +794,9 @@ customEnder next ( customBuilder, restCustomBuilders ) ( endCustom, restEndCusto
     )
 
 
-doConstructMultiTool : ((a -> {} -> a) -> c -> d -> e) -> c -> d -> e
+doConstructMultiTool : ((a -> () -> a) -> c -> d -> e) -> c -> d -> e
 doConstructMultiTool constructMultiTool_ ctor builder =
-    constructMultiTool_ (\output {} -> output) ctor builder
+    constructMultiTool_ (\output () -> output) ctor builder
 
 
 constructMultiTool : (a -> b -> c) -> (d -> a) -> ( d, b ) -> c
