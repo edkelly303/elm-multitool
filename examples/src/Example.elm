@@ -16,15 +16,16 @@ import Tools.Fuzz
 import Tools.Random
 import Tools.ToComparable
 import Tools.ToString
+import Tools.Exhaustive
 
-
-type alias Tools codec control fuzz random toString toComparable =
+type alias Tools codec control fuzz random toString toComparable exhaustive =
     { codec : codec
     , control : control
     , fuzz : fuzz
     , random : random
     , toString : toString
     , toComparable : toComparable
+    , exhaustive : exhaustive
     }
 
 
@@ -36,6 +37,7 @@ tools =
         |> MultiTool.add .random Tools.Random.interface
         |> MultiTool.add .toString Tools.ToString.interface
         |> MultiTool.add .toComparable Tools.ToComparable.interface
+        |> MultiTool.add .exhaustive Tools.Exhaustive.interface
         |> MultiTool.end
 
 
@@ -72,6 +74,7 @@ shapeSpec =
         , random = match
         , toString = match
         , toComparable = match
+        , exhaustive = match
         }
         |> tools.variant1 "Circle" Circle tools.int
         |> tools.variant3 "Triangle" Triangle tools.int tools.int tools.int
@@ -108,6 +111,7 @@ init () =
     ( { form = formState
       , shapes = shapes
       , random = ( [], Random.initialSeed 0 )
+      , exhaustive = 0
       }
     , Cmd.batch
         [ Task.perform (\_ -> Tick) (Process.sleep 1000)
@@ -115,15 +119,20 @@ init () =
         ]
     )
 
+numberOfExamples = 
+    4
 
 update msg model =
     case msg of
         Tick ->
             let
                 random =
-                    Random.step (Random.list 4 shapeTools.random) (Tuple.second model.random)
+                    Random.step (Random.list numberOfExamples shapeTools.random) (Tuple.second model.random)
+                exhaustive = model.exhaustive + numberOfExamples 
             in
-            ( { model | random = random }
+            ( { model | random = random
+              , exhaustive = if exhaustive > shapeTools.exhaustive.count then 0 else exhaustive
+              }
             , Task.perform (\_ -> Tick) (Process.sleep 2000)
             )
 
@@ -179,8 +188,11 @@ view model =
         , Html.text json
         , heading "Tools.Random: random generators"
         , viewShapes (model.random |> Tuple.first)
+        , heading "Tools.Exhaustive: exhaustive generators"
+        , Html.p [] [Html.text (String.fromInt model.exhaustive ++ "-" ++ String.fromInt (model.exhaustive + 3) ++ " of " ++ String.fromInt shapeTools.exhaustive.count ++ " generated values:")]
+        , viewShapes (List.range model.exhaustive (model.exhaustive + 3) |> List.filterMap shapeTools.exhaustive.nth)
         , heading "Tools.Fuzz: fuzzers for testing"
-        , viewShapes (Fuzz.examples 1 shapeTools.fuzz)
+        , viewShapes (Fuzz.examples numberOfExamples shapeTools.fuzz)
         ]
 
 
