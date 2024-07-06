@@ -76,7 +76,17 @@ shapeSpec =
         , toComparable = match
         , exhaustive = match
         }
-        |> tools.variant1 "Circle" Circle tools.int
+        |> tools.variant1 "Circle"
+            Circle
+            (tools.tweak.control
+                (\intControl ->
+                    Control.failIf
+                        (\n -> n < 1)
+                        "Must be greater than zero"
+                        intControl
+                )
+                tools.int
+            )
         |> tools.variant3 "Triangle" Triangle tools.int tools.int tools.int
         |> tools.variant2 "Rectangle" Rectangle tools.int tools.int
         |> tools.endCustomType
