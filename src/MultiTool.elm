@@ -66,20 +66,18 @@ the interfaces added to `tools`.
 
 -}
 define :
-    b
-    -> c
+    toolConstructor
+    -> tweakConstructor
     ->
         Builder
             { after : ()
             , afters : ()
-            , applyDelta : a29 -> a29
-            , arrayMaker : a28 -> a28
-            , before : a27 -> a27
-            , befores : a26 -> a26
-            , bool : a25 -> a25
-            , char : a24 -> a24
-            , constructMultiTool : a23 -> a23
-            , constructTweak : a22 -> a22
+            , applyMapper : a27 -> a27
+            , arrayMaker : a26 -> a26
+            , before : a25 -> a25
+            , bool : a24 -> a24
+            , char : a23 -> a23
+            , toolMaker : a22 -> a22
             , customEnder : a21 -> a21
             , customMaker : a20 -> a20
             , dictMaker : a19 -> a19
@@ -93,11 +91,11 @@ define :
             , resultMaker : a11 -> a11
             , setMaker : a10 -> a10
             , string : a9 -> a9
-            , toolConstructor : b
+            , toolConstructor : toolConstructor
             , tripleMaker : a8 -> a8
             , tupleMaker : a7 -> a7
-            , tweakConstructor : c
-            , tweakerMaker : a6 -> a6
+            , tweakConstructor : tweakConstructor
+            , tweakMaker : a6 -> a6
             , variant0Maker : a5 -> a5
             , variant1Maker : a4 -> a4
             , variant2Maker : a3 -> a3
@@ -141,16 +139,14 @@ define toolConstructor tweakConstructor =
 
         -- constructing the multitool
         , toolConstructor = toolConstructor
-        , constructMultiTool = identity
+        , toolMaker = identity
 
         -- constructing tweakers
         , before = identity
-        , befores = identity
         , after = ()
         , afters = ()
-        , tweakerMaker = identity
-        , constructTweak = identity
-        , applyDelta = identity
+        , tweakMaker = identity
+        , applyMapper = identity
         , tweakConstructor = tweakConstructor
         }
 
@@ -215,109 +211,108 @@ designed for piping with the `|>` operator, so you'll usually want to apply this
 
 -}
 add :
-    (c27 -> b23)
+    (c27 -> b20)
     ->
-        { array : a33 -> b14
-        , bool : a50
-        , char : a49
-        , customType : b23 -> a47
-        , dict : a23 -> b10 -> c25
-        , endCustomType : a48 -> b22
-        , endRecord : a13 -> b6
-        , field : c24 -> d14 -> a21 -> b9 -> e5
-        , float : a46
-        , int : a45
-        , list : a17 -> b8
-        , maybe : a15 -> b7
-        , record : c18 -> a11
-        , result : a9 -> b4 -> c17
-        , set : a7 -> b3
-        , string : a44
-        , triple : a4 -> b2 -> c14 -> d8
-        , tuple : a2 -> b1 -> c13
-        , variant0 : c11 -> d5 -> a43 -> b21
-        , variant1 : c9 -> d4 -> a42 -> b20 -> e11
-        , variant2 : c7 -> d3 -> a41 -> b19 -> e10 -> f11
-        , variant3 : c5 -> d2 -> a40 -> b18 -> e9 -> f10 -> g7
-        , variant4 : c3 -> d1 -> a39 -> b17 -> e8 -> f9 -> g6 -> h6
-        , variant5 : c1 -> d -> a38 -> b16 -> e7 -> f8 -> g5 -> h5 -> i3
+        { array : a27 -> b12
+        , bool : a43
+        , char : a42
+        , customType : b20 -> a40
+        , dict : a21 -> b9 -> c25
+        , endCustomType : a41 -> b19
+        , endRecord : a11 -> b5
+        , field : c24 -> d13 -> a19 -> b8 -> e4
+        , float : a39
+        , int : a38
+        , list : a15 -> b7
+        , maybe : a13 -> b6
+        , record : c18 -> a9
+        , result : a7 -> b3 -> c17
+        , set : a5 -> b2
+        , string : a37
+        , triple : a2 -> b1 -> c14 -> d7
+        , tuple : a -> b -> c13
+        , variant0 : c11 -> d5 -> a36 -> b18
+        , variant1 : c9 -> d4 -> a35 -> b17 -> e10
+        , variant2 : c7 -> d3 -> a34 -> b16 -> e9 -> f10
+        , variant3 : c5 -> d2 -> a33 -> b15 -> e8 -> f9 -> g6
+        , variant4 : c3 -> d1 -> a32 -> b14 -> e7 -> f8 -> g5 -> h6
+        , variant5 : c1 -> d -> a31 -> b13 -> e6 -> f7 -> g4 -> h5 -> i3
         }
     ->
         Builder
             { after : r
             , afters : s
-            , applyDelta : a36 -> b15 -> a35 -> c37
-            , arrayMaker : a34 -> c36 -> d19
-            , before : ( Maybe a51, a32 ) -> c35
-            , befores : ( ( Maybe a51, a32 ) -> c35, a31 ) -> c34
-            , bool : ( a50, a30 ) -> c33
-            , char : ( a49, a29 ) -> c32
-            , constructMultiTool : a28 -> a27 -> b13 -> c31
-            , constructTweak : a26 -> a25 -> b12 -> c30
-            , customEnder : (( a48, c29 ) -> ( b22, d16 )) -> c28
-            , customMaker : (c27 -> ( a47, b11 )) -> c26
-            , dictMaker : a24 -> d15 -> e6 -> f7
-            , fieldMaker : a22 -> c24 -> d14 -> f6 -> g4 -> h4
-            , float : ( a46, a20 ) -> c23
-            , int : ( a45, a19 ) -> c22
-            , listMaker : a18 -> c21 -> d13
-            , maybeMaker : a16 -> c20 -> d12
-            , recordEnder : a14 -> c19 -> d11
-            , recordMaker : a12 -> c18 -> b5
-            , resultMaker : a10 -> d10 -> e4 -> f5
-            , setMaker : a8 -> c16 -> d9
-            , string : ( a44, a6 ) -> c15
+            , applyMapper : a29 -> restMappers -> restToolSpecs -> restToolSpecs
+            , arrayMaker : a28 -> c33 -> d17
+            , before : ( Maybe mapper, after ) -> mappers
+            , bool : ( a43, a26 ) -> c32
+            , char : ( a42, a25 ) -> c31
+            , toolMaker : a24 -> a23 -> b11 -> c30
+            , customEnder : (( a41, c29 ) -> ( b19, d15 )) -> c28
+            , customMaker : (c27 -> ( a40, b10 )) -> c26
+            , dictMaker : a22 -> d14 -> e5 -> f6
+            , fieldMaker : a20 -> c24 -> d13 -> f5 -> g3 -> h4
+            , float : ( a39, a18 ) -> c23
+            , int : ( a38, a17 ) -> c22
+            , listMaker : a16 -> c21 -> d12
+            , maybeMaker : a14 -> c20 -> d11
+            , recordEnder : a12 -> c19 -> d10
+            , recordMaker : a10 -> c18 -> b4
+            , resultMaker : a8 -> d9 -> e3 -> f4
+            , setMaker : a6 -> c16 -> d8
+            , string : ( a37, a4 ) -> c15
             , toolConstructor : t
-            , tripleMaker : a5 -> e3 -> f4 -> g3 -> h3
-            , tupleMaker : a3 -> d7 -> e2 -> f3
+            , tripleMaker : a3 -> e2 -> f3 -> g2 -> h3
+            , tupleMaker : a1 -> d6 -> e1 -> f2
             , tweakConstructor : u
-            , tweakerMaker :
-                a1
-                -> ((() -> () -> ()) -> a -> toolSpec -> b)
+            , tweakMaker :
+                (((mapper -> ToolSpec toolSpec -> ToolSpec toolSpec) -> ctor)
+                 -> ((() -> () -> ()) -> mappers -> toolSpec -> toolSpec)
+                 -> ( after, restAfters )
+                 -> tweak
+                )
                 -> c12
-                -> d6
-                -> e1
-            , variant0Maker : (c11 -> d5 -> ( a43, e ) -> ( b21, f1 )) -> c10
+            , variant0Maker : (c11 -> d5 -> ( a36, e ) -> ( b18, f1 )) -> c10
             , variant1Maker :
-                (c9 -> d4 -> ( a42, f ) -> ( b20, g1 ) -> ( e11, h2 )) -> c8
+                (c9 -> d4 -> ( a35, f ) -> ( b17, g1 ) -> ( e10, h2 )) -> c8
             , variant2Maker :
                 (c7
                  -> d3
-                 -> ( a41, g )
-                 -> ( b19, h1 )
-                 -> ( e10, i2 )
-                 -> ( f11, j3 )
+                 -> ( a34, g )
+                 -> ( b16, h1 )
+                 -> ( e9, i2 )
+                 -> ( f10, j3 )
                 )
                 -> c6
             , variant3Maker :
                 (c5
                  -> d2
-                 -> ( a40, h )
-                 -> ( b18, i1 )
-                 -> ( e9, j2 )
-                 -> ( f10, k2 )
-                 -> ( g7, l2 )
+                 -> ( a33, h )
+                 -> ( b15, i1 )
+                 -> ( e8, j2 )
+                 -> ( f9, k2 )
+                 -> ( g6, l2 )
                 )
                 -> c4
             , variant4Maker :
                 (c3
                  -> d1
-                 -> ( a39, i )
-                 -> ( b17, j1 )
-                 -> ( e8, k1 )
-                 -> ( f9, l1 )
-                 -> ( g6, m1 )
+                 -> ( a32, i )
+                 -> ( b14, j1 )
+                 -> ( e7, k1 )
+                 -> ( f8, l1 )
+                 -> ( g5, m1 )
                  -> ( h6, n1 )
                 )
                 -> c2
             , variant5Maker :
                 (c1
                  -> d
-                 -> ( a38, j )
-                 -> ( b16, k )
-                 -> ( e7, l )
-                 -> ( f8, m )
-                 -> ( g5, n )
+                 -> ( a31, j )
+                 -> ( b13, k )
+                 -> ( e6, l )
+                 -> ( f7, m )
+                 -> ( g4, n )
                  -> ( h5, o )
                  -> ( i3, p )
                 )
@@ -325,42 +320,44 @@ add :
             }
     ->
         Builder
-            { after : ( Maybe a37, r )
+            { after : ( Maybe a30, r )
             , afters : ( r, s )
-            , applyDelta :
-                a36 -> ( Maybe (d20 -> d20), b15 ) -> ( d20, a35 ) -> ( d20, c37 )
-            , arrayMaker : a34 -> ( a33, c36 ) -> ( b14, d19 )
-            , before : a32 -> c35
-            , befores : a31 -> c34
-            , bool : a30 -> c33
-            , char : a29 -> c32
-            , constructMultiTool : a28 -> (d18 -> a27) -> ( d18, b13 ) -> c31
-            , constructTweak : a26 -> (d17 -> a25) -> ( d17, b12 ) -> c30
-            , customEnder : (c29 -> d16) -> c28
-            , customMaker : (c27 -> b11) -> c26
-            , dictMaker : a24 -> ( a23, d15 ) -> ( b10, e6 ) -> ( c25, f7 )
+            , applyMapper :
+                a29
+                -> ( Maybe (toolSpec1 -> toolSpec1), restMappers )
+                -> ( toolSpec1, restToolSpecs )
+                -> ( toolSpec1, restToolSpecs )
+            , arrayMaker : a28 -> ( a27, c33 ) -> ( b12, d17 )
+            , before : after -> mappers
+            , bool : a26 -> c32
+            , char : a25 -> c31
+            , toolMaker : a24 -> (d16 -> a23) -> ( d16, b11 ) -> c30
+            , customEnder : (c29 -> d15) -> c28
+            , customMaker : (c27 -> b10) -> c26
+            , dictMaker : a22 -> ( a21, d14 ) -> ( b9, e5 ) -> ( c25, f6 )
             , fieldMaker :
-                a22 -> c24 -> d14 -> ( a21, f6 ) -> ( b9, g4 ) -> ( e5, h4 )
-            , float : a20 -> c23
-            , int : a19 -> c22
-            , listMaker : a18 -> ( a17, c21 ) -> ( b8, d13 )
-            , maybeMaker : a16 -> ( a15, c20 ) -> ( b7, d12 )
-            , recordEnder : a14 -> ( a13, c19 ) -> ( b6, d11 )
-            , recordMaker : a12 -> c18 -> ( a11, b5 )
-            , resultMaker : a10 -> ( a9, d10 ) -> ( b4, e4 ) -> ( c17, f5 )
-            , setMaker : a8 -> ( a7, c16 ) -> ( b3, d9 )
-            , string : a6 -> c15
+                a20 -> c24 -> d13 -> ( a19, f5 ) -> ( b8, g3 ) -> ( e4, h4 )
+            , float : a18 -> c23
+            , int : a17 -> c22
+            , listMaker : a16 -> ( a15, c21 ) -> ( b7, d12 )
+            , maybeMaker : a14 -> ( a13, c20 ) -> ( b6, d11 )
+            , recordEnder : a12 -> ( a11, c19 ) -> ( b5, d10 )
+            , recordMaker : a10 -> c18 -> ( a9, b4 )
+            , resultMaker : a8 -> ( a7, d9 ) -> ( b3, e3 ) -> ( c17, f4 )
+            , setMaker : a6 -> ( a5, c16 ) -> ( b2, d8 )
+            , string : a4 -> c15
             , toolConstructor : t
             , tripleMaker :
-                a5 -> ( a4, e3 ) -> ( b2, f4 ) -> ( c14, g3 ) -> ( d8, h3 )
-            , tupleMaker : a3 -> ( a2, d7 ) -> ( b1, e2 ) -> ( c13, f3 )
+                a3 -> ( a2, e2 ) -> ( b1, f3 ) -> ( c14, g2 ) -> ( d7, h3 )
+            , tupleMaker : a1 -> ( a, d6 ) -> ( b, e1 ) -> ( c13, f2 )
             , tweakConstructor : u
-            , tweakerMaker :
-                a1
-                -> ((() -> () -> ()) -> a -> toolSpec -> b)
-                -> ( ( Maybe f2, g2 ) -> a, c12 )
-                -> ( g2, d6 )
-                -> ( f2 -> ToolSpec toolSpec -> ToolSpec b, e1 )
+            , tweakMaker :
+                (ctor
+                 -> ((() -> () -> ()) -> mappers -> toolSpec -> toolSpec)
+                 -> restAfters
+                 -> tweak
+                )
+                -> c12
             , variant0Maker : (c11 -> d5 -> e -> f1) -> c10
             , variant1Maker : (c9 -> d4 -> f -> g1 -> h2) -> c8
             , variant2Maker : (c7 -> d3 -> g -> h1 -> i2 -> j3) -> c6
@@ -404,16 +401,14 @@ add destructorFieldGetter tool (Builder builder) =
 
         -- constructing the multitool
         , toolConstructor = builder.toolConstructor
-        , constructMultiTool = builder.constructMultiTool >> constructMultiTool
+        , toolMaker = builder.toolMaker >> toolMaker
 
         -- constructing tweakers
         , before = builder.before << Tuple.pair Nothing
-        , befores = builder.befores << Tuple.pair builder.before
         , after = ( Nothing, builder.after )
         , afters = ( builder.after, builder.afters )
-        , tweakerMaker = builder.tweakerMaker >> tweakerMaker
-        , applyDelta = builder.applyDelta >> applyDelta
-        , constructTweak = builder.constructTweak >> constructTweak
+        , tweakMaker = builder.tweakMaker << tweakMaker builder.before
+        , applyMapper = builder.applyMapper >> applyMapper
         , tweakConstructor = builder.tweakConstructor
         }
 
@@ -566,35 +561,38 @@ For example, if you're using `edkelly303/elm-any-type-forms`, you could customis
 -}
 end :
     Builder
-        { after : xx
-        , afters : f8
-        , applyDelta : d13
+        { after : after
+        , afters : afters
+        , applyMapper : applyMapper
         , arrayMaker : (() -> ()) -> b7 -> a9
-        , before : xx1
-        , befores : () -> e10
+        , before : before
         , bool : () -> toolSpec4
         , char : () -> toolSpec3
-        , constructMultiTool : (a21 -> () -> a21) -> c13 -> d11 -> e9
-        , constructTweak : (a20 -> () -> a20) -> c12 -> d12 -> e6
+        , toolMaker : (a19 -> () -> a19) -> c12 -> d11 -> a19
         , customEnder : (() -> ()) -> b5 -> a7
-        , customMaker : (a19 -> ()) -> b6 -> c11
+        , customMaker : (a18 -> ()) -> b6 -> c11
         , dictMaker : (() -> () -> ()) -> c10 -> d10 -> a8
         , fieldMaker :
-            (a18 -> b14 -> () -> () -> ()) -> c9 -> d9 -> e8 -> f7 -> g5
+            (a17 -> b14 -> () -> () -> ()) -> c9 -> d9 -> e7 -> f7 -> g5
         , float : () -> toolSpec2
         , int : () -> toolSpec1
         , listMaker : (() -> ()) -> b3 -> a5
         , maybeMaker : (() -> ()) -> b2 -> a4
         , recordEnder : (() -> ()) -> b4 -> a6
-        , recordMaker : (a17 -> ()) -> b1 -> c8
+        , recordMaker : (a16 -> ()) -> b1 -> c8
         , resultMaker : (() -> () -> ()) -> c7 -> d8 -> a3
         , setMaker : (() -> ()) -> b -> a2
         , string : () -> toolSpec
-        , toolConstructor : c13
-        , tripleMaker : (() -> () -> () -> ()) -> d7 -> e7 -> f6 -> a1
+        , toolConstructor : c12
+        , tripleMaker : (() -> () -> () -> ()) -> d7 -> e6 -> f6 -> a1
         , tupleMaker : (() -> () -> ()) -> c6 -> d6 -> a
-        , tweakConstructor : c12
-        , tweakerMaker : (a16 -> () -> () -> ()) -> d13 -> e10 -> f8 -> d12
+        , tweakConstructor : ctor
+        , tweakMaker :
+            (tweak -> applyMapper -> () -> tweak)
+            -> ctor
+            -> applyMapper
+            -> afters
+            -> tweak
         , variant0Maker : (a15 -> b13 -> () -> ()) -> c5 -> d5 -> e5 -> f5
         , variant1Maker :
             (a14 -> b12 -> () -> () -> ()) -> c4 -> d4 -> e4 -> f4 -> g4
@@ -640,13 +638,13 @@ end :
     ->
         { array : ToolSpec b7 -> ToolSpec a9
         , bool : ToolSpec toolSpec4
-        , build : ToolSpec d11 -> e9
+        , build : ToolSpec d11 -> a19
         , char : ToolSpec toolSpec3
         , customType : b6 -> c11
         , dict : ToolSpec c10 -> ToolSpec d10 -> ToolSpec a8
         , endCustomType : b5 -> ToolSpec a7
         , endRecord : b4 -> ToolSpec a6
-        , field : c9 -> d9 -> ToolSpec e8 -> f7 -> g5
+        , field : c9 -> d9 -> ToolSpec e7 -> f7 -> g5
         , float : ToolSpec toolSpec2
         , int : ToolSpec toolSpec1
         , list : ToolSpec b3 -> ToolSpec a5
@@ -655,9 +653,9 @@ end :
         , result : ToolSpec c7 -> ToolSpec d8 -> ToolSpec a3
         , set : ToolSpec b -> ToolSpec a2
         , string : ToolSpec toolSpec
-        , triple : ToolSpec d7 -> ToolSpec e7 -> ToolSpec f6 -> ToolSpec a1
+        , triple : ToolSpec d7 -> ToolSpec e6 -> ToolSpec f6 -> ToolSpec a1
         , tuple : ToolSpec c6 -> ToolSpec d6 -> ToolSpec a
-        , tweak : e6
+        , tweak : tweak
         , variant0 : c5 -> d5 -> e5 -> f5
         , variant1 : c4 -> d4 -> ToolSpec e4 -> f4 -> g4
         , variant2 : c3 -> d3 -> ToolSpec e3 -> ToolSpec f3 -> g3 -> h3
@@ -784,13 +782,9 @@ end (Builder toolBuilder) =
     -- turn a spec into a usable multiTool
     , build =
         \(ToolSpec toolSpec) ->
-            doConstructMultiTool toolBuilder.constructMultiTool toolBuilder.toolConstructor toolSpec
+            doMakeTool toolBuilder.toolMaker toolBuilder.toolConstructor toolSpec
     , tweak =
-        let
-            tweakers =
-                doMakeTweakers toolBuilder.tweakerMaker toolBuilder.applyDelta (toolBuilder.befores ()) toolBuilder.afters
-        in
-        doConstructTweak toolBuilder.constructTweak toolBuilder.tweakConstructor tweakers
+        doMakeTweak toolBuilder.tweakMaker toolBuilder.tweakConstructor toolBuilder.applyMapper toolBuilder.afters
     }
 
 
@@ -800,31 +794,53 @@ type ToolSpec toolSpec
     = ToolSpec toolSpec
 
 
-doMakeTweakers : ((a -> () -> () -> ()) -> d -> e -> f -> g) -> d -> e -> f -> g
-doMakeTweakers tweakerMaker_ applyDelta_ befores afters =
-    tweakerMaker_ (\_ () () -> ()) applyDelta_ befores afters
+doMakeTool : ((tool -> () -> tool) -> toolConstructor -> builder -> tool) -> toolConstructor -> builder -> tool
+doMakeTool toolMaker_ ctor builder =
+    toolMaker_ (\output () -> output) ctor builder
 
 
-tweakerMaker :
-    (((() -> () -> ()) -> a -> toolSpec -> b) -> c -> d -> e)
-    -> ((() -> () -> ()) -> a -> toolSpec -> b)
-    -> ( ( Maybe f, g ) -> a, c )
-    -> ( g, d )
-    -> ( f -> ToolSpec toolSpec -> ToolSpec b, e )
-tweakerMaker next applyDelta_ ( before, restBefores ) ( after, restAfters ) =
-    ( \mapper (ToolSpec toolSpec) ->
-        let
-            delta =
-                before ( Just mapper, after )
-        in
-        applyDelta_ (\() () -> ()) delta toolSpec
-            |> ToolSpec
-    , next applyDelta_ restBefores restAfters
-    )
+toolMaker : (toolConstructor -> restBuilders -> tool) -> (builder -> toolConstructor) -> ( builder, restBuilders ) -> tool
+toolMaker next ctor ( builder, restBuilders ) =
+    next (ctor builder) restBuilders
 
 
-applyDelta : (b -> a -> c) -> ( Maybe (d -> d), b ) -> ( d, a ) -> ( d, c )
-applyDelta next ( delta, restDeltas ) ( toolSpec, restToolSpecs ) =
+doMakeTweak :
+    ((tweak -> applyMapper -> () -> tweak) -> tweakConstructor -> applyMapper -> afters -> tweak)
+    -> tweakConstructor
+    -> applyMapper
+    -> afters
+    -> tweak
+doMakeTweak tweakMaker_ ctor applyMapper_ afters =
+    tweakMaker_ (\tweak _ () -> tweak) ctor applyMapper_ afters
+
+
+tweakMaker :
+    (( Maybe mapper, after ) -> mappers)
+    -> (tweakConstructor -> ((() -> () -> ()) -> mappers -> toolSpec -> toolSpec) -> restAfters -> tweak)
+    -> ((mapper -> ToolSpec toolSpec -> ToolSpec toolSpec) -> tweakConstructor)
+    -> ((() -> () -> ()) -> mappers -> toolSpec -> toolSpec)
+    -> ( after, restAfters )
+    -> tweak
+tweakMaker before next ctor applyMapper_ ( after, restAfters ) =
+    let
+        tweaker =
+            \mapper (ToolSpec toolSpec) ->
+                let
+                    mappers =
+                        before ( Just mapper, after )
+                in
+                applyMapper_ (\() () -> ()) mappers toolSpec
+                    |> ToolSpec
+    in
+    next (ctor tweaker) applyMapper_ restAfters
+
+
+applyMapper :
+    (restMappers -> restToolSpecs -> restToolSpecs)
+    -> ( Maybe (toolSpec -> toolSpec), restMappers )
+    -> ( toolSpec, restToolSpecs )
+    -> ( toolSpec, restToolSpecs )
+applyMapper next ( delta, restDeltas ) ( toolSpec, restToolSpecs ) =
     ( case delta of
         Just mapper ->
             mapper toolSpec
@@ -833,16 +849,6 @@ applyDelta next ( delta, restDeltas ) ( toolSpec, restToolSpecs ) =
             toolSpec
     , next restDeltas restToolSpecs
     )
-
-
-doConstructTweak : ((a -> () -> a) -> c -> d -> e) -> c -> d -> e
-doConstructTweak constructTweak_ tweakConstructor tweakers =
-    constructTweak_ (\tc () -> tc) tweakConstructor tweakers
-
-
-constructTweak : (a -> b -> c) -> (d -> a) -> ( d, b ) -> c
-constructTweak next tweakConstructor ( tweaker, restTweakers ) =
-    next (tweakConstructor tweaker) restTweakers
 
 
 doMakeList : ((() -> ()) -> b -> c) -> b -> c
@@ -1071,13 +1077,3 @@ customEnder endCustom_ next ( customBuilder, restCustomBuilders ) =
     ( endCustom_ customBuilder
     , next restCustomBuilders
     )
-
-
-doConstructMultiTool : ((a -> () -> a) -> c -> d -> e) -> c -> d -> e
-doConstructMultiTool constructMultiTool_ ctor builder =
-    constructMultiTool_ (\output () -> output) ctor builder
-
-
-constructMultiTool : (a -> b -> c) -> (d -> a) -> ( d, b ) -> c
-constructMultiTool next ctor ( builder, restBuilders ) =
-    next (ctor builder) restBuilders
