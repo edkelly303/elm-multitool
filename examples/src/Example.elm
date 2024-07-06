@@ -12,11 +12,12 @@ import Random
 import Task
 import Tools.Codec
 import Tools.Control
+import Tools.Exhaustive
 import Tools.Fuzz
 import Tools.Random
 import Tools.ToComparable
 import Tools.ToString
-import Tools.Exhaustive
+
 
 type alias Tools codec control fuzz random toString toComparable exhaustive =
     { codec : codec
@@ -129,8 +130,10 @@ init () =
         ]
     )
 
-numberOfExamples = 
+
+numberOfExamples =
     4
+
 
 update msg model =
     case msg of
@@ -138,10 +141,18 @@ update msg model =
             let
                 random =
                     Random.step (Random.list numberOfExamples shapeTools.random) (Tuple.second model.random)
-                exhaustive = model.exhaustive + numberOfExamples 
+
+                exhaustive =
+                    model.exhaustive + numberOfExamples
             in
-            ( { model | random = random
-              , exhaustive = if exhaustive > shapeTools.exhaustive.count then 0 else exhaustive
+            ( { model
+                | random = random
+                , exhaustive =
+                    if exhaustive > shapeTools.exhaustive.count then
+                        0
+
+                    else
+                        exhaustive
               }
             , Task.perform (\_ -> Tick) (Process.sleep 2000)
             )
@@ -199,7 +210,7 @@ view model =
         , heading "Tools.Random: random generators"
         , viewShapes (model.random |> Tuple.first)
         , heading "Tools.Exhaustive: exhaustive generators"
-        , Html.p [] [Html.text (String.fromInt model.exhaustive ++ "-" ++ String.fromInt (model.exhaustive + 3) ++ " of " ++ String.fromInt shapeTools.exhaustive.count ++ " generated values:")]
+        , Html.p [] [ Html.text (String.fromInt model.exhaustive ++ "-" ++ String.fromInt (model.exhaustive + 3) ++ " of " ++ String.fromInt shapeTools.exhaustive.count ++ " generated values:") ]
         , viewShapes (List.range model.exhaustive (model.exhaustive + 3) |> List.filterMap shapeTools.exhaustive.nth)
         , heading "Tools.Fuzz: fuzzers for testing"
         , viewShapes (Fuzz.examples numberOfExamples shapeTools.fuzz)
