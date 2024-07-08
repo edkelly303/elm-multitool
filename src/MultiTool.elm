@@ -469,7 +469,7 @@ end (Builder toolBuilder) =
             doMakeRecord toolBuilder.recordMaker recordConstructor
     , field =
         \fieldName getField (ToolSpec fieldSpec) recordBuilder ->
-            doMakeFields toolBuilder.fieldMaker fieldName getField fieldSpec recordBuilder
+            doMakeField toolBuilder.fieldMaker fieldName getField fieldSpec recordBuilder
     , endRecord =
         \recordBuilder ->
             doEndRecord toolBuilder.recordEnder recordBuilder
