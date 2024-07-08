@@ -4,14 +4,16 @@ module MultiTool exposing
     , end, ToolSpec
     )
 
-{-| **Fun fact**: The type annotations for the functions in this package are pretty horrifying.
+{-| **Fun fact**: The type annotations for the functions in this package are
+pretty horrifying.
 
-**Hot tip**: Ignore them! There's no need to put any of these functions, or the tools they produce, in your
-application's `Msg` or `Model` type. So you don't need to know or care about what their type signatures are. Just read
-the docs and look at the examples. It'll be fine.\*
+**Hot tip**: Ignore them! There's no need to put any of these functions, or the
+tools they produce, in your application's `Msg` or `Model` type. So you don't
+need to know or care about what their type signatures are. Just read the docs
+and look at the examples. It'll be fine.\*
 
-\* Unless you make any kind of minor typo in your code, in which case the Elm compiler may respond with a Lovecraftian
-error message 😱.
+\* Unless you make any kind of minor typo in your code, in which case the Elm
+compiler may respond with a Lovecraftian error message 😱.
 
 @docs define, Builder
 
@@ -35,10 +37,12 @@ type Builder a
 
 Begin creating a new MultiTool.
 
-This function takes two identical arguments. Both arguments should be a function that constructs a record with a field
-for each of the tools you intend to include in your MultiTool.
+This function takes two identical arguments. Both arguments should be a function
+that constructs a record with a field for each of the tools you intend to
+include in your MultiTool.
 
-For example, if you want to combine a `ToString` tool and a `ToComparable` tool, you could do something like this:
+For example, if you want to combine a `ToString` tool and a `ToComparable` tool,
+you could do something like this:
 
     import ToComparable
     import ToString
@@ -58,11 +62,12 @@ For example, if you want to combine a `ToString` tool and a `ToComparable` tool,
                 ToComparable.interface
             |> MultiTool.end
 
-**Note**: The order of the type parameters in the `Tools` type alias is important. It needs to match the order in which
-you add the tool interfaces with `MultiTool.add`.
+**Note**: The order of the type parameters in the `Tools` type alias is
+important. It needs to match the order in which you add the tool interfaces with
+`MultiTool.add`.
 
-In this example, we see that `toString` comes first and `toComparable` comes second in _both_ the `Tools` type alias and
-the interfaces added to `tools`.
+In this example, we see that `toString` comes first and `toComparable` comes
+second in _both_ the `Tools` type alias and the interfaces added to `tools`.
 
 -}
 define :
@@ -158,11 +163,13 @@ define toolConstructor tweakConstructor =
 
 Add a tool to your MultiTool.
 
-This function takes three arguments. The first is a field accessor, which should match one of the fields of the record
-constructor you passed to `MultiTool.define`. For example: `.codec`.
+This function takes three arguments. The first is a field accessor, which should
+match one of the fields of the record constructor you passed to
+`MultiTool.define`. For example: `.codec`.
 
-The second is a tool interface - a record whose fields contain all the functions we will need to make the tool work.
-Here's an example of an interface for the awesome `miniBill/elm-codec` package:
+The second is a tool interface - a record whose fields contain all the functions
+we will need to make the tool work. Here's an example of an interface for the
+awesome `miniBill/elm-codec` package:
 
     import Codec
 
@@ -197,13 +204,15 @@ Here's an example of an interface for the awesome `miniBill/elm-codec` package:
         , endCustomType = Codec.buildCustom
         }
 
-(You'll notice that this interface type mostly looks straightforward, except for the `dict` field. The problem here
-is that we need a `Dict` implementation that can take any `comparable` as a key, but `elm-codec`'s built-in `dict`
-function only accepts `String`s as keys. Fortunately, we can build the function we need using `elm-codec`'s lower-level
-primitives.)
+(You'll notice that this interface type mostly looks straightforward, except for
+the `dict` field. The problem here is that we need a `Dict` implementation that
+can take any `comparable` as a key, but `elm-codec`'s built-in `dict` function
+only accepts `String`s as keys. Fortunately, we can build the function we need
+using `elm-codec`'s lower-level primitives.)
 
-The third and final argument is the `MultiTool.Builder` that you've already created using `define`. The API here is
-designed for piping with the `|>` operator, so you'll usually want to apply this final argument like this:
+The third and final argument is the `MultiTool.Builder` that you've already
+created using `define`. The API here is designed for piping with the `|>`
+operator, so you'll usually want to apply this final argument like this:
 
     tools =
         MultiTool.define Tools Tools
@@ -275,14 +284,16 @@ Complete the definition of a MultiTool.
                 ToComparable.interface
             |> MultiTool.end
 
-This function converts a `MultiTool.Builder` into a record that contains all the functions you'll need to create tool
-specifications (`ToolSpec`s) for the types in your application. If you define a MultiTool like `tools` in the example
+This function converts a `MultiTool.Builder` into a record that contains all the
+functions you'll need to create tool specifications (`ToolSpec`s) for the types
+in your application. If you define a MultiTool like `tools` in the example
 above, it'll give you access to the following `ToolSpecs` and helper functions:
 
 
 ## `ToolSpec`s for primitive types
 
-We've got `tools.bool`, `tools.string`, `tools.int`, `tools.float`, and `tools.char`.
+We've got `tools.bool`, `tools.string`, `tools.int`, `tools.float`, and
+`tools.char`.
 
 For example:
 
@@ -295,8 +306,8 @@ For example:
 
 ## `ToolSpec`s for common combinators
 
-We've got `tools.maybe`, `tools.result`, `tools.list`, `tools.array`, `tools.dict`, `tools.set`, `tools.tuple`, _and_
-`tools.triple`.
+We've got `tools.maybe`, `tools.result`, `tools.list`, `tools.array`,
+`tools.dict`, `tools.set`, `tools.tuple`, _and_ `tools.triple`.
 
 For example:
 
@@ -309,10 +320,12 @@ For example:
 
 ## `ToolSpec`s for combinators for custom types
 
-To define `ToolSpec`s for your own custom types, use `tools.customType`, `tools.variant0`, `tools.variant1`, `tools.variant2`,
-`tools.variant3`, `tools.variant4`, `tools.variant5`, and `tools.endCustomType`.
+To define `ToolSpec`s for your own custom types, use `tools.customType`,
+`tools.variant0`, `tools.variant1`, `tools.variant2`, `tools.variant3`,
+`tools.variant4`, `tools.variant5`, and `tools.endCustomType`.
 
-For example, if we really hated Elm's `Maybe` type and wanted it to be called `Option` instead:
+For example, if we really hated Elm's `Maybe` type and wanted it to be called
+`Option` instead:
 
     type Option value
         = Some value
@@ -334,17 +347,19 @@ For example, if we really hated Elm's `Maybe` type and wanted it to be called `O
             |> tools.variant0 "None" None
             |> tools.endCustomType
 
-**Note**: You _must_ define the `match` function either in a `let-in` block within your tool specification, or as a
-top-level function in one of your modules. If you try and parameterise your tool specification to take a `match`
+**Note**: You _must_ define the `match` function either in a `let-in` block
+within your tool specification, or as a top-level function in one of your
+modules. If you try and parameterise your tool specification to take a `match`
 function as one of its arguments, it won't work - you'll get a compiler error.
 
-The explanation for this is a bit beyond me, but I think it goes: "something something `forall`, something something
-let-polymorphism."
+The explanation for this is a bit beyond me, but I think it goes: "something
+something `forall`, something something let-polymorphism."
 
 
 ## `ToolSpec`s for combinators for records
 
-For records (and indeed any kind of "product" type), check out `tools.record`, `tools.field`, and `tools.endRecord`.
+For records (and indeed any kind of "product" type), check out `tools.record`,
+`tools.field`, and `tools.endRecord`.
 
 For example:
 
@@ -377,10 +392,11 @@ For example:
 
 ## Customising a `ToolSpec`
 
-`tools.tweak` allows you to alter (or replace) the tools contained within a `ToolSpec`.
+`tools.tweak` allows you to alter (or replace) the tools contained within a
+`ToolSpec`.
 
-For example, if you're using `edkelly303/elm-any-type-forms`, you could customise the `tools.string` and `tools.int`
-`ToolSpec`s like this:
+For example, if you're using `edkelly303/elm-any-type-forms`, you could
+customise the `tools.string` and `tools.int` `ToolSpec`s like this:
 
     import Control
 
@@ -511,7 +527,8 @@ end (Builder toolBuilder) =
     }
 
 
-{-| A tool specification - the basic building block for creating tools for the types in your application.
+{-| A tool specification - the basic building block for creating tools for the
+types in your application.
 -}
 type ToolSpec toolSpec
     = ToolSpec toolSpec
@@ -692,7 +709,7 @@ recordMaker record_ next recordConstructor =
     )
 
 
-doMakeFields :
+doMakeField :
     ((String -> getField -> () -> () -> ())
      -> String
      -> getField
@@ -705,7 +722,7 @@ doMakeFields :
     -> fieldSpec
     -> recordBuilder
     -> recordBuilder2
-doMakeFields fieldMaker_ fieldName getField fieldSpec recordBuilders =
+doMakeField fieldMaker_ fieldName getField fieldSpec recordBuilders =
     fieldMaker_ (\_ _ () () -> ()) fieldName getField fieldSpec recordBuilders
 
 
