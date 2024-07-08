@@ -210,161 +210,6 @@ designed for piping with the `|>` operator, so you'll usually want to apply this
             |> MultiTool.add .codec codecInterface
 
 -}
-add :
-    (c27 -> b20)
-    ->
-        { array : a27 -> b12
-        , bool : a43
-        , char : a42
-        , customType : b20 -> a40
-        , dict : a21 -> b9 -> c25
-        , endCustomType : a41 -> b19
-        , endRecord : a11 -> b5
-        , field : c24 -> d13 -> a19 -> b8 -> e4
-        , float : a39
-        , int : a38
-        , list : a15 -> b7
-        , maybe : a13 -> b6
-        , record : c18 -> a9
-        , result : a7 -> b3 -> c17
-        , set : a5 -> b2
-        , string : a37
-        , triple : a2 -> b1 -> c14 -> d7
-        , tuple : a -> b -> c13
-        , variant0 : c11 -> d5 -> a36 -> b18
-        , variant1 : c9 -> d4 -> a35 -> b17 -> e10
-        , variant2 : c7 -> d3 -> a34 -> b16 -> e9 -> f10
-        , variant3 : c5 -> d2 -> a33 -> b15 -> e8 -> f9 -> g6
-        , variant4 : c3 -> d1 -> a32 -> b14 -> e7 -> f8 -> g5 -> h6
-        , variant5 : c1 -> d -> a31 -> b13 -> e6 -> f7 -> g4 -> h5 -> i3
-        }
-    ->
-        Builder
-            { after : r
-            , afters : s
-            , applyMapper : a29 -> restMappers -> restToolSpecs -> restToolSpecs
-            , arrayMaker : a28 -> c33 -> d17
-            , before : ( Maybe mapper, after ) -> mappers
-            , bool : ( a43, a26 ) -> c32
-            , char : ( a42, a25 ) -> c31
-            , toolMaker : a24 -> a23 -> b11 -> c30
-            , customEnder : (( a41, c29 ) -> ( b19, d15 )) -> c28
-            , customMaker : (c27 -> ( a40, b10 )) -> c26
-            , dictMaker : a22 -> d14 -> e5 -> f6
-            , fieldMaker : a20 -> c24 -> d13 -> f5 -> g3 -> h4
-            , float : ( a39, a18 ) -> c23
-            , int : ( a38, a17 ) -> c22
-            , listMaker : a16 -> c21 -> d12
-            , maybeMaker : a14 -> c20 -> d11
-            , recordEnder : a12 -> c19 -> d10
-            , recordMaker : a10 -> c18 -> b4
-            , resultMaker : a8 -> d9 -> e3 -> f4
-            , setMaker : a6 -> c16 -> d8
-            , string : ( a37, a4 ) -> c15
-            , toolConstructor : t
-            , tripleMaker : a3 -> e2 -> f3 -> g2 -> h3
-            , tupleMaker : a1 -> d6 -> e1 -> f2
-            , tweakConstructor : u
-            , tweakMaker :
-                (((mapper -> ToolSpec toolSpec -> ToolSpec toolSpec) -> ctor)
-                 -> ((() -> () -> ()) -> mappers -> toolSpec -> toolSpec)
-                 -> ( after, restAfters )
-                 -> tweak
-                )
-                -> c12
-            , variant0Maker : (c11 -> d5 -> ( a36, e ) -> ( b18, f1 )) -> c10
-            , variant1Maker :
-                (c9 -> d4 -> ( a35, f ) -> ( b17, g1 ) -> ( e10, h2 )) -> c8
-            , variant2Maker :
-                (c7
-                 -> d3
-                 -> ( a34, g )
-                 -> ( b16, h1 )
-                 -> ( e9, i2 )
-                 -> ( f10, j3 )
-                )
-                -> c6
-            , variant3Maker :
-                (c5
-                 -> d2
-                 -> ( a33, h )
-                 -> ( b15, i1 )
-                 -> ( e8, j2 )
-                 -> ( f9, k2 )
-                 -> ( g6, l2 )
-                )
-                -> c4
-            , variant4Maker :
-                (c3
-                 -> d1
-                 -> ( a32, i )
-                 -> ( b14, j1 )
-                 -> ( e7, k1 )
-                 -> ( f8, l1 )
-                 -> ( g5, m1 )
-                 -> ( h6, n1 )
-                )
-                -> c2
-            , variant5Maker :
-                (c1
-                 -> d
-                 -> ( a31, j )
-                 -> ( b13, k )
-                 -> ( e6, l )
-                 -> ( f7, m )
-                 -> ( g4, n )
-                 -> ( h5, o )
-                 -> ( i3, p )
-                )
-                -> c
-            }
-    ->
-        Builder
-            { after : ( Maybe a30, r )
-            , afters : ( r, s )
-            , applyMapper :
-                a29
-                -> ( Maybe (toolSpec1 -> toolSpec1), restMappers )
-                -> ( toolSpec1, restToolSpecs )
-                -> ( toolSpec1, restToolSpecs )
-            , arrayMaker : a28 -> ( a27, c33 ) -> ( b12, d17 )
-            , before : after -> mappers
-            , bool : a26 -> c32
-            , char : a25 -> c31
-            , toolMaker : a24 -> (d16 -> a23) -> ( d16, b11 ) -> c30
-            , customEnder : (c29 -> d15) -> c28
-            , customMaker : (c27 -> b10) -> c26
-            , dictMaker : a22 -> ( a21, d14 ) -> ( b9, e5 ) -> ( c25, f6 )
-            , fieldMaker :
-                a20 -> c24 -> d13 -> ( a19, f5 ) -> ( b8, g3 ) -> ( e4, h4 )
-            , float : a18 -> c23
-            , int : a17 -> c22
-            , listMaker : a16 -> ( a15, c21 ) -> ( b7, d12 )
-            , maybeMaker : a14 -> ( a13, c20 ) -> ( b6, d11 )
-            , recordEnder : a12 -> ( a11, c19 ) -> ( b5, d10 )
-            , recordMaker : a10 -> c18 -> ( a9, b4 )
-            , resultMaker : a8 -> ( a7, d9 ) -> ( b3, e3 ) -> ( c17, f4 )
-            , setMaker : a6 -> ( a5, c16 ) -> ( b2, d8 )
-            , string : a4 -> c15
-            , toolConstructor : t
-            , tripleMaker :
-                a3 -> ( a2, e2 ) -> ( b1, f3 ) -> ( c14, g2 ) -> ( d7, h3 )
-            , tupleMaker : a1 -> ( a, d6 ) -> ( b, e1 ) -> ( c13, f2 )
-            , tweakConstructor : u
-            , tweakMaker :
-                (ctor
-                 -> ((() -> () -> ()) -> mappers -> toolSpec -> toolSpec)
-                 -> restAfters
-                 -> tweak
-                )
-                -> c12
-            , variant0Maker : (c11 -> d5 -> e -> f1) -> c10
-            , variant1Maker : (c9 -> d4 -> f -> g1 -> h2) -> c8
-            , variant2Maker : (c7 -> d3 -> g -> h1 -> i2 -> j3) -> c6
-            , variant3Maker : (c5 -> d2 -> h -> i1 -> j2 -> k2 -> l2) -> c4
-            , variant4Maker : (c3 -> d1 -> i -> j1 -> k1 -> l1 -> m1 -> n1) -> c2
-            , variant5Maker : (c1 -> d -> j -> k -> l -> m -> n -> o -> p) -> c
-            }
 add destructorFieldGetter tool (Builder builder) =
     Builder
         { -- primitives
@@ -559,128 +404,6 @@ For example, if you're using `edkelly303/elm-any-type-forms`, you could customis
                 )
 
 -}
-end :
-    Builder
-        { after : after
-        , afters : afters
-        , applyMapper : applyMapper
-        , arrayMaker : (() -> ()) -> b7 -> a9
-        , before : before
-        , bool : () -> toolSpec4
-        , char : () -> toolSpec3
-        , toolMaker : (a19 -> () -> a19) -> c12 -> d11 -> a19
-        , customEnder : (() -> ()) -> b5 -> a7
-        , customMaker : (a18 -> ()) -> b6 -> c11
-        , dictMaker : (() -> () -> ()) -> c10 -> d10 -> a8
-        , fieldMaker :
-            (a17 -> b14 -> () -> () -> ()) -> c9 -> d9 -> e7 -> f7 -> g5
-        , float : () -> toolSpec2
-        , int : () -> toolSpec1
-        , listMaker : (() -> ()) -> b3 -> a5
-        , maybeMaker : (() -> ()) -> b2 -> a4
-        , recordEnder : (() -> ()) -> b4 -> a6
-        , recordMaker : (a16 -> ()) -> b1 -> c8
-        , resultMaker : (() -> () -> ()) -> c7 -> d8 -> a3
-        , setMaker : (() -> ()) -> b -> a2
-        , string : () -> toolSpec
-        , toolConstructor : c12
-        , tripleMaker : (() -> () -> () -> ()) -> d7 -> e6 -> f6 -> a1
-        , tupleMaker : (() -> () -> ()) -> c6 -> d6 -> a
-        , tweakConstructor : ctor
-        , tweakMaker :
-            (tweak -> applyMapper -> () -> tweak)
-            -> ctor
-            -> applyMapper
-            -> afters
-            -> tweak
-        , variant0Maker : (a15 -> b13 -> () -> ()) -> c5 -> d5 -> e5 -> f5
-        , variant1Maker :
-            (a14 -> b12 -> () -> () -> ()) -> c4 -> d4 -> e4 -> f4 -> g4
-        , variant2Maker :
-            (a13 -> b11 -> () -> () -> () -> ())
-            -> c3
-            -> d3
-            -> e3
-            -> f3
-            -> g3
-            -> h3
-        , variant3Maker :
-            (a12 -> b10 -> () -> () -> () -> () -> ())
-            -> c2
-            -> d2
-            -> e2
-            -> f2
-            -> g2
-            -> h2
-            -> i2
-        , variant4Maker :
-            (a11 -> b9 -> () -> () -> () -> () -> () -> ())
-            -> c1
-            -> d1
-            -> e1
-            -> f1
-            -> g1
-            -> h1
-            -> i1
-            -> j1
-        , variant5Maker :
-            (a10 -> b8 -> () -> () -> () -> () -> () -> () -> ())
-            -> c
-            -> d
-            -> e
-            -> f
-            -> g
-            -> h
-            -> i
-            -> j
-            -> k
-        }
-    ->
-        { array : ToolSpec b7 -> ToolSpec a9
-        , bool : ToolSpec toolSpec4
-        , build : ToolSpec d11 -> a19
-        , char : ToolSpec toolSpec3
-        , customType : b6 -> c11
-        , dict : ToolSpec c10 -> ToolSpec d10 -> ToolSpec a8
-        , endCustomType : b5 -> ToolSpec a7
-        , endRecord : b4 -> ToolSpec a6
-        , field : c9 -> d9 -> ToolSpec e7 -> f7 -> g5
-        , float : ToolSpec toolSpec2
-        , int : ToolSpec toolSpec1
-        , list : ToolSpec b3 -> ToolSpec a5
-        , maybe : ToolSpec b2 -> ToolSpec a4
-        , record : b1 -> c8
-        , result : ToolSpec c7 -> ToolSpec d8 -> ToolSpec a3
-        , set : ToolSpec b -> ToolSpec a2
-        , string : ToolSpec toolSpec
-        , triple : ToolSpec d7 -> ToolSpec e6 -> ToolSpec f6 -> ToolSpec a1
-        , tuple : ToolSpec c6 -> ToolSpec d6 -> ToolSpec a
-        , tweak : tweak
-        , variant0 : c5 -> d5 -> e5 -> f5
-        , variant1 : c4 -> d4 -> ToolSpec e4 -> f4 -> g4
-        , variant2 : c3 -> d3 -> ToolSpec e3 -> ToolSpec f3 -> g3 -> h3
-        , variant3 :
-            c2 -> d2 -> ToolSpec e2 -> ToolSpec f2 -> ToolSpec g2 -> h2 -> i2
-        , variant4 :
-            c1
-            -> d1
-            -> ToolSpec e1
-            -> ToolSpec f1
-            -> ToolSpec g1
-            -> ToolSpec h1
-            -> i1
-            -> j1
-        , variant5 :
-            c
-            -> d
-            -> ToolSpec e
-            -> ToolSpec f
-            -> ToolSpec g
-            -> ToolSpec h
-            -> ToolSpec i
-            -> j
-            -> k
-        }
 end (Builder toolBuilder) =
     let
         -- primitives
@@ -795,13 +518,13 @@ type ToolSpec toolSpec
 
 
 doMakeTool : ((tool -> () -> tool) -> toolConstructor -> builder -> tool) -> toolConstructor -> builder -> tool
-doMakeTool toolMaker_ ctor builder =
-    toolMaker_ (\output () -> output) ctor builder
+doMakeTool toolMaker_ toolConstructor builder =
+    toolMaker_ (\output () -> output) toolConstructor builder
 
 
 toolMaker : (toolConstructor -> restBuilders -> tool) -> (builder -> toolConstructor) -> ( builder, restBuilders ) -> tool
-toolMaker next ctor ( builder, restBuilders ) =
-    next (ctor builder) restBuilders
+toolMaker next toolConstructor ( builder, restBuilders ) =
+    next (toolConstructor builder) restBuilders
 
 
 doMakeTweak :
@@ -810,8 +533,8 @@ doMakeTweak :
     -> applyMapper
     -> afters
     -> tweak
-doMakeTweak tweakMaker_ ctor applyMapper_ afters =
-    tweakMaker_ (\tweak _ () -> tweak) ctor applyMapper_ afters
+doMakeTweak tweakMaker_ tweakConstructor applyMapper_ afters =
+    tweakMaker_ (\tweak _ () -> tweak) tweakConstructor applyMapper_ afters
 
 
 tweakMaker :
@@ -821,7 +544,7 @@ tweakMaker :
     -> ((() -> () -> ()) -> mappers -> toolSpec -> toolSpec)
     -> ( after, restAfters )
     -> tweak
-tweakMaker before next ctor applyMapper_ ( after, restAfters ) =
+tweakMaker before next tweakConstructor applyMapper_ ( after, restAfters ) =
     let
         tweaker =
             \mapper (ToolSpec toolSpec) ->
@@ -832,7 +555,7 @@ tweakMaker before next ctor applyMapper_ ( after, restAfters ) =
                 applyMapper_ (\() () -> ()) mappers toolSpec
                     |> ToolSpec
     in
-    next (ctor tweaker) applyMapper_ restAfters
+    next (tweakConstructor tweaker) applyMapper_ restAfters
 
 
 applyMapper :
@@ -947,75 +670,148 @@ resultMaker result_ next ( error, restErrors ) ( value, restValues ) =
     )
 
 
-doMakeRecord : ((a -> ()) -> b -> c) -> b -> c
+doMakeRecord :
+    ((recordConstructor -> ())
+     -> recordConstructor
+     -> recordBuilder
+    )
+    -> recordConstructor
+    -> recordBuilder
 doMakeRecord recordMaker_ recordConstructor =
     recordMaker_ (\_ -> ()) recordConstructor
 
 
-recordMaker : (c -> a) -> (c -> b) -> c -> ( a, b )
+recordMaker :
+    (recordConstructor -> recordBuilder)
+    -> (recordConstructor -> restRecordBuilders)
+    -> recordConstructor
+    -> ( recordBuilder, restRecordBuilders )
 recordMaker record_ next recordConstructor =
     ( record_ recordConstructor
     , next recordConstructor
     )
 
 
-doMakeFields : ((a -> b -> () -> () -> ()) -> c -> d -> e -> f -> g) -> c -> d -> e -> f -> g
-doMakeFields fieldMaker_ fieldName getField child recordBuilders =
-    fieldMaker_ (\_ _ () () -> ()) fieldName getField child recordBuilders
+doMakeFields :
+    ((String -> getField -> () -> () -> ())
+     -> String
+     -> getField
+     -> fieldSpec
+     -> recordBuilder
+     -> recordBuilder2
+    )
+    -> String
+    -> getField
+    -> fieldSpec
+    -> recordBuilder
+    -> recordBuilder2
+doMakeFields fieldMaker_ fieldName getField fieldSpec recordBuilders =
+    fieldMaker_ (\_ _ () () -> ()) fieldName getField fieldSpec recordBuilders
 
 
-fieldMaker : (c -> d -> a -> b -> e) -> (c -> d -> f -> g -> h) -> c -> d -> ( a, f ) -> ( b, g ) -> ( e, h )
-fieldMaker field_ next fieldName getField ( child, restChilds ) ( builder, restBuilders ) =
-    ( field_ fieldName getField child builder
-    , next fieldName getField restChilds restBuilders
+fieldMaker :
+    (String -> getField -> fieldTool -> recordBuilder -> recordBuilder2)
+    -> (String -> getField -> restFieldTools -> restRecordBuilders -> restRecordBuilder2s)
+    -> String
+    -> getField
+    -> ( fieldTool, restFieldTools )
+    -> ( recordBuilder, restRecordBuilders )
+    -> ( recordBuilder2, restRecordBuilder2s )
+fieldMaker field_ next fieldName getField ( fieldTool, restFieldTools ) ( builder, restBuilders ) =
+    ( field_ fieldName getField fieldTool builder
+    , next fieldName getField restFieldTools restBuilders
     )
 
 
-doEndRecord : ((() -> ()) -> b -> a) -> b -> a
+doEndRecord :
+    ((() -> ()) -> recordBuilder -> recordSpec)
+    -> recordBuilder
+    -> recordSpec
 doEndRecord recordEnder_ builder =
     recordEnder_ (\() -> ()) builder
 
 
-recordEnder : (a -> b) -> (c -> d) -> ( a, c ) -> ( b, d )
+recordEnder :
+    (recordBuilder -> recordSpec)
+    -> (restRecordBuilders -> restRecordSpecs)
+    -> ( recordBuilder, restRecordBuilders )
+    -> ( recordSpec, restRecordSpecs )
 recordEnder endRecord_ next ( builder, restBuilders ) =
     ( endRecord_ builder
     , next restBuilders
     )
 
 
-doMakeCustom : ((a -> ()) -> b -> c) -> b -> c
+doMakeCustom :
+    ((customDestructor -> ()) -> customDestructor -> customBuilders)
+    -> customDestructor
+    -> customBuilders
 doMakeCustom customMaker_ customDestructors =
     customMaker_ (\_ -> ()) customDestructors
 
 
-customMaker : (c -> a) -> (c -> b) -> c -> ( a, b )
+customMaker :
+    (customDestructor -> customBuilder)
+    -> (customDestructor -> restCustomBuilders)
+    -> customDestructor
+    -> ( customBuilder, restCustomBuilders )
 customMaker customType_ next customDestructors =
     ( customType_ customDestructors
     , next customDestructors
     )
 
 
-doMakeVariant0 : ((a -> b -> () -> ()) -> c -> d -> e -> f) -> c -> d -> e -> f
+doMakeVariant0 :
+    ((a -> b -> () -> ()) -> String -> variantConstructor -> customBuilder -> customBuilder2)
+    -> String
+    -> variantConstructor
+    -> customBuilder
+    -> customBuilder2
 doMakeVariant0 variant0Maker_ variantName variantConstructor customBuilder =
     variant0Maker_ (\_ _ () -> ()) variantName variantConstructor customBuilder
 
 
-variant0Maker : (c -> d -> a -> b) -> (c -> d -> e -> f) -> c -> d -> ( a, e ) -> ( b, f )
+variant0Maker :
+    (String -> variantConstructor -> customBuilder -> customBuilder2)
+    -> (String -> variantConstructor -> restCustomBuilders -> restCustomBuilders2)
+    -> String
+    -> variantConstructor
+    -> ( customBuilder, restCustomBuilders )
+    -> ( customBuilder2, restCustomBuilders2 )
 variant0Maker variant0_ next variantName variantConstructor ( customBuilder, restCustomBuilders ) =
     ( variant0_ variantName variantConstructor customBuilder
     , next variantName variantConstructor restCustomBuilders
     )
 
 
-doMakeVariant1 : ((a -> b -> () -> () -> ()) -> c -> d -> e -> f -> g) -> c -> d -> e -> f -> g
-doMakeVariant1 variant1Maker_ variantName variantConstructor child1 customBuilder =
-    variant1Maker_ (\_ _ () () -> ()) variantName variantConstructor child1 customBuilder
+doMakeVariant1 :
+    ((String -> variantConstructor -> () -> () -> ())
+     -> String
+     -> variantConstructor
+     -> arg1Spec
+     -> customBuilder
+     -> customBuilder2
+    )
+    -> String
+    -> variantConstructor
+    -> arg1Spec
+    -> customBuilder
+    -> customBuilder2
+doMakeVariant1 variant1Maker_ variantName variantConstructor arg1Spec customBuilder =
+    variant1Maker_ (\_ _ () () -> ()) variantName variantConstructor arg1Spec customBuilder
 
 
-variant1Maker : (c -> d -> a -> b -> e) -> (c -> d -> f -> g -> h) -> c -> d -> ( a, f ) -> ( b, g ) -> ( e, h )
-variant1Maker variant1_ next variantName variantConstructor ( child1, restChild1s ) ( customBuilder, restCustomBuilders ) =
-    ( variant1_ variantName variantConstructor child1 customBuilder
-    , next variantName variantConstructor restChild1s restCustomBuilders
+variant1Maker :
+    (String -> variantConstructor -> arg1Tool -> customBuilder -> customBuilder2)
+    -> (String -> variantConstructor -> restArg1Tools -> restCustomBuilders -> restCustomBuilders2)
+    -> String
+    -> variantConstructor
+    -> ( arg1Tool, restArg1Tools )
+    -> ( customBuilder, restCustomBuilders )
+    -> ( customBuilder2, restCustomBuilders2 )
+variant1Maker variant1_ next variantName variantConstructor ( arg1Spec, restArg1Specs ) ( customBuilder, restCustomBuilders ) =
+    ( variant1_ variantName variantConstructor arg1Spec customBuilder
+    , next variantName variantConstructor restArg1Specs restCustomBuilders
     )
 
 
@@ -1067,12 +863,16 @@ variant5Maker variant next variantName variantConstructor ( arg1Spec, restC1s ) 
     )
 
 
-doEndCustom : ((() -> ()) -> b -> a) -> b -> a
+doEndCustom : ((() -> ()) -> customBuilder -> customTypeSpec) -> customBuilder -> customTypeSpec
 doEndCustom customEnder_ customBuilder =
     customEnder_ (\() -> ()) customBuilder
 
 
-customEnder : (a -> b) -> (c -> d) -> ( a, c ) -> ( b, d )
+customEnder :
+    (customBuilder -> customTypeSpec)
+    -> (restCustomBuilders -> restCustomTypeSpecs)
+    -> ( customBuilder, restCustomBuilders )
+    -> ( customTypeSpec, restCustomTypeSpecs )
 customEnder endCustom_ next ( customBuilder, restCustomBuilders ) =
     ( endCustom_ customBuilder
     , next restCustomBuilders
