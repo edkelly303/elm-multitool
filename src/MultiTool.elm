@@ -475,21 +475,19 @@ end (Builder toolBuilder) =
             doMakeTriple toolBuilder.tripleMaker firstSpec secondSpec thirdSpec
                 |> ToolSpec
     , result =
-        \(ToolSpec errorSpec) (ToolSpec valueSpec) ->
+        \errorSpec valueSpec ->
             doMakeResult toolBuilder.resultMaker errorSpec valueSpec
-                |> ToolSpec
 
     -- records
     , record =
         \recordConstructor ->
             doMakeRecord toolBuilder.recordMaker recordConstructor
     , field =
-        \fieldName getField (ToolSpec fieldSpec) recordBuilder ->
+        \fieldName getField fieldSpec recordBuilder ->
             doMakeField toolBuilder.fieldMaker fieldName getField fieldSpec recordBuilder
     , endRecord =
         \recordBuilder ->
             doEndRecord toolBuilder.recordEnder recordBuilder
-                |> ToolSpec
 
     -- custom types
     , customType =
@@ -502,21 +500,20 @@ end (Builder toolBuilder) =
         \variantName variantConstructor arg1Spec customBuilder ->
             doMakeVariant1 toolBuilder.variant1Maker variantName variantConstructor arg1Spec customBuilder
     , variant2 =
-        \variantName variantConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) customBuilder ->
+        \variantName variantConstructor arg1Spec arg2Spec customBuilder ->
             doMakeVariant2 toolBuilder.variant2Maker variantName variantConstructor arg1Spec arg2Spec customBuilder
     , variant3 =
-        \variantName variantConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) (ToolSpec arg3Spec) customBuilder ->
+        \variantName variantConstructor arg1Spec arg2Spec arg3Spec customBuilder ->
             doMakeVariant3 toolBuilder.variant3Maker variantName variantConstructor arg1Spec arg2Spec arg3Spec customBuilder
     , variant4 =
-        \variantName variantConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) (ToolSpec arg3Spec) (ToolSpec arg4Spec) customBuilder ->
+        \variantName variantConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder ->
             doMakeVariant4 toolBuilder.variant4Maker variantName variantConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder
     , variant5 =
-        \variantName variantConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) (ToolSpec arg3Spec) (ToolSpec arg4Spec) (ToolSpec arg5Spec) customBuilder ->
+        \variantName variantConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder ->
             doMakeVariant5 toolBuilder.variant5Maker variantName variantConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder
     , endCustomType =
         \customBuilder ->
             doEndCustom toolBuilder.customEnder customBuilder
-                |> ToolSpec
 
     -- turn a spec into a usable multiTool
     , build =
@@ -675,12 +672,26 @@ tripleMaker triple_ next ( a, restAs ) ( b, restBs ) ( c, restCs ) =
     )
 
 
-doMakeResult : ((() -> () -> ()) -> c -> d -> e) -> c -> d -> e
-doMakeResult resultMaker_ errors values =
+doMakeResult :
+    ((() -> () -> ())
+     -> ( error, restErrors )
+     -> ( value, restValues )
+     -> ( resultSpec, restResultSpecs )
+    )
+    -> ToolSpec ( error, restErrors )
+    -> ToolSpec ( value, restValues )
+    -> ToolSpec ( resultSpec, restResultSpecs )
+doMakeResult resultMaker_ (ToolSpec errors) (ToolSpec values) =
     resultMaker_ (\() () -> ()) errors values
+        |> ToolSpec
 
 
-resultMaker : (a -> b -> c) -> (d -> e -> f) -> ( a, d ) -> ( b, e ) -> ( c, f )
+resultMaker :
+    (error -> value -> resultSpec)
+    -> (restErrors -> restValues -> restResultSpecs)
+    -> ( error, restErrors )
+    -> ( value, restValues )
+    -> ( resultSpec, restResultSpecs )
 resultMaker result_ next ( error, restErrors ) ( value, restValues ) =
     ( result_ error value
     , next restErrors restValues
@@ -690,10 +701,10 @@ resultMaker result_ next ( error, restErrors ) ( value, restValues ) =
 doMakeRecord :
     ((recordConstructor -> ())
      -> recordConstructor
-     -> recordBuilder
+     -> ( recordBuilder, restRecordBuilders )
     )
     -> recordConstructor
-    -> recordBuilder
+    -> ( recordBuilder, restRecordBuilders )
 doMakeRecord recordMaker_ recordConstructor =
     recordMaker_ (\_ -> ()) recordConstructor
 
@@ -714,15 +725,15 @@ doMakeField :
      -> String
      -> getField
      -> fieldSpec
-     -> recordBuilder
-     -> recordBuilder2
+     -> ( recordBuilder, restRecordBuilders )
+     -> ( recordBuilder2, restRecordBuilder2s )
     )
     -> String
     -> getField
-    -> fieldSpec
-    -> recordBuilder
-    -> recordBuilder2
-doMakeField fieldMaker_ fieldName getField fieldSpec recordBuilders =
+    -> ToolSpec fieldSpec
+    -> ( recordBuilder, restRecordBuilders )
+    -> ( recordBuilder2, restRecordBuilder2s )
+doMakeField fieldMaker_ fieldName getField (ToolSpec fieldSpec) recordBuilders =
     fieldMaker_ (\_ _ () () -> ()) fieldName getField fieldSpec recordBuilders
 
 
@@ -741,11 +752,15 @@ fieldMaker field_ next fieldName getField ( fieldTool, restFieldTools ) ( builde
 
 
 doEndRecord :
-    ((() -> ()) -> recordBuilder -> recordSpec)
-    -> recordBuilder
-    -> recordSpec
+    ((() -> ())
+     -> ( recordBuilder, restRecordBuilders )
+     -> ( recordSpec, restRecordSpecs )
+    )
+    -> ( recordBuilder, restRecordBuilders )
+    -> ToolSpec ( recordSpec, restRecordSpecs )
 doEndRecord recordEnder_ builder =
     recordEnder_ (\() -> ()) builder
+        |> ToolSpec
 
 
 recordEnder :
@@ -760,9 +775,12 @@ recordEnder endRecord_ next ( builder, restBuilders ) =
 
 
 doMakeCustom :
-    ((customDestructor -> ()) -> customDestructor -> customBuilders)
+    ((customDestructor -> ())
+     -> customDestructor
+     -> ( customBuilder, restCustomBuilders )
+    )
     -> customDestructor
-    -> customBuilders
+    -> ( customBuilder, restCustomBuilders )
 doMakeCustom customMaker_ customDestructors =
     customMaker_ (\_ -> ()) customDestructors
 
@@ -779,11 +797,16 @@ customMaker customType_ next customDestructors =
 
 
 doMakeVariant0 :
-    ((String -> variantConstructor -> () -> ()) -> String -> variantConstructor -> customBuilder -> customBuilder2)
+    ((String -> variantConstructor -> () -> ())
+     -> String
+     -> variantConstructor
+     -> ( customBuilder, restCustomBuilders )
+     -> ( customBuilder2, restCustomBuilders2 )
+    )
     -> String
     -> variantConstructor
-    -> customBuilder
-    -> customBuilder2
+    -> ( customBuilder, restCustomBuilders )
+    -> ( customBuilder2, restCustomBuilders2 )
 doMakeVariant0 variant0Maker_ variantName variantConstructor customBuilder =
     variant0Maker_ (\_ _ () -> ()) variantName variantConstructor customBuilder
 
@@ -843,11 +866,11 @@ doMakeVariant2 :
     )
     -> String
     -> variantConstructor
-    -> ( arg1Tool, restArg1Tools )
-    -> ( arg2Tool, restArg2Tools )
+    -> ToolSpec ( arg1Tool, restArg1Tools )
+    -> ToolSpec ( arg2Tool, restArg2Tools )
     -> ( customBuilder, restCustomBuilders )
     -> ( customBuilder2, restCustomBuilders2 )
-doMakeVariant2 variant2Maker_ variantName variantConstructor arg1Spec arg2Spec customBuilder =
+doMakeVariant2 variant2Maker_ variantName variantConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) customBuilder =
     variant2Maker_ (\_ _ () () () -> ()) variantName variantConstructor arg1Spec arg2Spec customBuilder
 
 
@@ -891,12 +914,12 @@ doMakeVariant3 :
     )
     -> String
     -> variantConstructor
-    -> ( arg1Tool, restArg1Tools )
-    -> ( arg2Tool, restArg2Tools )
-    -> ( arg3Tool, restArg3Tools )
+    -> ToolSpec ( arg1Tool, restArg1Tools )
+    -> ToolSpec ( arg2Tool, restArg2Tools )
+    -> ToolSpec ( arg3Tool, restArg3Tools )
     -> ( customBuilder, restCustomBuilders )
     -> ( customBuilder2, restCustomBuilders2 )
-doMakeVariant3 variantMaker_ variantName variantConstructor arg1Spec arg2Spec arg3Spec customBuilder =
+doMakeVariant3 variantMaker_ variantName variantConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) (ToolSpec arg3Spec) customBuilder =
     variantMaker_ (\_ _ () () () () -> ()) variantName variantConstructor arg1Spec arg2Spec arg3Spec customBuilder
 
 
@@ -944,13 +967,13 @@ doMakeVariant4 :
     )
     -> String
     -> variantConstructor
-    -> ( arg1Tool, restArg1Tools )
-    -> ( arg2Tool, restArg2Tools )
-    -> ( arg3Tool, restArg3Tools )
-    -> ( arg4Tool, restArg4Tools )
+    -> ToolSpec ( arg1Tool, restArg1Tools )
+    -> ToolSpec ( arg2Tool, restArg2Tools )
+    -> ToolSpec ( arg3Tool, restArg3Tools )
+    -> ToolSpec ( arg4Tool, restArg4Tools )
     -> ( customBuilder, restCustomBuilders )
     -> ( customBuilder2, restCustomBuilders2 )
-doMakeVariant4 variantMaker_ variantName variantConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder =
+doMakeVariant4 variantMaker_ variantName variantConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) (ToolSpec arg3Spec) (ToolSpec arg4Spec) customBuilder =
     variantMaker_ (\_ _ () () () () () -> ()) variantName variantConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder
 
 
@@ -1002,14 +1025,14 @@ doMakeVariant5 :
     )
     -> String
     -> variantConstructor
-    -> ( arg1Tool, restArg1Tools )
-    -> ( arg2Tool, restArg2Tools )
-    -> ( arg3Tool, restArg3Tools )
-    -> ( arg4Tool, restArg4Tools )
-    -> ( arg5Tool, restArg5Tools )
+    -> ToolSpec ( arg1Tool, restArg1Tools )
+    -> ToolSpec ( arg2Tool, restArg2Tools )
+    -> ToolSpec ( arg3Tool, restArg3Tools )
+    -> ToolSpec ( arg4Tool, restArg4Tools )
+    -> ToolSpec ( arg5Tool, restArg5Tools )
     -> ( customBuilder, restCustomBuilders )
     -> ( customBuilder2, restCustomBuilders2 )
-doMakeVariant5 variantMaker_ variantName variantConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder =
+doMakeVariant5 variantMaker_ variantName variantConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) (ToolSpec arg3Spec) (ToolSpec arg4Spec) (ToolSpec arg5Spec) customBuilder =
     variantMaker_ (\_ _ () () () () () () -> ()) variantName variantConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder
 
 
@@ -1050,9 +1073,10 @@ variant5Maker variant next variantName variantConstructor ( arg1Spec, restC1s ) 
     )
 
 
-doEndCustom : ((() -> ()) -> customBuilder -> customTypeSpec) -> customBuilder -> customTypeSpec
+doEndCustom : ((() -> ()) -> customBuilder -> customTypeSpec) -> customBuilder -> ToolSpec customTypeSpec
 doEndCustom customEnder_ customBuilder =
     customEnder_ (\() -> ()) customBuilder
+        |> ToolSpec
 
 
 customEnder :
