@@ -499,7 +499,7 @@ end (Builder toolBuilder) =
         \variantName variantConstructor customBuilder ->
             doMakeVariant0 toolBuilder.variant0Maker variantName variantConstructor customBuilder
     , variant1 =
-        \variantName variantConstructor (ToolSpec arg1Spec) customBuilder ->
+        \variantName variantConstructor arg1Spec customBuilder ->
             doMakeVariant1 toolBuilder.variant1Maker variantName variantConstructor arg1Spec customBuilder
     , variant2 =
         \variantName variantConstructor (ToolSpec arg1Spec) (ToolSpec arg2Spec) customBuilder ->
@@ -779,7 +779,7 @@ customMaker customType_ next customDestructors =
 
 
 doMakeVariant0 :
-    ((a -> b -> () -> ()) -> String -> variantConstructor -> customBuilder -> customBuilder2)
+    ((String -> variantConstructor -> () -> ()) -> String -> variantConstructor -> customBuilder -> customBuilder2)
     -> String
     -> variantConstructor
     -> customBuilder
@@ -805,16 +805,16 @@ doMakeVariant1 :
     ((String -> variantConstructor -> () -> () -> ())
      -> String
      -> variantConstructor
-     -> arg1Spec
-     -> customBuilder
-     -> customBuilder2
+     -> ( arg1Tool, restArg1Tools )
+     -> ( customBuilder, restCustomBuilders )
+     -> ( customBuilder2, restCustomBuilders2 )
     )
     -> String
     -> variantConstructor
-    -> arg1Spec
-    -> customBuilder
-    -> customBuilder2
-doMakeVariant1 variant1Maker_ variantName variantConstructor arg1Spec customBuilder =
+    -> ToolSpec ( arg1Tool, restArg1Tools )
+    -> ( customBuilder, restCustomBuilders )
+    -> ( customBuilder2, restCustomBuilders2 )
+doMakeVariant1 variant1Maker_ variantName variantConstructor (ToolSpec arg1Spec) customBuilder =
     variant1Maker_ (\_ _ () () -> ()) variantName variantConstructor arg1Spec customBuilder
 
 
@@ -826,54 +826,224 @@ variant1Maker :
     -> ( arg1Tool, restArg1Tools )
     -> ( customBuilder, restCustomBuilders )
     -> ( customBuilder2, restCustomBuilders2 )
-variant1Maker variant1_ next variantName variantConstructor ( arg1Spec, restArg1Specs ) ( customBuilder, restCustomBuilders ) =
-    ( variant1_ variantName variantConstructor arg1Spec customBuilder
-    , next variantName variantConstructor restArg1Specs restCustomBuilders
+variant1Maker variant1_ next variantName variantConstructor ( arg1Tool, restArg1Tools ) ( customBuilder, restCustomBuilders ) =
+    ( variant1_ variantName variantConstructor arg1Tool customBuilder
+    , next variantName variantConstructor restArg1Tools restCustomBuilders
     )
 
 
-doMakeVariant2 : ((a -> b -> () -> () -> () -> ()) -> c -> d -> e -> f -> g -> h) -> c -> d -> e -> f -> g -> h
+doMakeVariant2 :
+    ((String -> variantConstructor -> () -> () -> () -> ())
+     -> String
+     -> variantConstructor
+     -> ( arg1Tool, restArg1Tools )
+     -> ( arg2Tool, restArg2Tools )
+     -> ( customBuilder, restCustomBuilders )
+     -> ( customBuilder2, restCustomBuilders2 )
+    )
+    -> String
+    -> variantConstructor
+    -> ( arg1Tool, restArg1Tools )
+    -> ( arg2Tool, restArg2Tools )
+    -> ( customBuilder, restCustomBuilders )
+    -> ( customBuilder2, restCustomBuilders2 )
 doMakeVariant2 variant2Maker_ variantName variantConstructor arg1Spec arg2Spec customBuilder =
     variant2Maker_ (\_ _ () () () -> ()) variantName variantConstructor arg1Spec arg2Spec customBuilder
 
 
-variant2Maker : (c -> d -> a -> b -> e -> f) -> (c -> d -> g -> h -> i -> j) -> c -> d -> ( a, g ) -> ( b, h ) -> ( e, i ) -> ( f, j )
+variant2Maker :
+    (String
+     -> variantConstructor
+     -> arg1Tool
+     -> arg2Tool
+     -> customBuilder
+     -> customBuilder2
+    )
+    ->
+        (String
+         -> variantConstructor
+         -> restArg1Tools
+         -> restArg2Tools
+         -> restCustomBuilders
+         -> restCustomBuilders2
+        )
+    -> String
+    -> variantConstructor
+    -> ( arg1Tool, restArg1Tools )
+    -> ( arg2Tool, restArg2Tools )
+    -> ( customBuilder, restCustomBuilders )
+    -> ( customBuilder2, restCustomBuilders2 )
 variant2Maker variant2_ next variantName variantConstructor ( arg1Spec, restC1s ) ( arg2Spec, restC2s ) ( customBuilder, restCustomBuilders ) =
     ( variant2_ variantName variantConstructor arg1Spec arg2Spec customBuilder
     , next variantName variantConstructor restC1s restC2s restCustomBuilders
     )
 
 
-doMakeVariant3 : ((a -> b -> () -> () -> () -> () -> ()) -> c -> d -> e -> f -> g -> h -> i) -> c -> d -> e -> f -> g -> h -> i
+doMakeVariant3 :
+    ((String -> variantConstructor -> () -> () -> () -> () -> ())
+     -> String
+     -> variantConstructor
+     -> ( arg1Tool, restArg1Tools )
+     -> ( arg2Tool, restArg2Tools )
+     -> ( arg3Tool, restArg3Tools )
+     -> ( customBuilder, restCustomBuilders )
+     -> ( customBuilder2, restCustomBuilders2 )
+    )
+    -> String
+    -> variantConstructor
+    -> ( arg1Tool, restArg1Tools )
+    -> ( arg2Tool, restArg2Tools )
+    -> ( arg3Tool, restArg3Tools )
+    -> ( customBuilder, restCustomBuilders )
+    -> ( customBuilder2, restCustomBuilders2 )
 doMakeVariant3 variantMaker_ variantName variantConstructor arg1Spec arg2Spec arg3Spec customBuilder =
     variantMaker_ (\_ _ () () () () -> ()) variantName variantConstructor arg1Spec arg2Spec arg3Spec customBuilder
 
 
-variant3Maker : (c -> d -> a -> b -> e -> f -> g) -> (c -> d -> h -> i -> j -> k -> l) -> c -> d -> ( a, h ) -> ( b, i ) -> ( e, j ) -> ( f, k ) -> ( g, l )
+variant3Maker :
+    (String
+     -> variantConstructor
+     -> arg1Tool
+     -> arg2Tool
+     -> arg3Tool
+     -> customBuilder
+     -> customBuilder2
+    )
+    ->
+        (String
+         -> variantConstructor
+         -> restArg1Tools
+         -> restArg2Tools
+         -> restArg3Tools
+         -> restCustomBuilders
+         -> restCustomBuilders2
+        )
+    -> String
+    -> variantConstructor
+    -> ( arg1Tool, restArg1Tools )
+    -> ( arg2Tool, restArg2Tools )
+    -> ( arg3Tool, restArg3Tools )
+    -> ( customBuilder, restCustomBuilders )
+    -> ( customBuilder2, restCustomBuilders2 )
 variant3Maker variant3_ next variantName variantConstructor ( arg1Spec, restC1s ) ( arg2Spec, restC2s ) ( arg3Spec, restC3s ) ( customBuilder, restCustomBuilders ) =
     ( variant3_ variantName variantConstructor arg1Spec arg2Spec arg3Spec customBuilder
     , next variantName variantConstructor restC1s restC2s restC3s restCustomBuilders
     )
 
 
-doMakeVariant4 : ((a -> b -> () -> () -> () -> () -> () -> ()) -> c -> d -> e -> f -> g -> h -> i -> j) -> c -> d -> e -> f -> g -> h -> i -> j
+doMakeVariant4 :
+    ((String -> variantConstructor -> () -> () -> () -> () -> () -> ())
+     -> String
+     -> variantConstructor
+     -> ( arg1Tool, restArg1Tools )
+     -> ( arg2Tool, restArg2Tools )
+     -> ( arg3Tool, restArg3Tools )
+     -> ( arg4Tool, restArg4Tools )
+     -> ( customBuilder, restCustomBuilders )
+     -> ( customBuilder2, restCustomBuilders2 )
+    )
+    -> String
+    -> variantConstructor
+    -> ( arg1Tool, restArg1Tools )
+    -> ( arg2Tool, restArg2Tools )
+    -> ( arg3Tool, restArg3Tools )
+    -> ( arg4Tool, restArg4Tools )
+    -> ( customBuilder, restCustomBuilders )
+    -> ( customBuilder2, restCustomBuilders2 )
 doMakeVariant4 variantMaker_ variantName variantConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder =
     variantMaker_ (\_ _ () () () () () -> ()) variantName variantConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder
 
 
-variant4Maker : (c -> d -> a -> b -> e -> f -> g -> h) -> (c -> d -> i -> j -> k -> l -> m -> n) -> c -> d -> ( a, i ) -> ( b, j ) -> ( e, k ) -> ( f, l ) -> ( g, m ) -> ( h, n )
+variant4Maker :
+    (String
+     -> variantConstructor
+     -> arg1Tool
+     -> arg2Tool
+     -> arg3Tool
+     -> arg4Tool
+     -> customBuilder
+     -> customBuilder2
+    )
+    ->
+        (String
+         -> variantConstructor
+         -> restArg1Tools
+         -> restArg2Tools
+         -> restArg3Tools
+         -> restArg4Tools
+         -> restCustomBuilders
+         -> restCustomBuilders2
+        )
+    -> String
+    -> variantConstructor
+    -> ( arg1Tool, restArg1Tools )
+    -> ( arg2Tool, restArg2Tools )
+    -> ( arg3Tool, restArg3Tools )
+    -> ( arg4Tool, restArg4Tools )
+    -> ( customBuilder, restCustomBuilders )
+    -> ( customBuilder2, restCustomBuilders2 )
 variant4Maker variant next variantName variantConstructor ( arg1Spec, restC1s ) ( arg2Spec, restC2s ) ( arg3Spec, restC3s ) ( arg4Spec, restC4s ) ( customBuilder, restCustomBuilders ) =
     ( variant variantName variantConstructor arg1Spec arg2Spec arg3Spec arg4Spec customBuilder
     , next variantName variantConstructor restC1s restC2s restC3s restC4s restCustomBuilders
     )
 
 
-doMakeVariant5 : ((a -> b -> () -> () -> () -> () -> () -> () -> ()) -> c -> d -> e -> f -> g -> h -> i -> j -> k) -> c -> d -> e -> f -> g -> h -> i -> j -> k
+doMakeVariant5 :
+    ((String -> variantConstructor -> () -> () -> () -> () -> () -> () -> ())
+     -> String
+     -> variantConstructor
+     -> ( arg1Tool, restArg1Tools )
+     -> ( arg2Tool, restArg2Tools )
+     -> ( arg3Tool, restArg3Tools )
+     -> ( arg4Tool, restArg4Tools )
+     -> ( arg5Tool, restArg5Tools )
+     -> ( customBuilder, restCustomBuilders )
+     -> ( customBuilder2, restCustomBuilders2 )
+    )
+    -> String
+    -> variantConstructor
+    -> ( arg1Tool, restArg1Tools )
+    -> ( arg2Tool, restArg2Tools )
+    -> ( arg3Tool, restArg3Tools )
+    -> ( arg4Tool, restArg4Tools )
+    -> ( arg5Tool, restArg5Tools )
+    -> ( customBuilder, restCustomBuilders )
+    -> ( customBuilder2, restCustomBuilders2 )
 doMakeVariant5 variantMaker_ variantName variantConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder =
     variantMaker_ (\_ _ () () () () () () -> ()) variantName variantConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder
 
 
-variant5Maker : (c -> d -> a -> b -> e -> f -> g -> h -> i) -> (c -> d -> j -> k -> l -> m -> n -> o -> p) -> c -> d -> ( a, j ) -> ( b, k ) -> ( e, l ) -> ( f, m ) -> ( g, n ) -> ( h, o ) -> ( i, p )
+variant5Maker :
+    (String
+     -> variantConstructor
+     -> arg1Tool
+     -> arg2Tool
+     -> arg3Tool
+     -> arg4Tool
+     -> arg5Tool
+     -> customBuilder
+     -> customBuilder2
+    )
+    ->
+        (String
+         -> variantConstructor
+         -> restArg1Tools
+         -> restArg2Tools
+         -> restArg3Tools
+         -> restArg4Tools
+         -> restArg5Tools
+         -> restCustomBuilders
+         -> restCustomBuilders2
+        )
+    -> String
+    -> variantConstructor
+    -> ( arg1Tool, restArg1Tools )
+    -> ( arg2Tool, restArg2Tools )
+    -> ( arg3Tool, restArg3Tools )
+    -> ( arg4Tool, restArg4Tools )
+    -> ( arg5Tool, restArg5Tools )
+    -> ( customBuilder, restCustomBuilders )
+    -> ( customBuilder2, restCustomBuilders2 )
 variant5Maker variant next variantName variantConstructor ( arg1Spec, restC1s ) ( arg2Spec, restC2s ) ( arg3Spec, restC3s ) ( arg4Spec, restC4s ) ( arg5Spec, restC5s ) ( customBuilder, restCustomBuilders ) =
     ( variant variantName variantConstructor arg1Spec arg2Spec arg3Spec arg4Spec arg5Spec customBuilder
     , next variantName variantConstructor restC1s restC2s restC3s restC4s restC5s restCustomBuilders
