@@ -229,14 +229,14 @@ add destructorFieldGetter tool (Builder builder) =
         , char = builder.char << Tuple.pair tool.char
 
         -- built-in combinators
-        , listMaker = builder.listMaker >> listMaker tool.list
-        , maybeMaker = builder.maybeMaker >> maybeMaker tool.maybe
-        , arrayMaker = builder.arrayMaker >> arrayMaker tool.array
-        , dictMaker = builder.dictMaker >> dictMaker tool.dict
-        , setMaker = builder.setMaker >> setMaker tool.set
-        , tupleMaker = builder.tupleMaker >> tupleMaker tool.tuple
-        , tripleMaker = builder.tripleMaker >> tripleMaker tool.triple
-        , resultMaker = builder.resultMaker >> resultMaker tool.result
+        , listMaker = builder.listMaker >> functorMaker tool.list
+        , maybeMaker = builder.maybeMaker >> functorMaker tool.maybe
+        , arrayMaker = builder.arrayMaker >> functorMaker tool.array
+        , setMaker = builder.setMaker >> functorMaker tool.set
+        , dictMaker = builder.dictMaker >> bifunctorMaker tool.dict
+        , resultMaker = builder.resultMaker >> bifunctorMaker tool.result
+        , tupleMaker = builder.tupleMaker >> bifunctorMaker tool.tuple
+        , tripleMaker = builder.tripleMaker >> trifunctorMaker tool.triple
 
         -- record combinators
         , recordMaker = builder.recordMaker >> recordMaker tool.record
@@ -448,34 +448,28 @@ end (Builder toolBuilder) =
     -- built-in combinators
     , list =
         \itemSpec ->
-            doMakeList toolBuilder.listMaker itemSpec
+            doMakeFunctor toolBuilder.listMaker itemSpec
     , maybe =
-        \(ToolSpec contentSpec) ->
-            doMakeMaybe toolBuilder.maybeMaker contentSpec
-                |> ToolSpec
+        \contentSpec ->
+            doMakeFunctor toolBuilder.maybeMaker contentSpec
     , array =
-        \(ToolSpec itemSpec) ->
-            doMakeArray toolBuilder.arrayMaker itemSpec
-                |> ToolSpec
+        \itemSpec ->
+            doMakeFunctor toolBuilder.arrayMaker itemSpec
     , dict =
-        \(ToolSpec keySpec) (ToolSpec valueSpec) ->
-            doMakeDict toolBuilder.dictMaker keySpec valueSpec
-                |> ToolSpec
+        \keySpec valueSpec ->
+            doMakeBifunctor toolBuilder.dictMaker keySpec valueSpec
     , set =
-        \(ToolSpec memberSpec) ->
-            doMakeSet toolBuilder.setMaker memberSpec
-                |> ToolSpec
+        \memberSpec ->
+            doMakeFunctor toolBuilder.setMaker memberSpec
     , tuple =
-        \(ToolSpec firstSpec) (ToolSpec secondSpec) ->
-            doMakeTuple toolBuilder.tupleMaker firstSpec secondSpec
-                |> ToolSpec
+        \firstSpec secondSpec ->
+            doMakeBifunctor toolBuilder.tupleMaker firstSpec secondSpec
     , triple =
-        \(ToolSpec firstSpec) (ToolSpec secondSpec) (ToolSpec thirdSpec) ->
-            doMakeTriple toolBuilder.tripleMaker firstSpec secondSpec thirdSpec
-                |> ToolSpec
+        \firstSpec secondSpec thirdSpec ->
+            doMakeTrifunctor toolBuilder.tripleMaker firstSpec secondSpec thirdSpec
     , result =
         \errorSpec valueSpec ->
-            doMakeResult toolBuilder.resultMaker errorSpec valueSpec
+            doMakeBifunctor toolBuilder.resultMaker errorSpec valueSpec
 
     -- records
     , record =
@@ -587,121 +581,78 @@ applyMapper next ( delta, restDeltas ) ( toolSpec, restToolSpecs ) =
     )
 
 
-doMakeList :
-    ((() -> ()) -> ( itemSpec, restItemSpecs ) -> ( listSpec, restListSpecs ))
+doMakeFunctor :
+    ((() -> ()) -> ( itemSpec, restItemSpecs ) -> ( functorSpec, restFunctorSpecs ))
     -> ToolSpec ( itemSpec, restItemSpecs )
-    -> ToolSpec ( listSpec, restListSpecs )
-doMakeList listMaker_ (ToolSpec itemSpec) =
-    listMaker_ (\() -> ()) itemSpec
+    -> ToolSpec ( functorSpec, restFunctorSpecs )
+doMakeFunctor functorMaker_ (ToolSpec itemSpec) =
+    functorMaker_ (\() -> ()) itemSpec
         |> ToolSpec
 
 
-listMaker :
-    (itemSpec -> listSpec)
-    -> (restItemSpecs -> restListSpecs)
+functorMaker :
+    (itemSpec -> functorSpec)
+    -> (restItemSpecs -> restFunctorSpecs)
     -> ( itemSpec, restItemSpecs )
-    -> ( listSpec, restListSpecs )
-listMaker list_ next ( itemSpec, restItemSpecs ) =
-    ( list_ itemSpec
+    -> ( functorSpec, restFunctorSpecs )
+functorMaker functorConstructor next ( itemSpec, restItemSpecs ) =
+    ( functorConstructor itemSpec
     , next restItemSpecs
     )
 
 
-doMakeMaybe : ((() -> ()) -> b -> c) -> b -> c
-doMakeMaybe maybeMaker_ maybeContents_ =
-    maybeMaker_ (\() -> ()) maybeContents_
-
-
-maybeMaker : (a -> b) -> (c -> d) -> ( a, c ) -> ( b, d )
-maybeMaker maybe_ next ( maybeContent, restMaybeContents ) =
-    ( maybe_ maybeContent
-    , next restMaybeContents
-    )
-
-
-doMakeArray : ((() -> ()) -> b -> c) -> b -> c
-doMakeArray maker_ contents_ =
-    maker_ (\() -> ()) contents_
-
-
-arrayMaker : (a -> b) -> (c -> d) -> ( a, c ) -> ( b, d )
-arrayMaker array_ next ( content, restContents ) =
-    ( array_ content
-    , next restContents
-    )
-
-
-doMakeDict : ((() -> () -> ()) -> c -> d -> e) -> c -> d -> e
-doMakeDict dictMaker_ keys_ values_ =
-    dictMaker_ (\() () -> ()) keys_ values_
-
-
-dictMaker : (a -> b -> c) -> (d -> e -> f) -> ( a, d ) -> ( b, e ) -> ( c, f )
-dictMaker dict_ next ( key_, restKeys ) ( value_, restValues ) =
-    ( dict_ key_ value_
-    , next restKeys restValues
-    )
-
-
-doMakeSet : ((() -> ()) -> b -> c) -> b -> c
-doMakeSet setMaker_ contents_ =
-    setMaker_ (\() -> ()) contents_
-
-
-setMaker : (a -> b) -> (c -> d) -> ( a, c ) -> ( b, d )
-setMaker set_ next ( content, restContents ) =
-    ( set_ content
-    , next restContents
-    )
-
-
-doMakeTuple : ((() -> () -> ()) -> c -> d -> e) -> c -> d -> e
-doMakeTuple tupleMaker_ a b =
-    tupleMaker_ (\() () -> ()) a b
-
-
-tupleMaker : (a -> b -> c) -> (d -> e -> f) -> ( a, d ) -> ( b, e ) -> ( c, f )
-tupleMaker tuple_ next ( a, restAs ) ( b, restBs ) =
-    ( tuple_ a b
-    , next restAs restBs
-    )
-
-
-doMakeTriple : ((() -> () -> () -> ()) -> d -> e -> f -> g) -> d -> e -> f -> g
-doMakeTriple tripleMaker_ a b c =
-    tripleMaker_ (\() () () -> ()) a b c
-
-
-tripleMaker : (a -> b -> c -> d) -> (e -> f -> g -> h) -> ( a, e ) -> ( b, f ) -> ( c, g ) -> ( d, h )
-tripleMaker triple_ next ( a, restAs ) ( b, restBs ) ( c, restCs ) =
-    ( triple_ a b c
-    , next restAs restBs restCs
-    )
-
-
-doMakeResult :
+doMakeBifunctor :
     ((() -> () -> ())
-     -> ( error, restErrors )
-     -> ( value, restValues )
-     -> ( resultSpec, restResultSpecs )
+     -> ( firstSpec, restFirstSpecs )
+     -> ( secondSpec, restSecondSpecs )
+     -> ( bifunctorSpec, restBifunctorSpecs )
     )
-    -> ToolSpec ( error, restErrors )
-    -> ToolSpec ( value, restValues )
-    -> ToolSpec ( resultSpec, restResultSpecs )
-doMakeResult resultMaker_ (ToolSpec errors) (ToolSpec values) =
-    resultMaker_ (\() () -> ()) errors values
+    -> ToolSpec ( firstSpec, restFirstSpecs )
+    -> ToolSpec ( secondSpec, restSecondSpecs )
+    -> ToolSpec ( bifunctorSpec, restBifunctorSpecs )
+doMakeBifunctor bifunctorMaker_ (ToolSpec errors) (ToolSpec values) =
+    bifunctorMaker_ (\() () -> ()) errors values
         |> ToolSpec
 
 
-resultMaker :
-    (error -> value -> resultSpec)
-    -> (restErrors -> restValues -> restResultSpecs)
-    -> ( error, restErrors )
-    -> ( value, restValues )
-    -> ( resultSpec, restResultSpecs )
-resultMaker result_ next ( error, restErrors ) ( value, restValues ) =
+bifunctorMaker :
+    (firstSpec -> secondSpec -> bifunctorSpec)
+    -> (restFirstSpecs -> restSecondSpecs -> restResultSpecs)
+    -> ( firstSpec, restFirstSpecs )
+    -> ( secondSpec, restSecondSpecs )
+    -> ( bifunctorSpec, restResultSpecs )
+bifunctorMaker result_ next ( error, restErrors ) ( value, restValues ) =
     ( result_ error value
     , next restErrors restValues
+    )
+
+
+doMakeTrifunctor :
+    ((() -> () -> () -> ())
+     -> ( firstSpec, restFirstSpecs )
+     -> ( secondSpec, restSecondSpecs )
+     -> ( thirdSpec, restThirdSpecs )
+     -> ( trifunctorSpec, restTrifunctorSpecs )
+    )
+    -> ToolSpec ( firstSpec, restFirstSpecs )
+    -> ToolSpec ( secondSpec, restSecondSpecs )
+    -> ToolSpec ( thirdSpec, restThirdSpecs )
+    -> ToolSpec ( trifunctorSpec, restTrifunctorSpecs )
+doMakeTrifunctor trifunctorMaker_ (ToolSpec a) (ToolSpec b) (ToolSpec c) =
+    trifunctorMaker_ (\() () () -> ()) a b c
+        |> ToolSpec
+
+
+trifunctorMaker :
+    (firstSpec -> secondSpec -> thirdSpec -> trifunctorSpec)
+    -> (restFirstSpecs -> restSecondSpecs -> restThirdSpecs -> restTrifunctorSpecs)
+    -> ( firstSpec, restFirstSpecs )
+    -> ( secondSpec, restSecondSpecs )
+    -> ( thirdSpec, restThirdSpecs )
+    -> ( trifunctorSpec, restTrifunctorSpecs )
+trifunctorMaker trifunctorConstructor next ( a, restAs ) ( b, restBs ) ( c, restCs ) =
+    ( trifunctorConstructor a b c
+    , next restAs restBs restCs
     )
 
 
