@@ -447,9 +447,8 @@ end (Builder toolBuilder) =
 
     -- built-in combinators
     , list =
-        \(ToolSpec itemSpec) ->
+        \itemSpec ->
             doMakeList toolBuilder.listMaker itemSpec
-                |> ToolSpec
     , maybe =
         \(ToolSpec contentSpec) ->
             doMakeMaybe toolBuilder.maybeMaker contentSpec
@@ -588,15 +587,23 @@ applyMapper next ( delta, restDeltas ) ( toolSpec, restToolSpecs ) =
     )
 
 
-doMakeList : ((() -> ()) -> b -> c) -> b -> c
-doMakeList listMaker_ listChildren_ =
-    listMaker_ (\() -> ()) listChildren_
+doMakeList :
+    ((() -> ()) -> ( itemSpec, restItemSpecs ) -> ( listSpec, restListSpecs ))
+    -> ToolSpec ( itemSpec, restItemSpecs )
+    -> ToolSpec ( listSpec, restListSpecs )
+doMakeList listMaker_ (ToolSpec itemSpec) =
+    listMaker_ (\() -> ()) itemSpec
+        |> ToolSpec
 
 
-listMaker : (a -> b) -> (c -> d) -> ( a, c ) -> ( b, d )
-listMaker list_ next ( listChild, restListChildren ) =
-    ( list_ listChild
-    , next restListChildren
+listMaker :
+    (itemSpec -> listSpec)
+    -> (restItemSpecs -> restListSpecs)
+    -> ( itemSpec, restItemSpecs )
+    -> ( listSpec, restListSpecs )
+listMaker list_ next ( itemSpec, restItemSpecs ) =
+    ( list_ itemSpec
+    , next restItemSpecs
     )
 
 
