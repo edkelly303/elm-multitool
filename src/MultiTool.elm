@@ -77,36 +77,36 @@ define :
         Builder
             { after : ()
             , afters : ()
-            , applyMapper : a27 -> a27
-            , arrayMaker : a26 -> a26
-            , before : a25 -> a25
-            , bool : a24 -> a24
-            , char : a23 -> a23
-            , toolMaker : a22 -> a22
-            , customEnder : a21 -> a21
-            , customMaker : a20 -> a20
-            , dictMaker : a19 -> a19
-            , fieldMaker : a18 -> a18
-            , float : a17 -> a17
-            , int : a16 -> a16
-            , listMaker : a15 -> a15
-            , maybeMaker : a14 -> a14
-            , recordEnder : a13 -> a13
-            , recordMaker : a12 -> a12
-            , resultMaker : a11 -> a11
-            , setMaker : a10 -> a10
-            , string : a9 -> a9
+            , applyMapper : applyMapper -> applyMapper
+            , arrayMaker : arrayMaker -> arrayMaker
+            , before : before -> before
+            , bool : bool -> bool
+            , char : char -> char
+            , toolMaker : toolMaker -> toolMaker
+            , customEnder : customEnder -> customEnder
+            , customMaker : customMaker -> customMaker
+            , dictMaker : dictMaker -> dictMaker
+            , fieldMaker : fieldMaker -> fieldMaker
+            , float : float -> float
+            , int : int -> int
+            , listMaker : listMaker -> listMaker
+            , maybeMaker : maybeMaker -> maybeMaker
+            , recordEnder : recordEnder -> recordEnder
+            , recordMaker : recordMaker -> recordMaker
+            , resultMaker : resultMaker -> resultMaker
+            , setMaker : setMaker -> setMaker
+            , string : string -> string
             , toolConstructor : toolConstructor
-            , tripleMaker : a8 -> a8
-            , tupleMaker : a7 -> a7
+            , tripleMaker : tripleMaker -> tripleMaker
+            , tupleMaker : tupleMaker -> tupleMaker
             , tweakConstructor : tweakConstructor
-            , tweakMaker : a6 -> a6
-            , variant0Maker : a5 -> a5
-            , variant1Maker : a4 -> a4
-            , variant2Maker : a3 -> a3
-            , variant3Maker : a2 -> a2
-            , variant4Maker : a1 -> a1
-            , variant5Maker : a -> a
+            , tweakMaker : tweakMaker -> tweakMaker
+            , variant0Maker : variant0Maker -> variant0Maker
+            , variant1Maker : variant1Maker -> variant1Maker
+            , variant2Maker : variant2Maker -> variant2Maker
+            , variant3Maker : variant3Maker -> variant3Maker
+            , variant4Maker : variant4Maker -> variant4Maker
+            , variant5Maker : variant5Maker -> variant5Maker
             }
 define toolConstructor tweakConstructor =
     Builder
