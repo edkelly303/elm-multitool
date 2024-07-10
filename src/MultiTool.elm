@@ -77,7 +77,7 @@ define :
         Builder
             { after : ()
             , afters : ()
-            , applyMapper : applyMapper -> applyMapper
+            , applyTweakFn : applyTweakFn -> applyTweakFn
             , arrayMaker : arrayMaker -> arrayMaker
             , before : before -> before
             , bool : bool -> bool
@@ -151,7 +151,7 @@ define toolConstructor tweakConstructor =
         , after = ()
         , afters = ()
         , tweakMaker = identity
-        , applyMapper = identity
+        , applyTweakFn = identity
         , tweakConstructor = tweakConstructor
         }
 
@@ -219,50 +219,50 @@ operator, so you'll usually want to apply this final argument like this:
             |> MultiTool.add .codec codecInterface
 
 -}
-add destructorFieldGetter tool (Builder builder) =
+add getMatcher tool (Builder builder) =
     Builder
         { -- primitives
-          string = builder.string << Tuple.pair tool.string
-        , int = builder.int << Tuple.pair tool.int
-        , bool = builder.bool << Tuple.pair tool.bool
-        , float = builder.float << Tuple.pair tool.float
-        , char = builder.char << Tuple.pair tool.char
+          string = \next -> builder.string (Tuple.pair tool.string next)
+        , int = \next -> builder.int (Tuple.pair tool.int next)
+        , bool = \next -> builder.bool (Tuple.pair tool.bool next)
+        , float = \next -> builder.float (Tuple.pair tool.float next)
+        , char = \next -> builder.char (Tuple.pair tool.char next)
 
         -- built-in combinators
-        , listMaker = builder.listMaker >> functorMaker tool.list
-        , maybeMaker = builder.maybeMaker >> functorMaker tool.maybe
-        , arrayMaker = builder.arrayMaker >> functorMaker tool.array
-        , setMaker = builder.setMaker >> functorMaker tool.set
-        , dictMaker = builder.dictMaker >> bifunctorMaker tool.dict
-        , resultMaker = builder.resultMaker >> bifunctorMaker tool.result
-        , tupleMaker = builder.tupleMaker >> bifunctorMaker tool.tuple
-        , tripleMaker = builder.tripleMaker >> trifunctorMaker tool.triple
+        , listMaker = \next -> builder.listMaker (mapper tool.list next)
+        , maybeMaker = \next -> builder.maybeMaker (mapper tool.maybe next)
+        , arrayMaker = \next -> builder.arrayMaker (mapper tool.array next)
+        , setMaker = \next -> builder.setMaker (mapper tool.set next)
+        , dictMaker = \next -> builder.dictMaker (mapper2 tool.dict next)
+        , resultMaker = \next -> builder.resultMaker (mapper2 tool.result next)
+        , tupleMaker = \next -> builder.tupleMaker (mapper2 tool.tuple next)
+        , tripleMaker = \next -> builder.tripleMaker (mapper3 tool.triple next)
 
         -- record combinators
-        , recordMaker = builder.recordMaker >> recordMaker tool.record
-        , fieldMaker = builder.fieldMaker >> fieldMaker tool.field
-        , recordEnder = builder.recordEnder >> recordEnder tool.endRecord
+        , recordMaker = \next -> builder.recordMaker (recordMaker tool.record next)
+        , fieldMaker = \next -> builder.fieldMaker (fieldMaker tool.field next)
+        , recordEnder = \next -> builder.recordEnder (recordEnder tool.endRecord next)
 
         -- custom type combinators
-        , customMaker = builder.customMaker << customMaker (tool.customType << destructorFieldGetter)
-        , variant0Maker = builder.variant0Maker << variant0Maker tool.variant0
-        , variant1Maker = builder.variant1Maker << variant1Maker tool.variant1
-        , variant2Maker = builder.variant2Maker << variant2Maker tool.variant2
-        , variant3Maker = builder.variant3Maker << variant3Maker tool.variant3
-        , variant4Maker = builder.variant4Maker << variant4Maker tool.variant4
-        , variant5Maker = builder.variant5Maker << variant5Maker tool.variant5
-        , customEnder = builder.customEnder << customEnder tool.endCustomType
+        , customMaker = \next -> builder.customMaker (customMaker (\matchers -> tool.customType (getMatcher matchers)) next)
+        , variant0Maker = \next -> builder.variant0Maker (variant0Maker tool.variant0 next)
+        , variant1Maker = \next -> builder.variant1Maker (variant1Maker tool.variant1 next)
+        , variant2Maker = \next -> builder.variant2Maker (variant2Maker tool.variant2 next)
+        , variant3Maker = \next -> builder.variant3Maker (variant3Maker tool.variant3 next)
+        , variant4Maker = \next -> builder.variant4Maker (variant4Maker tool.variant4 next)
+        , variant5Maker = \next -> builder.variant5Maker (variant5Maker tool.variant5 next)
+        , customEnder = \next -> builder.customEnder (customEnder tool.endCustomType next)
 
         -- constructing the multitool
         , toolConstructor = builder.toolConstructor
-        , toolMaker = builder.toolMaker >> toolMaker
+        , toolMaker = \next -> toolMaker (builder.toolMaker next)
 
         -- constructing tweakers
-        , before = builder.before << Tuple.pair Nothing
+        , before = \next -> builder.before ( Nothing, next )
         , after = ( Nothing, builder.after )
         , afters = ( builder.after, builder.afters )
-        , tweakMaker = builder.tweakMaker << tweakMaker builder.before
-        , applyMapper = builder.applyMapper >> applyMapper
+        , tweakMaker = \next -> builder.tweakMaker (tweakMaker builder.before next)
+        , applyTweakFn = \next -> mapper2 applyTweakFn (builder.applyTweakFn next)
         , tweakConstructor = builder.tweakConstructor
         }
 
@@ -448,28 +448,28 @@ end (Builder toolBuilder) =
     -- built-in combinators
     , list =
         \itemSpec ->
-            doMakeFunctor toolBuilder.listMaker itemSpec
+            map toolBuilder.listMaker itemSpec
     , maybe =
         \contentSpec ->
-            doMakeFunctor toolBuilder.maybeMaker contentSpec
+            map toolBuilder.maybeMaker contentSpec
     , array =
         \itemSpec ->
-            doMakeFunctor toolBuilder.arrayMaker itemSpec
+            map toolBuilder.arrayMaker itemSpec
     , dict =
         \keySpec valueSpec ->
-            doMakeBifunctor toolBuilder.dictMaker keySpec valueSpec
+            map2 toolBuilder.dictMaker keySpec valueSpec
     , set =
         \memberSpec ->
-            doMakeFunctor toolBuilder.setMaker memberSpec
+            map toolBuilder.setMaker memberSpec
     , tuple =
         \firstSpec secondSpec ->
-            doMakeBifunctor toolBuilder.tupleMaker firstSpec secondSpec
+            map2 toolBuilder.tupleMaker firstSpec secondSpec
     , triple =
         \firstSpec secondSpec thirdSpec ->
-            doMakeTrifunctor toolBuilder.tripleMaker firstSpec secondSpec thirdSpec
+            map3 toolBuilder.tripleMaker firstSpec secondSpec thirdSpec
     , result =
         \errorSpec valueSpec ->
-            doMakeBifunctor toolBuilder.resultMaker errorSpec valueSpec
+            map2 toolBuilder.resultMaker errorSpec valueSpec
 
     -- records
     , record =
@@ -484,8 +484,8 @@ end (Builder toolBuilder) =
 
     -- custom types
     , customType =
-        \customDestructors ->
-            doMakeCustom toolBuilder.customMaker customDestructors
+        \matchers ->
+            doMakeCustom toolBuilder.customMaker matchers
     , variant0 =
         \variantName variantConstructor customBuilder ->
             doMakeVariant0 toolBuilder.variant0Maker variantName variantConstructor customBuilder
@@ -510,10 +510,9 @@ end (Builder toolBuilder) =
 
     -- turn a spec into a usable multiTool
     , build =
-        \(ToolSpec toolSpec) ->
-            doMakeTool toolBuilder.toolMaker toolBuilder.toolConstructor toolSpec
+        doMakeTool toolBuilder.toolMaker toolBuilder.toolConstructor
     , tweak =
-        doMakeTweak toolBuilder.tweakMaker toolBuilder.tweakConstructor toolBuilder.applyMapper toolBuilder.afters
+        doMakeTweak toolBuilder.tweakMaker toolBuilder.tweakConstructor toolBuilder.applyTweakFn toolBuilder.afters
     }
 
 
@@ -524,135 +523,129 @@ type ToolSpec toolSpec
     = ToolSpec toolSpec
 
 
-doMakeTool : ((tool -> () -> tool) -> toolConstructor -> builder -> tool) -> toolConstructor -> builder -> tool
-doMakeTool toolMaker_ toolConstructor builder =
-    toolMaker_ (\output () -> output) toolConstructor builder
+doMakeTool : ((multiTool -> () -> multiTool) -> toolConstructor -> ( tool, restTools ) -> multiTool) -> toolConstructor -> ToolSpec ( tool, restTools ) -> multiTool
+doMakeTool toolMaker_ toolConstructor (ToolSpec ( tool, restTools )) =
+    toolMaker_ (\output () -> output) toolConstructor ( tool, restTools )
 
 
-toolMaker : (toolConstructor -> restBuilders -> tool) -> (builder -> toolConstructor) -> ( builder, restBuilders ) -> tool
-toolMaker next toolConstructor ( builder, restBuilders ) =
-    next (toolConstructor builder) restBuilders
+toolMaker : (multiToolConstructor -> restTools -> multiTool) -> (tool -> multiToolConstructor) -> ( tool, restTools ) -> multiTool
+toolMaker constructRestTools constructTool ( tool, restTools ) =
+    constructRestTools (constructTool tool) restTools
 
 
 doMakeTweak :
-    ((tweak -> applyMapper -> () -> tweak) -> tweakConstructor -> applyMapper -> afters -> tweak)
+    ((tweak -> applyTweakFn -> () -> tweak) -> tweakConstructor -> applyTweakFn -> afters -> tweak)
     -> tweakConstructor
-    -> applyMapper
+    -> applyTweakFn
     -> afters
     -> tweak
-doMakeTweak tweakMaker_ tweakConstructor applyMapper_ afters =
-    tweakMaker_ (\tweak _ () -> tweak) tweakConstructor applyMapper_ afters
+doMakeTweak tweakMaker_ tweakConstructor applyTweakFn_ afters =
+    tweakMaker_ (\tweak _ () -> tweak) tweakConstructor applyTweakFn_ afters
 
 
 tweakMaker :
-    (( Maybe mapper, after ) -> mappers)
-    -> (tweakConstructor -> ((() -> () -> ()) -> mappers -> toolSpec -> toolSpec) -> restAfters -> tweak)
-    -> ((mapper -> ToolSpec toolSpec -> ToolSpec toolSpec) -> tweakConstructor)
-    -> ((() -> () -> ()) -> mappers -> toolSpec -> toolSpec)
+    (( Maybe mapper, after ) -> tweakFns)
+    -> (tweakConstructor -> ((() -> () -> ()) -> tweakFns -> tool -> tool) -> restAfters -> tweak)
+    -> ((mapper -> ToolSpec tool -> ToolSpec tool) -> tweakConstructor)
+    -> ((() -> () -> ()) -> tweakFns -> tool -> tool)
     -> ( after, restAfters )
     -> tweak
-tweakMaker before next tweakConstructor applyMapper_ ( after, restAfters ) =
+tweakMaker before next tweakConstructor applyTweakFn_ ( after, restAfters ) =
     let
         tweaker =
-            \mapper (ToolSpec toolSpec) ->
+            \tweakFn (ToolSpec toolSpec) ->
                 let
-                    mappers =
-                        before ( Just mapper, after )
+                    tweakFns =
+                        before ( Just tweakFn, after )
                 in
-                applyMapper_ (\() () -> ()) mappers toolSpec
+                applyTweakFn_ (\() () -> ()) tweakFns toolSpec
                     |> ToolSpec
     in
-    next (tweakConstructor tweaker) applyMapper_ restAfters
+    next (tweakConstructor tweaker) applyTweakFn_ restAfters
 
 
-applyMapper :
-    (restMappers -> restToolSpecs -> restToolSpecs)
-    -> ( Maybe (toolSpec -> toolSpec), restMappers )
-    -> ( toolSpec, restToolSpecs )
-    -> ( toolSpec, restToolSpecs )
-applyMapper next ( delta, restDeltas ) ( toolSpec, restToolSpecs ) =
-    ( case delta of
-        Just mapper ->
-            mapper toolSpec
+applyTweakFn : Maybe (tool -> tool) -> tool -> tool
+applyTweakFn maybeFn tool =
+    case maybeFn of
+        Just fn ->
+            fn tool
 
         Nothing ->
-            toolSpec
-    , next restDeltas restToolSpecs
-    )
+            tool
 
 
-doMakeFunctor :
-    ((() -> ()) -> ( itemSpec, restItemSpecs ) -> ( functorSpec, restFunctorSpecs ))
-    -> ToolSpec ( itemSpec, restItemSpecs )
-    -> ToolSpec ( functorSpec, restFunctorSpecs )
-doMakeFunctor functorMaker_ (ToolSpec itemSpec) =
-    functorMaker_ (\() -> ()) itemSpec
+map :
+    ((() -> ()) -> ( thisA, restA ) -> ( thisB, restB ))
+    -> ToolSpec ( thisA, restA )
+    -> ToolSpec ( thisB, restB )
+map mapper_ (ToolSpec ( this, rest )) =
+    mapper_ (\() -> ()) ( this, rest )
         |> ToolSpec
 
 
-functorMaker :
-    (itemSpec -> functorSpec)
-    -> (restItemSpecs -> restFunctorSpecs)
-    -> ( itemSpec, restItemSpecs )
-    -> ( functorSpec, restFunctorSpecs )
-functorMaker functorConstructor next ( itemSpec, restItemSpecs ) =
-    ( functorConstructor itemSpec
-    , next restItemSpecs
+mapper :
+    (thisA -> thisB)
+    -> (restA -> restB)
+    -> ( thisA, restA )
+    -> ( thisB, restB )
+mapper mapThis mapRest ( this, rest ) =
+    ( mapThis this
+    , mapRest rest
     )
 
 
-doMakeBifunctor :
+map2 :
     ((() -> () -> ())
-     -> ( firstSpec, restFirstSpecs )
-     -> ( secondSpec, restSecondSpecs )
-     -> ( bifunctorSpec, restBifunctorSpecs )
+     -> ( thisA, restA )
+     -> ( thisB, restB )
+     -> ( thisC, restC )
     )
-    -> ToolSpec ( firstSpec, restFirstSpecs )
-    -> ToolSpec ( secondSpec, restSecondSpecs )
-    -> ToolSpec ( bifunctorSpec, restBifunctorSpecs )
-doMakeBifunctor bifunctorMaker_ (ToolSpec errors) (ToolSpec values) =
-    bifunctorMaker_ (\() () -> ()) errors values
+    -> ToolSpec ( thisA, restA )
+    -> ToolSpec ( thisB, restB )
+    -> ToolSpec ( thisC, restC )
+map2 mapper2_ (ToolSpec errors) (ToolSpec values) =
+    mapper2_ (\() () -> ()) errors values
         |> ToolSpec
 
 
-bifunctorMaker :
-    (firstSpec -> secondSpec -> bifunctorSpec)
-    -> (restFirstSpecs -> restSecondSpecs -> restResultSpecs)
-    -> ( firstSpec, restFirstSpecs )
-    -> ( secondSpec, restSecondSpecs )
-    -> ( bifunctorSpec, restResultSpecs )
-bifunctorMaker result_ next ( error, restErrors ) ( value, restValues ) =
-    ( result_ error value
-    , next restErrors restValues
+mapper2 :
+    (thisA -> thisB -> thisC)
+    -> (restA -> restB -> restC)
+    -> ( thisA, restA )
+    -> ( thisB, restB )
+    -> ( thisC, restC )
+mapper2 map2This map2Rest ( thisA, restA ) ( thisB, restB ) =
+    ( map2This thisA thisB
+    , map2Rest restA restB
     )
 
 
-doMakeTrifunctor :
+map3 :
     ((() -> () -> () -> ())
-     -> ( firstSpec, restFirstSpecs )
-     -> ( secondSpec, restSecondSpecs )
-     -> ( thirdSpec, restThirdSpecs )
-     -> ( trifunctorSpec, restTrifunctorSpecs )
+     -> ( thisA, restA )
+     -> ( thisB, restB )
+     -> ( thisC, restC )
+     -> ( thisD, restD )
     )
-    -> ToolSpec ( firstSpec, restFirstSpecs )
-    -> ToolSpec ( secondSpec, restSecondSpecs )
-    -> ToolSpec ( thirdSpec, restThirdSpecs )
-    -> ToolSpec ( trifunctorSpec, restTrifunctorSpecs )
-doMakeTrifunctor trifunctorMaker_ (ToolSpec a) (ToolSpec b) (ToolSpec c) =
-    trifunctorMaker_ (\() () () -> ()) a b c
+    -> ToolSpec ( thisA, restA )
+    -> ToolSpec ( thisB, restB )
+    -> ToolSpec ( thisC, restC )
+    -> ToolSpec ( thisD, restD )
+map3 mapper3_ (ToolSpec a) (ToolSpec b) (ToolSpec c) =
+    mapper3_ (\() () () -> ()) a b c
         |> ToolSpec
 
 
-trifunctorMaker :
-    (firstSpec -> secondSpec -> thirdSpec -> trifunctorSpec)
-    -> (restFirstSpecs -> restSecondSpecs -> restThirdSpecs -> restTrifunctorSpecs)
-    -> ( firstSpec, restFirstSpecs )
-    -> ( secondSpec, restSecondSpecs )
-    -> ( thirdSpec, restThirdSpecs )
-    -> ( trifunctorSpec, restTrifunctorSpecs )
-trifunctorMaker trifunctorConstructor next ( a, restAs ) ( b, restBs ) ( c, restCs ) =
-    ( trifunctorConstructor a b c
-    , next restAs restBs restCs
+mapper3 :
+    (thisA -> thisB -> thisC -> thisD)
+    -> (restA -> restB -> restC -> restD)
+    -> ( thisA, restA )
+    -> ( thisB, restB )
+    -> ( thisC, restC )
+    -> ( thisD, restD )
+mapper3 map3This map3Rest ( thisA, restAs ) ( thisB, restBs ) ( thisC, restCs ) =
+    ( map3This thisA thisB thisC
+    , map3Rest restAs restBs restCs
     )
 
 
