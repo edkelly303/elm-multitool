@@ -449,27 +449,27 @@ end (Builder toolBuilder) =
     , list =
         \itemSpec ->
             map toolBuilder.listMaker itemSpec
-    , maybe =
-        \contentSpec ->
-            map toolBuilder.maybeMaker contentSpec
     , array =
         \itemSpec ->
             map toolBuilder.arrayMaker itemSpec
-    , dict =
-        \keySpec valueSpec ->
-            map2 toolBuilder.dictMaker keySpec valueSpec
     , set =
         \memberSpec ->
             map toolBuilder.setMaker memberSpec
+    , dict =
+        \keySpec valueSpec ->
+            map2 toolBuilder.dictMaker keySpec valueSpec
+    , maybe =
+        \contentSpec ->
+            map toolBuilder.maybeMaker contentSpec
+    , result =
+        \errorSpec valueSpec ->
+            map2 toolBuilder.resultMaker errorSpec valueSpec
     , tuple =
         \firstSpec secondSpec ->
             map2 toolBuilder.tupleMaker firstSpec secondSpec
     , triple =
         \firstSpec secondSpec thirdSpec ->
             map3 toolBuilder.tripleMaker firstSpec secondSpec thirdSpec
-    , result =
-        \errorSpec valueSpec ->
-            map2 toolBuilder.resultMaker errorSpec valueSpec
 
     -- records
     , record =
