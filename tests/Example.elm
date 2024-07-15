@@ -5,15 +5,19 @@ import Expect
 import MultiTool
 import Test exposing (..)
 import Tools.Control
+import Tools.ToString
 
 
-type alias Tools control =
-    { control : control }
+type alias Tools control toString =
+    { control : control
+    , toString : toString
+    }
 
 
 t =
     MultiTool.define Tools Tools
         |> MultiTool.add .control Tools.Control.interface
+        |> MultiTool.add .toString Tools.ToString.interface
         |> MultiTool.end
 
 
@@ -74,7 +78,7 @@ allSpec =
                             F i1 i2 i3 i4 i5 ->
                                 f i1 i2 i3 i4 i5
              in
-             t.customType { control = match }
+             t.customType { control = match, toString = match }
                 |> t.variant0 "a" A
                 |> t.variant1 "b" B t.int
                 |> t.variant2 "c" C t.int t.int
