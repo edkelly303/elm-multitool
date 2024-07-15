@@ -219,6 +219,301 @@ operator, so you'll usually want to apply this final argument like this:
             |> MultiTool.add .codec codecInterface
 
 -}
+add :
+    (customDestructor -> c)
+    ->
+        { array : thisA7 -> thisB7
+        , bool : a5
+        , char : a4
+        , customType : c -> customBuilder7
+        , dict : thisA6 -> thisB6 -> thisC4
+        , endCustomType : customBuilder8 -> customTypeSpec
+        , endRecord : recordBuilder1 -> recordSpec
+        , field :
+            String -> getField -> fieldTool -> recordBuilder3 -> recordBuilder2
+        , float : a3
+        , int : a2
+        , list : thisA5 -> thisB5
+        , maybe : thisA4 -> thisB4
+        , record : recordConstructor -> recordBuilder
+        , result : thisA3 -> thisB3 -> thisC3
+        , set : thisA2 -> thisB2
+        , string : a1
+        , triple : thisA1 -> thisB1 -> thisC2 -> thisD
+        , tuple : thisA -> thisB -> thisC1
+        , variant0 :
+            String -> variantConstructor5 -> customBuilder6 -> customBuilder2_5
+        , variant1 :
+            String
+            -> variantConstructor4
+            -> arg1Tool4
+            -> customBuilder5
+            -> customBuilder2_4
+        , variant2 :
+            String
+            -> variantConstructor3
+            -> arg1Tool3
+            -> arg2Tool3
+            -> customBuilder4
+            -> customBuilder2_3
+        , variant3 :
+            String
+            -> variantConstructor2
+            -> arg1Tool2
+            -> arg2Tool2
+            -> arg3Tool2
+            -> customBuilder3
+            -> customBuilder2_2
+        , variant4 :
+            String
+            -> variantConstructor1
+            -> arg1Tool1
+            -> arg2Tool1
+            -> arg3Tool1
+            -> arg4Tool1
+            -> customBuilder1
+            -> customBuilder2_1
+        , variant5 :
+            String
+            -> variantConstructor
+            -> arg1Tool
+            -> arg2Tool
+            -> arg3Tool
+            -> arg4Tool
+            -> arg5Tool
+            -> customBuilder
+            -> customBuilder2
+        }
+    ->
+        Builder
+            { after : e
+            , afters : f
+            , applyTweakFn : g -> restA8 -> restB8 -> restC4
+            , arrayMaker : (( thisA7, restA7 ) -> ( thisB7, restB7 )) -> h
+            , before : ( Maybe mapper, after ) -> tweakFns
+            , bool : ( a5, b4 ) -> i
+            , char : ( a4, b3 ) -> j
+            , customEnder :
+                (( customBuilder8, restCustomBuilders8 )
+                 -> ( customTypeSpec, restCustomTypeSpecs )
+                )
+                -> k
+            , customMaker :
+                (customDestructor -> ( customBuilder7, restCustomBuilders7 ))
+                -> l
+            , dictMaker :
+                (( thisA6, restA6 ) -> ( thisB6, restB6 ) -> ( thisC4, restC3 ))
+                -> m
+            , fieldMaker :
+                (String
+                 -> getField
+                 -> ( fieldTool, restFieldTools )
+                 -> ( recordBuilder3, restRecordBuilders2 )
+                 -> ( recordBuilder2, restRecordBuilder2s )
+                )
+                -> n
+            , float : ( a3, b2 ) -> o
+            , int : ( a2, b1 ) -> p
+            , listMaker : (( thisA5, restA5 ) -> ( thisB5, restB5 )) -> q
+            , maybeMaker : (( thisA4, restA4 ) -> ( thisB4, restB4 )) -> r
+            , recordEnder :
+                (( recordBuilder1, restRecordBuilders1 )
+                 -> ( recordSpec, restRecordSpecs )
+                )
+                -> s
+            , recordMaker :
+                (recordConstructor -> ( recordBuilder, restRecordBuilders ))
+                -> t
+            , resultMaker :
+                (( thisA3, restA3 ) -> ( thisB3, restB3 ) -> ( thisC3, restC2 ))
+                -> u
+            , setMaker : (( thisA2, restA2 ) -> ( thisB2, restB2 )) -> v
+            , string : ( a1, b ) -> w
+            , toolConstructor : x
+            , toolMaker : y -> multiToolConstructor -> restTools -> multiTool
+            , tripleMaker :
+                (( thisA1, restA1 )
+                 -> ( thisB1, restB1 )
+                 -> ( thisC2, restC1 )
+                 -> ( thisD, restD )
+                )
+                -> z
+            , tupleMaker :
+                (( thisA, restA ) -> ( thisB, restB ) -> ( thisC1, restC ))
+                -> c1
+            , tweakConstructor : d1
+            , tweakMaker :
+                (((mapper -> ToolSpec tool -> ToolSpec tool) -> tweakConstructor)
+                 -> ((() -> () -> ()) -> tweakFns -> tool -> tool)
+                 -> ( after, restAfters )
+                 -> tweak
+                )
+                -> e1
+            , variant0Maker :
+                (String
+                 -> variantConstructor5
+                 -> ( customBuilder6, restCustomBuilders6 )
+                 -> ( customBuilder2_5, restCustomBuilders2_5 )
+                )
+                -> f1
+            , variant1Maker :
+                (String
+                 -> variantConstructor4
+                 -> ( arg1Tool4, restArg1Tools4 )
+                 -> ( customBuilder5, restCustomBuilders5 )
+                 -> ( customBuilder2_4, restCustomBuilders2_4 )
+                )
+                -> g1
+            , variant2Maker :
+                (String
+                 -> variantConstructor3
+                 -> ( arg1Tool3, restArg1Tools3 )
+                 -> ( arg2Tool3, restArg2Tools3 )
+                 -> ( customBuilder4, restCustomBuilders4 )
+                 -> ( customBuilder2_3, restCustomBuilders2_3 )
+                )
+                -> h1
+            , variant3Maker :
+                (String
+                 -> variantConstructor2
+                 -> ( arg1Tool2, restArg1Tools2 )
+                 -> ( arg2Tool2, restArg2Tools2 )
+                 -> ( arg3Tool2, restArg3Tools2 )
+                 -> ( customBuilder3, restCustomBuilders3 )
+                 -> ( customBuilder2_2, restCustomBuilders2_2 )
+                )
+                -> i1
+            , variant4Maker :
+                (String
+                 -> variantConstructor1
+                 -> ( arg1Tool1, restArg1Tools1 )
+                 -> ( arg2Tool1, restArg2Tools1 )
+                 -> ( arg3Tool1, restArg3Tools1 )
+                 -> ( arg4Tool1, restArg4Tools1 )
+                 -> ( customBuilder1, restCustomBuilders1 )
+                 -> ( customBuilder2_1, restCustomBuilders2_1 )
+                )
+                -> j1
+            , variant5Maker :
+                (String
+                 -> variantConstructor
+                 -> ( arg1Tool, restArg1Tools )
+                 -> ( arg2Tool, restArg2Tools )
+                 -> ( arg3Tool, restArg3Tools )
+                 -> ( arg4Tool, restArg4Tools )
+                 -> ( arg5Tool, restArg5Tools )
+                 -> ( customBuilder, restCustomBuilders )
+                 -> ( customBuilder2, restCustomBuilders2 )
+                )
+                -> k1
+            }
+    ->
+        Builder
+            { after : ( Maybe a, e )
+            , afters : ( e, f )
+            , applyTweakFn :
+                g
+                -> ( Maybe (thisC -> thisC), restA8 )
+                -> ( thisC, restB8 )
+                -> ( thisC, restC4 )
+            , arrayMaker : (restA7 -> restB7) -> h
+            , before : after -> tweakFns
+            , bool : b4 -> i
+            , char : b3 -> j
+            , customEnder : (restCustomBuilders8 -> restCustomTypeSpecs) -> k
+            , customMaker : (customDestructor -> restCustomBuilders7) -> l
+            , dictMaker : (restA6 -> restB6 -> restC3) -> m
+            , fieldMaker :
+                (String
+                 -> getField
+                 -> restFieldTools
+                 -> restRecordBuilders2
+                 -> restRecordBuilder2s
+                )
+                -> n
+            , float : b2 -> o
+            , int : b1 -> p
+            , listMaker : (restA5 -> restB5) -> q
+            , maybeMaker : (restA4 -> restB4) -> r
+            , recordEnder : (restRecordBuilders1 -> restRecordSpecs) -> s
+            , recordMaker : (recordConstructor -> restRecordBuilders) -> t
+            , resultMaker : (restA3 -> restB3 -> restC2) -> u
+            , setMaker : (restA2 -> restB2) -> v
+            , string : b -> w
+            , toolConstructor : x
+            , toolMaker :
+                y
+                -> (tool1 -> multiToolConstructor)
+                -> ( tool1, restTools )
+                -> multiTool
+            , tripleMaker : (restA1 -> restB1 -> restC1 -> restD) -> z
+            , tupleMaker : (restA -> restB -> restC) -> c1
+            , tweakConstructor : d1
+            , tweakMaker :
+                (tweakConstructor
+                 -> ((() -> () -> ()) -> tweakFns -> tool -> tool)
+                 -> restAfters
+                 -> tweak
+                )
+                -> e1
+            , variant0Maker :
+                (String
+                 -> variantConstructor5
+                 -> restCustomBuilders6
+                 -> restCustomBuilders2_5
+                )
+                -> f1
+            , variant1Maker :
+                (String
+                 -> variantConstructor4
+                 -> restArg1Tools4
+                 -> restCustomBuilders5
+                 -> restCustomBuilders2_4
+                )
+                -> g1
+            , variant2Maker :
+                (String
+                 -> variantConstructor3
+                 -> restArg1Tools3
+                 -> restArg2Tools3
+                 -> restCustomBuilders4
+                 -> restCustomBuilders2_3
+                )
+                -> h1
+            , variant3Maker :
+                (String
+                 -> variantConstructor2
+                 -> restArg1Tools2
+                 -> restArg2Tools2
+                 -> restArg3Tools2
+                 -> restCustomBuilders3
+                 -> restCustomBuilders2_2
+                )
+                -> i1
+            , variant4Maker :
+                (String
+                 -> variantConstructor1
+                 -> restArg1Tools1
+                 -> restArg2Tools1
+                 -> restArg3Tools1
+                 -> restArg4Tools1
+                 -> restCustomBuilders1
+                 -> restCustomBuilders2_1
+                )
+                -> j1
+            , variant5Maker :
+                (String
+                 -> variantConstructor
+                 -> restArg1Tools
+                 -> restArg2Tools
+                 -> restArg3Tools
+                 -> restArg4Tools
+                 -> restArg5Tools
+                 -> restCustomBuilders
+                 -> restCustomBuilders2
+                )
+                -> k1
+            }
 add getMatcher tool (Builder builder) =
     Builder
         { -- primitives
@@ -420,6 +715,223 @@ customise the `tools.string` and `tools.int` `ToolSpec`s like this:
                 )
 
 -}
+end :
+    Builder
+        { after : after
+        , afters : afters
+        , applyTweakFn : applyTweakFn
+        , arrayMaker : (() -> ()) -> ( thisA7, restA7 ) -> ( thisB7, restB7 )
+        , before : before
+        , bool : () -> toolSpec4
+        , char : () -> toolSpec3
+        , customEnder : (() -> ()) -> customBuilder7 -> customTypeSpec
+        , customMaker :
+            (customDestructor -> ())
+            -> customDestructor
+            -> ( customBuilder8, restCustomBuilders7 )
+        , dictMaker :
+            (() -> () -> ())
+            -> ( thisA6, restA6 )
+            -> ( thisB6, restB6 )
+            -> ( thisC3, restC3 )
+        , fieldMaker :
+            (String -> getField -> () -> () -> ())
+            -> String
+            -> getField
+            -> fieldSpec
+            -> ( recordBuilder1, restRecordBuilders1 )
+            -> ( recordBuilder2, restRecordBuilder2s )
+        , float : () -> toolSpec2
+        , int : () -> toolSpec1
+        , listMaker : (() -> ()) -> ( thisA5, restA5 ) -> ( thisB5, restB5 )
+        , maybeMaker : (() -> ()) -> ( thisA4, restA4 ) -> ( thisB4, restB4 )
+        , recordEnder :
+            (() -> ())
+            -> ( recordBuilder3, restRecordBuilders2 )
+            -> ( recordSpec, restRecordSpecs )
+        , recordMaker :
+            (recordConstructor -> ())
+            -> recordConstructor
+            -> ( recordBuilder, restRecordBuilders )
+        , resultMaker :
+            (() -> () -> ())
+            -> ( thisA3, restA3 )
+            -> ( thisB3, restB3 )
+            -> ( thisC2, restC2 )
+        , setMaker : (() -> ()) -> ( thisA2, restA2 ) -> ( thisB2, restB2 )
+        , string : () -> toolSpec
+        , toolConstructor : toolConstructor
+        , toolMaker :
+            (multiTool -> () -> multiTool)
+            -> toolConstructor
+            -> ( tool, restTools )
+            -> multiTool
+        , tripleMaker :
+            (() -> () -> () -> ())
+            -> ( thisA1, restA1 )
+            -> ( thisB1, restB1 )
+            -> ( thisC1, restC1 )
+            -> ( thisD, restD )
+        , tupleMaker :
+            (() -> () -> ())
+            -> ( thisA, restA )
+            -> ( thisB, restB )
+            -> ( thisC, restC )
+        , tweakConstructor : tweakConstructor
+        , tweakMaker :
+            (tweak -> applyTweakFn -> () -> tweak)
+            -> tweakConstructor
+            -> applyTweakFn
+            -> afters
+            -> tweak
+        , variant0Maker :
+            (String -> variantConstructor5 -> () -> ())
+            -> String
+            -> variantConstructor5
+            -> ( customBuilder6, restCustomBuilders6 )
+            -> ( customBuilder2_5, restCustomBuilders2_5 )
+        , variant1Maker :
+            (String -> variantConstructor4 -> () -> () -> ())
+            -> String
+            -> variantConstructor4
+            -> ( arg1Tool4, restArg1Tools4 )
+            -> ( customBuilder5, restCustomBuilders5 )
+            -> ( customBuilder2_4, restCustomBuilders2_4 )
+        , variant2Maker :
+            (String -> variantConstructor3 -> () -> () -> () -> ())
+            -> String
+            -> variantConstructor3
+            -> ( arg1Tool3, restArg1Tools3 )
+            -> ( arg2Tool3, restArg2Tools3 )
+            -> ( customBuilder4, restCustomBuilders4 )
+            -> ( customBuilder2_3, restCustomBuilders2_3 )
+        , variant3Maker :
+            (String -> variantConstructor2 -> () -> () -> () -> () -> ())
+            -> String
+            -> variantConstructor2
+            -> ( arg1Tool2, restArg1Tools2 )
+            -> ( arg2Tool2, restArg2Tools2 )
+            -> ( arg3Tool2, restArg3Tools2 )
+            -> ( customBuilder3, restCustomBuilders3 )
+            -> ( customBuilder2_2, restCustomBuilders2_2 )
+        , variant4Maker :
+            (String -> variantConstructor1 -> () -> () -> () -> () -> () -> ())
+            -> String
+            -> variantConstructor1
+            -> ( arg1Tool1, restArg1Tools1 )
+            -> ( arg2Tool1, restArg2Tools1 )
+            -> ( arg3Tool1, restArg3Tools1 )
+            -> ( arg4Tool1, restArg4Tools1 )
+            -> ( customBuilder1, restCustomBuilders1 )
+            -> ( customBuilder2_1, restCustomBuilders2_1 )
+        , variant5Maker :
+            (String
+             -> variantConstructor
+             -> ()
+             -> ()
+             -> ()
+             -> ()
+             -> ()
+             -> ()
+             -> ()
+            )
+            -> String
+            -> variantConstructor
+            -> ( arg1Tool, restArg1Tools )
+            -> ( arg2Tool, restArg2Tools )
+            -> ( arg3Tool, restArg3Tools )
+            -> ( arg4Tool, restArg4Tools )
+            -> ( arg5Tool, restArg5Tools )
+            -> ( customBuilder, restCustomBuilders )
+            -> ( customBuilder2, restCustomBuilders2 )
+        }
+    ->
+        { array : ToolSpec ( thisA7, restA7 ) -> ToolSpec ( thisB7, restB7 )
+        , bool : ToolSpec toolSpec4
+        , build : ToolSpec ( tool, restTools ) -> multiTool
+        , char : ToolSpec toolSpec3
+        , customType : customDestructor -> ( customBuilder8, restCustomBuilders7 )
+        , dict :
+            ToolSpec ( thisA6, restA6 )
+            -> ToolSpec ( thisB6, restB6 )
+            -> ToolSpec ( thisC3, restC3 )
+        , endCustomType : customBuilder7 -> ToolSpec customTypeSpec
+        , endRecord :
+            ( recordBuilder3, restRecordBuilders2 )
+            -> ToolSpec ( recordSpec, restRecordSpecs )
+        , field :
+            String
+            -> getField
+            -> ToolSpec fieldSpec
+            -> ( recordBuilder1, restRecordBuilders1 )
+            -> ( recordBuilder2, restRecordBuilder2s )
+        , float : ToolSpec toolSpec2
+        , int : ToolSpec toolSpec1
+        , list : ToolSpec ( thisA5, restA5 ) -> ToolSpec ( thisB5, restB5 )
+        , maybe : ToolSpec ( thisA4, restA4 ) -> ToolSpec ( thisB4, restB4 )
+        , record : recordConstructor -> ( recordBuilder, restRecordBuilders )
+        , result :
+            ToolSpec ( thisA3, restA3 )
+            -> ToolSpec ( thisB3, restB3 )
+            -> ToolSpec ( thisC2, restC2 )
+        , set : ToolSpec ( thisA2, restA2 ) -> ToolSpec ( thisB2, restB2 )
+        , string : ToolSpec toolSpec
+        , triple :
+            ToolSpec ( thisA1, restA1 )
+            -> ToolSpec ( thisB1, restB1 )
+            -> ToolSpec ( thisC1, restC1 )
+            -> ToolSpec ( thisD, restD )
+        , tuple :
+            ToolSpec ( thisA, restA )
+            -> ToolSpec ( thisB, restB )
+            -> ToolSpec ( thisC, restC )
+        , tweak : tweak
+        , variant0 :
+            String
+            -> variantConstructor5
+            -> ( customBuilder6, restCustomBuilders6 )
+            -> ( customBuilder2_5, restCustomBuilders2_5 )
+        , variant1 :
+            String
+            -> variantConstructor4
+            -> ToolSpec ( arg1Tool4, restArg1Tools4 )
+            -> ( customBuilder5, restCustomBuilders5 )
+            -> ( customBuilder2_4, restCustomBuilders2_4 )
+        , variant2 :
+            String
+            -> variantConstructor3
+            -> ToolSpec ( arg1Tool3, restArg1Tools3 )
+            -> ToolSpec ( arg2Tool3, restArg2Tools3 )
+            -> ( customBuilder4, restCustomBuilders4 )
+            -> ( customBuilder2_3, restCustomBuilders2_3 )
+        , variant3 :
+            String
+            -> variantConstructor2
+            -> ToolSpec ( arg1Tool2, restArg1Tools2 )
+            -> ToolSpec ( arg2Tool2, restArg2Tools2 )
+            -> ToolSpec ( arg3Tool2, restArg3Tools2 )
+            -> ( customBuilder3, restCustomBuilders3 )
+            -> ( customBuilder2_2, restCustomBuilders2_2 )
+        , variant4 :
+            String
+            -> variantConstructor1
+            -> ToolSpec ( arg1Tool1, restArg1Tools1 )
+            -> ToolSpec ( arg2Tool1, restArg2Tools1 )
+            -> ToolSpec ( arg3Tool1, restArg3Tools1 )
+            -> ToolSpec ( arg4Tool1, restArg4Tools1 )
+            -> ( customBuilder1, restCustomBuilders1 )
+            -> ( customBuilder2_1, restCustomBuilders2_1 )
+        , variant5 :
+            String
+            -> variantConstructor
+            -> ToolSpec ( arg1Tool, restArg1Tools )
+            -> ToolSpec ( arg2Tool, restArg2Tools )
+            -> ToolSpec ( arg3Tool, restArg3Tools )
+            -> ToolSpec ( arg4Tool, restArg4Tools )
+            -> ToolSpec ( arg5Tool, restArg5Tools )
+            -> ( customBuilder, restCustomBuilders )
+            -> ( customBuilder2, restCustomBuilders2 )
+        }
 end (Builder toolBuilder) =
     let
         -- primitives
